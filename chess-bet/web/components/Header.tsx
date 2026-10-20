@@ -4,6 +4,7 @@ import { createWallet, inAppWallet } from "thirdweb/wallets";
 import { chain, client } from "@/lib/config";
 import { useApp } from "@/lib/ctx";
 import { LANGS, Lang } from "@/lib/i18n";
+import MusicToggle from "./MusicToggle";
 
 export const wallets = [
   inAppWallet({ auth: { options: ["email", "google", "apple", "passkey"] } }),
@@ -31,6 +32,7 @@ export default function Header() {
           {Object.entries(LANGS).map(([k, v]) => <option key={k} value={k} className="text-slate-900">{v}</option>)}
         </select>
         <button onClick={toggleDark} aria-label="Theme" className="w-10 h-10 rounded-xl bg-black/5 dark:bg-white/10 text-lg">{dark ? "☀" : "☾"}</button>
+        <MusicToggle />
         <ConnectButton
           client={client}
           chain={chain}
