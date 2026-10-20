@@ -54,6 +54,7 @@ type Live = {
   chess: Chess; clock: { w: number; b: number }; last: number;
   drawOffer: string | null; over: boolean; reason: string | null; winner: string | null;
   reported: boolean; socks: Set<WebSocket>;
+  chat: { from: string; text: string; at: number }[];
   // пауза: у каждого игрока 2 паузы по 5 минут; пока пауза идёт, основные часы заморожены
   pause: { by: string; color: "w" | "b"; until: number } | null; pausesLeft: { w: number; b: number };
 };
@@ -83,7 +84,7 @@ function load() {
       // время простоя сервера не списывается с игроков
       // пауза: простой сервера тоже не съедает её время
       const pause = x.pause ? { by: x.pause.by, color: x.pause.color, until: Date.now() + Number(x.pause.left) } : null;
-      live.set(x.id, { ...x, chess, startedAt: x.startedAt ?? Date.now(), last: Date.now(), socks: new Set(), pause, pausesLeft: x.pausesLeft ?? { w: PAUSES, b: PAUSES } });
+      live.set(x.id, { ...x, chess, startedAt: x.startedAt ?? Date.now(), last: Date.now(), socks: new Set(), pause, pausesLeft: x.pausesLeft ?? { w: PAUSES, b: PAUSES }, chat: x.chat ?? [] });
     }
     console.log(`state: live=${live.size} done=${done.length} scanFrom=${scanFrom}`);
   } catch {
@@ -98,7 +99,7 @@ function save() {
     const liveOut = [...live.values()].map((g) => ({
       id: g.id, white: g.white, black: g.black, bet: g.bet, duration: g.duration,
       startedAt: g.startedAt, pgn: g.chess.pgn(), clock: g.clock, drawOffer: g.drawOffer, over: g.over,
-      reason: g.reason, winner: g.winner, reported: g.reported,
+      reason: g.reason, winner: g.winner, reported: g.reported, chat: g.chat,
       pause: g.pause ? { by: g.pause.by, color: g.pause.color, left: Math.max(0, g.pause.until - Date.now()) } : null, pausesLeft: g.pausesLeft,
     }));
     fs.mkdirSync(path.dirname(STATE_FILE), { recursive: true });
@@ -213,7 +214,7 @@ function startLive(id: number, white: string, black: string, bet: string, durati
   live.set(id, {
     id, white, black, bet, duration, startedAt, chess: new Chess(), clock: { w: ms, b: ms }, last: Date.now(),
     drawOffer: null, over: false, reason: null, winner: null, reported: false, socks: new Set(),
-    pause: null, pausesLeft: { w: PAUSES, b: PAUSES },
+    pause: null, pausesLeft: { w: PAUSES, b: PAUSES }, chat: [],
   });
   open.delete(id);
   save();
@@ -260,7 +261,7 @@ function snap(g: Live) {
     turn: g.chess.turn(), clock: remaining(g), over: g.over, reason: g.reason,
     winner: g.winner, drawOffer: g.drawOffer, feeBps,
     pause: g.pause ? { by: g.pause.by, color: g.pause.color, left: Math.max(0, g.pause.until - Date.now()) } : null,
-    pausesLeft: g.pausesLeft,
+    pausesLeft: g.pausesLeft, chat: g.chat.slice(-50),
   };
 }
 function broadcast(g: Live) {
@@ -524,7 +525,7 @@ server.on("upgrade", (req, socket, head) => {
   wss.handleUpgrade(req, socket, head, (ws) => wss.emit("connection", ws));
 });
 
-type Conn = { addr?: string; gid?: number; nonce: string; win: number; n: number };
+type Conn = { addr?: string; gid?: number; nonce: string; win: number; n: number; lc?: number };
 
 wss.on("connection", (ws: WebSocket) => {
   const c: Conn = { nonce: crypto.randomBytes(16).toString("hex"), win: Date.now(), n: 0 };
@@ -578,6 +579,17 @@ wss.on("connection", (ws: WebSocket) => {
     if (!g) return err("no_game");
     const me = c.addr;
     if (me !== g.white && me !== g.black) return err("not_player");
+    if (m.t === "chat") {
+      // чат партии: только двое игроков, до 200 символов, без ссылок, не чаще раза в секунду
+      const text = String(m.text ?? "").replace(/\s+/g, " ").trim().slice(0, 200);
+      if (!text || /https?:\/\/|www\./i.test(text)) return err("bad_chat");
+      if (now - (c.lc ?? 0) < 1000) return err("rate_limit");
+      c.lc = now;
+      g.chat.push({ from: me, text, at: now });
+      if (g.chat.length > 100) g.chat.shift();
+      broadcast(g); save();
+      return;
+    }
     if (g.over) return err("game_over");
 
     if (m.t === "pause") {
