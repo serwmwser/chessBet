@@ -18,6 +18,7 @@ type State = {
   white: string; black: string; bet: string; turn: "w" | "b"; clock: { w: number; b: number };
   over: boolean; reason: string | null; winner: string | null; drawOffer: string | null; feeBps: number;
   pause?: { by: string; color: "w" | "b"; left: number } | null; pausesLeft?: { w: number; b: number };
+  chat?: { from: string; text: string; at: number }[];
 };
 type Phase = "connect" | "sign" | "load" | "fail";
 
@@ -44,6 +45,10 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
   const replay = useReplay(st?.history ?? EMPTY);
   const [intro, setIntro] = useState(true);
   const [endOpen, setEndOpen] = useState(true);
+  const [msg, setMsg] = useState("");
+  const chatBox = useRef<HTMLDivElement>(null);
+  const chatLen = st?.chat?.length ?? 0;
+  useEffect(() => { const el = chatBox.current; if (el) el.scrollTop = el.scrollHeight; }, [chatLen]);
 
   useEffect(() => {
     if (!account) return;
@@ -73,6 +78,7 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
         else if (m.t === "error") {
           if (m.message === "game_not_found") setTimeout(() => sock.readyState === 1 && join(), 1500);
           else if (m.message === "bad_signature" || m.message === "bad_message") { setPhase("fail"); setFailMsg(m.message); }
+          else if (m.message === "bad_chat") toast(ru ? "Сообщение не отправлено: ссылки и пустые сообщения запрещены" : "Message not sent: links and empty messages are not allowed", "err");
           else if (m.message !== "not_your_turn") toast(ptRef.current.err[m.message] ?? m.message, "err");
         }
       };
@@ -169,6 +175,23 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
       </div>
       {!st.over && <PauseButton left={pausesLeft} active={myTurn && started} onClick={() => send({ t: "pause" })} />}
       <Moves san={st.history} />
+
+      {st.chat && (
+        <div className="card space-y-2">
+          <div ref={chatBox} className="max-h-32 overflow-y-auto space-y-1 text-sm">
+            {st.chat.length === 0 && <div className="opacity-50 text-xs">{ru ? "Чат партии: его видите только вы и соперник" : "Game chat: only you and your opponent can see it"}</div>}
+            {st.chat.map((c, i) => (
+              <div key={i} className={c.from === me ? "text-end" : ""}>
+                <span className={"inline-block rounded-2xl px-3 py-1 " + (c.from === me ? "bg-emerald-500/20" : "bg-black/5 dark:bg-white/10")}>{c.text}</span>
+              </div>
+            ))}
+          </div>
+          <form className="flex gap-2" onSubmit={(e) => { e.preventDefault(); const text = msg.trim(); if (!text) return; send({ t: "chat", text }); setMsg(""); }}>
+            <input value={msg} onChange={(e) => setMsg(e.target.value.slice(0, 200))} maxLength={200} placeholder={ru ? "Сообщение…" : "Message…"} className="flex-1 rounded-xl bg-black/5 dark:bg-white/10 px-3 py-2 text-sm" />
+            <button className="btn btn-primary !py-2" type="submit">{ru ? "Отправить" : "Send"}</button>
+          </form>
+        </div>
+      )}
 
       {!st.over && (
         <div className="grid grid-cols-2 gap-2">
