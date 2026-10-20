@@ -19,12 +19,14 @@ type State = {
   over: boolean; reason: string | null; winner: string | null; drawOffer: string | null; feeBps: number;
   pause?: { by: string; color: "w" | "b"; left: number } | null; pausesLeft?: { w: number; b: number };
 };
+type Phase = "connect" | "sign" | "load" | "fail";
 
 const REASON: Record<string, Key> = { checkmate: "rChk", timeout: "rTime", resign: "rRes", timeout_draw: "rTimeDraw", abort: "rAbort" };
 const EMPTY: string[] = [];
 
 export default function OnlineGame({ id, onExit }: { id: number; onExit: () => void }) {
-  const { t, toast } = useApp();
+  const { t, toast, lang } = useApp();
+  const ru = lang === "ru";
   const pt = usePT();
   const ptRef = useRef(pt);
   ptRef.current = pt;
@@ -33,6 +35,9 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
   const [, tick] = useState(0);
   const recv = useRef(0);
   const ws = useRef<WebSocket | null>(null);
+  const [phase, setPhase] = useState<Phase>("connect");
+  const [failMsg, setFailMsg] = useState("");
+  const [attempt, setAttempt] = useState(0);
   const me = account?.address.toLowerCase();
   const oppAddr = st ? (st.white === me ? st.black : st.white) : undefined;
   const oppProf = useProfile(oppAddr);
@@ -44,6 +49,8 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
     if (!account) return;
     let closed = false;
     let retry: ReturnType<typeof setTimeout>;
+    setPhase("connect");
+    setFailMsg("");
     const connect = () => {
       const sock = new WebSocket(WS_URL);
       ws.current = sock;
@@ -51,30 +58,52 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
       sock.onmessage = async (ev) => {
         const m = JSON.parse(ev.data);
         if (m.t === "challenge") {
+          setPhase("sign");
           try {
             const message = `ChessBet login\nAddress: ${account.address}\nNonce: ${m.nonce}`;
             const sig = await account.signMessage({ message });
             sock.send(JSON.stringify({ t: "auth", address: account.address, message, sig }));
-          } catch { toast("Signature rejected", "err"); }
-        } else if (m.t === "authed") join();
+            setPhase("load");
+          } catch (e) {
+            setPhase("fail");
+            setFailMsg(((e as Error)?.message || "signature rejected").slice(0, 140));
+          }
+        } else if (m.t === "authed") { setPhase("load"); join(); }
         else if (m.t === "state") { setSt(m); recv.current = Date.now(); }
         else if (m.t === "error") {
           if (m.message === "game_not_found") setTimeout(() => sock.readyState === 1 && join(), 1500);
+          else if (m.message === "bad_signature" || m.message === "bad_message") { setPhase("fail"); setFailMsg(m.message); }
           else if (m.message !== "not_your_turn") toast(ptRef.current.err[m.message] ?? m.message, "err");
         }
       };
-      sock.onclose = () => { if (!closed) retry = setTimeout(connect, 2000); };
+      sock.onclose = () => { if (!closed) { setPhase((p) => (p === "fail" ? p : "connect")); retry = setTimeout(connect, 2000); } };
     };
     connect();
     return () => { closed = true; clearTimeout(retry); ws.current?.close(); };
-  }, [account, id, toast]);
+  }, [account, id, toast, attempt]);
 
   // часы обновляются локально между сообщениями сервера
   useEffect(() => { const i = setInterval(() => tick((x) => x + 1), 250); return () => clearInterval(i); }, []);
 
   const send = (o: object) => ws.current?.readyState === 1 && ws.current.send(JSON.stringify(o));
 
-  if (!st || !account) return <WaitingSplash />;
+  if (!st || !account) {
+    const msg = !account
+      ? (ru ? "Подключите кошелёк" : "Connect your wallet")
+      : phase === "connect" ? (ru ? "Соединение с сервером игры…" : "Connecting to the game server…")
+      : phase === "sign" ? (ru ? "Подтвердите подпись входа в вашем кошельке. Это бесплатно и не списывает деньги. Если запроса не видно, откройте приложение кошелька." : "Approve the sign-in signature in your wallet. It is free and moves no money. If you see no prompt, open your wallet app.")
+      : phase === "fail" ? (ru ? "Подпись не получена: " : "Signature failed: ") + failMsg
+      : (ru ? "Загружаем партию…" : "Loading the game…");
+    return (
+      <div className="space-y-3">
+        <WaitingSplash />
+        <div className="card text-center text-sm space-y-2">
+          <div>{msg}</div>
+          {account && phase === "fail" && <button className="btn btn-primary" onClick={() => setAttempt((a) => a + 1)}>{ru ? "Повторить" : "Retry"}</button>}
+        </div>
+      </div>
+    );
+  }
 
   const iAmWhite = st.white === me;
   const myColor = iAmWhite ? "w" : "b";
