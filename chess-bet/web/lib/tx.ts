@@ -5,6 +5,8 @@ import { escrowContract, ESCROW_ADDRESS, usdcContract } from "./config";
 
 export type Step = "idle" | "approve" | "confirm";
 const ZERO = "0x0000000000000000000000000000000000000000";
+/** Разрешение на списание выдаём сразу на 10 ставок вперёд: следующие игры будут требовать одну подпись вместо двух. */
+const ALLOWANCE_MULT = 10n;
 
 /** Сколько и можно ли забрать по игре: amount — доступно игроку, claimed — уже забрано, status — статус игры в контракте (2 = идёт, 3 = завершена, 4 = отменена). */
 export async function readClaimInfo(id: number, who: string) {
@@ -38,7 +40,7 @@ export function useEscrow() {
     await run(prepareContractCall({
       contract: usdcContract,
       method: "function approve(address spender, uint256 amount) returns (bool)",
-      params: [ESCROW_ADDRESS, amount],
+      params: [ESCROW_ADDRESS, amount * ALLOWANCE_MULT],
     }));
   };
 
