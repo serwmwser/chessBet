@@ -13,7 +13,7 @@ const GRACE_MS = 3 * 86_400_000;
 
 /** Раздел профиля: мои созданные игры, идущие партии, невостребованные выплаты и возврат ставок по зависшим партиям (кнопка появляется только когда срок вышел). */
 export default function MyGames({ onOpenGame }: { onOpenGame: (id: number) => void }) {
-  const { t, toast } = useApp();
+  const { t, toast, lang } = useApp();
   const { account, cancel, refund } = useEscrow();
   const me = account?.address;
   const [mine, setMine] = useState<{ open: OpenGame[]; active: LiveInfo[] } | null>(null);
@@ -69,6 +69,14 @@ export default function MyGames({ onOpenGame }: { onOpenGame: (id: number) => vo
             <button className="btn btn-primary !py-2" onClick={() => onOpenGame(g.id)}>{t("resume")}</button>
           </div>
         ))}
+
+        {mine && mine.open.length > 0 && (
+          <p className="text-xs opacity-70">
+            {lang === "ru"
+              ? "Игра без соперника хранится без ограничения по времени. Кнопка «Отмена» сразу возвращает вашу ставку целиком на ваш кошелёк (одной транзакцией, нужна небольшая комиссия сети в POL). Отменить можно только пока никто не присоединился. Токены лежат в смарт-контракте, ни у кого, кроме вас, доступа к ним нет."
+              : "A game without an opponent is kept with no time limit. The Cancel button returns your full stake to your wallet right away (one transaction, a small network fee in POL is needed). You can cancel only while nobody has joined. The tokens sit in the smart contract and nobody but you can take them out."}
+          </p>
+        )}
 
         {mine?.open.map((g) => {
           const k = g.signer ? keyForSigner(g.signer) : undefined;
