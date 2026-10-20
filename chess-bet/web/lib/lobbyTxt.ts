@@ -9,6 +9,10 @@ const RU = {
   switchHint: "Разделы переключаются кнопками выше: выберите «Стандарт» или «Крупные», затем ставку ползунком или быстрой кнопкой.",
   quickStd: "Быстрые ставки раздела «Стандарт»: 0.5, 1, 2.5 и 5 USDC.",
   quickBig: (max: string) => `Быстрые ставки раздела «Крупные»: от 5.5 до ${max} USDC. Остальные суммы с шагом 0.5 выбирайте ползунком.`,
+  signHint: "Кошелёк попросит две подписи подряд. Шаг 1 из 2: разрешите списание USDC игре (деньги ещё не списываются, при следующих играх этот шаг обычно не нужен). Шаг 2 из 2: подтвердите саму ставку, только тогда деньги уйдут в контракт.",
+  walletNote: "Красное предупреждение кошелька о «рисках фишинга» появляется для всех новых сайтов, у которых нет собственного проверенного домена. Адрес контракта игры виден в подтверждении, а деньги можно вернуть: отмена своей игры возвращает ставку целиком.",
+  stepApprove: "Шаг 1 из 2: подтвердите разрешение в кошельке…",
+  stepConfirm: "Шаг 2 из 2: подтвердите ставку в кошельке…",
 };
 
 const EN: typeof RU = {
@@ -20,6 +24,10 @@ const EN: typeof RU = {
   switchHint: "Switch sections with the buttons above: pick Standard or High stakes, then choose a stake with the slider or a quick button.",
   quickStd: "Quick stakes of the Standard section: 0.5, 1, 2.5 and 5 USDC.",
   quickBig: (max: string) => `Quick stakes of the High stakes section: from 5.5 to ${max} USDC. Use the slider for other amounts in steps of 0.5.`,
+  signHint: "Your wallet will ask for two signatures in a row. Step 1 of 2: allow the game to use your USDC (no money is taken yet, and later games usually skip this step). Step 2 of 2: confirm the stake itself, only then the money goes into the contract.",
+  walletNote: "The red \"phishing risk\" warning in wallets appears for every new site without its own verified domain. The game contract address is shown in the confirmation, and you can get your money back: cancelling your own game returns the stake in full.",
+  stepApprove: "Step 1 of 2: confirm the allowance in your wallet…",
+  stepConfirm: "Step 2 of 2: confirm the stake in your wallet…",
 };
 
 export type LT = typeof RU;
