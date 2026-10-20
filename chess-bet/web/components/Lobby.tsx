@@ -46,7 +46,7 @@ export default function Lobby() {
     if (!agreed) { toast(t("ageNote"), "err"); return false; }
     return true;
   };
-  const stepText = step === "approve" ? t("approving") : step === "confirm" ? t("confirming") : "";
+  const stepText = step === "approve" ? lt.stepApprove : step === "confirm" ? lt.stepConfirm : "";
   const mineOpen = async (a: string) => { try { return (await fetchMine(a)).open; } catch { return [] as OpenGame[]; } };
 
   const onCreate = async () => {
@@ -132,6 +132,8 @@ export default function Lobby() {
         <button className="btn btn-primary w-full" disabled={busy !== null} onClick={onCreate}>
           {busy === "create" ? stepText || "…" : t("create")}
         </button>
+        <p className="text-xs opacity-70">{lt.signHint}</p>
+        <p className="text-xs opacity-60">{lt.walletNote}</p>
         {!account && <p className="text-sm opacity-70 text-center">{t("signIn")}</p>}
       </section>
 
