@@ -4,6 +4,7 @@ import { fetchGame, OpenGame } from "@/lib/api";
 import { shortAddr, TERMS_URL, usdc } from "@/lib/config";
 import { useApp } from "@/lib/ctx";
 import { gameUrl, keyFromHash, keyMatches, signJoin } from "@/lib/invite";
+import { useLT } from "@/lib/lobbyTxt";
 import { Step, useEscrow } from "@/lib/tx";
 import { durLabel } from "./Lobby";
 import Share from "./Share";
@@ -11,6 +12,7 @@ import Share from "./Share";
 /** Страница приглашения: открывается по ссылке ?game=ID (для приватных игр ключ лежит в #k=...). */
 export default function Invite({ id, onClose }: { id: number; onClose: () => void }) {
   const { t, toast, agreed, setAgreed } = useApp();
+  const lt = useLT();
   const { account, join } = useEscrow();
   const [g, setG] = useState<OpenGame | null | undefined>(undefined); // undefined — загрузка, null — не найдена
   const [step, setStep] = useState<Step>("idle");
@@ -59,7 +61,7 @@ export default function Invite({ id, onClose }: { id: number; onClose: () => voi
     finally { setBusy(false); setStep("idle"); }
   };
 
-  const stepText = step === "approve" ? t("approving") : step === "confirm" ? t("confirming") : "…";
+  const stepText = step === "approve" ? lt.stepApprove : step === "confirm" ? lt.stepConfirm : "…";
 
   return (
     <section className="card mb-4 space-y-3 !border-emerald-500/40 !bg-gradient-to-br from-brand-500/10 to-brand-violet/10">
@@ -91,6 +93,8 @@ export default function Invite({ id, onClose }: { id: number; onClose: () => voi
             </label>
           )}
           <button className="btn btn-primary w-full" disabled={busy} onClick={onJoin}>{busy ? stepText : t("join")}</button>
+          <p className="text-xs opacity-70">{lt.signHint}</p>
+          <p className="text-xs opacity-60">{lt.walletNote}</p>
           {!account && <p className="text-sm opacity-70 text-center">{t("signIn")}</p>}
         </>
       )}
