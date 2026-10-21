@@ -41,7 +41,14 @@ const ABI = [
   "function setReferrer(address user,address ref)",
   "function refInfo(address r) view returns (uint32 friends,uint32 gamesCount,uint256 earned,uint256 owed,uint256 pct)",
 ];
-const provider = new ethers.JsonRpcProvider(RPC_URL);
+// RPC_URL: один адрес или несколько через запятую. Если адресов несколько, сервер идёт по порядку
+// и переключается на следующий, когда первый завис или вернул ошибку.
+const rpcUrls = RPC_URL.split(",").map((x) => x.trim()).filter(Boolean);
+const net = ethers.Network.from(Number(process.env.CHAIN_ID ?? "137"));
+const mkRpc = (u: string) => new ethers.JsonRpcProvider(u, net, { staticNetwork: net, batchMaxCount: 1 });
+const provider: ethers.AbstractProvider = rpcUrls.length > 1
+  ? new ethers.FallbackProvider(rpcUrls.map((u, i) => ({ provider: mkRpc(u), priority: i + 1, stallTimeout: 1500, weight: 1 })), net, { quorum: 1 })
+  : mkRpc(rpcUrls[0]);
 const wallet = new ethers.Wallet(ORACLE_PK, provider);
 const escrow = new ethers.Contract(ESCROW, ABI, wallet);
 const ev = process.env.EVENTS === "0" ? (..._a: unknown[]) => {} : (...a: unknown[]) => (escrow as any).on(...a);
