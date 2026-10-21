@@ -1,10 +1,12 @@
 "use client";
 import { useTx, TxKey } from "@/lib/txt";
+import { useRT } from "@/lib/rulesTxt";
 
 const STEPS: TxKey[] = ["how1", "how2", "how3", "how4", "how5", "how6"];
 
 export default function HowTo() {
   const tx = useTx();
+  const rt = useRT();
   return (
     <details className="card group" open>
       <summary className="cursor-pointer list-none flex items-center justify-between text-lg font-bold">
@@ -19,6 +21,16 @@ export default function HowTo() {
           </li>
         ))}
       </ol>
+
+      <div className="mt-5 space-y-3 border-t border-black/10 dark:border-white/10 pt-4">
+        <h3 className="font-bold">{rt.title}</h3>
+        {rt.items.map((it) => (
+          <div key={it.h} className="text-sm space-y-0.5">
+            <div className="font-semibold">{it.h}</div>
+            <div className="opacity-85">{it.p}</div>
+          </div>
+        ))}
+      </div>
     </details>
   );
 }
