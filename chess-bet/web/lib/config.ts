@@ -12,7 +12,7 @@ export const TERMS_URL = process.env.NEXT_PUBLIC_TERMS_URL || `${process.env.NEX
 
 export const client = createThirdwebClient({ clientId: CLIENT_ID || "missing-client-id" });
 export const chain = RPC_URL
-  ? defineChain({ id: CHAIN_ID, rpc: RPC_URL, name: "Local test", nativeCurrency: { name: "POL", symbol: "POL", decimals: 18 } })
+  ? defineChain({ id: CHAIN_ID, rpc: RPC_URL, name: CHAIN_ID === 137 ? "Polygon" : "Local test", nativeCurrency: { name: "POL", symbol: "POL", decimals: 18 } })
   : defineChain(CHAIN_ID);
 
 export const usdcContract = getContract({ client, chain, address: USDC_ADDRESS });
