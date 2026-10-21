@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchHistory, fetchMine, LiveInfo, OpenGame } from "@/lib/api";
 import { usdc } from "@/lib/config";
 import { useApp } from "@/lib/ctx";
@@ -27,18 +27,27 @@ export default function MyGames({ onOpenGame }: { onOpenGame: (id: number) => vo
   }, [me]);
   useEffect(() => { loadMine(); const i = setInterval(loadMine, 4000); return () => clearInterval(i); }, [loadMine]);
 
-  // выплаты, которые игрок ещё не забрал, — по последним 20 завершённым играм
+  // выплаты, которые игрок ещё не забрал, — по последним 20 завершённым играм.
+  // Игры, по которым всё забрано или забирать нечего, запоминаем и больше не проверяем; остальные читаем по очереди,
+  // чтобы не создавать всплесков запросов к блокчейну (у бесплатного RPC есть лимит запросов в секунду).
+  const settled = useRef<Set<number>>(new Set());
+  useEffect(() => { settled.current = new Set(); }, [me]);
   const loadClaims = useCallback(async () => {
     if (!me) return;
     try {
       const h = await fetchHistory(me.toLowerCase());
-      const infos = await Promise.all(
-        h.games.slice(0, 20).map((g) => readClaimInfo(g.id, me).then((i) => ({ id: g.id, ...i })).catch(() => null))
-      );
-      setClaims(infos.filter((x): x is NonNullable<typeof x> => !!x && x.amount > 0 && !x.claimed).map((x) => ({ id: x.id })));
+      const found: { id: number }[] = [];
+      for (const g of h.games.slice(0, 20)) {
+        if (settled.current.has(g.id)) continue;
+        const i = await readClaimInfo(g.id, me).catch(() => null);
+        if (!i) continue;
+        if (i.claimed || (i.amount === 0 && i.status >= 3)) { settled.current.add(g.id); continue; }
+        if (i.amount > 0) found.push({ id: g.id });
+      }
+      setClaims(found);
     } catch { /* повторим позже */ }
   }, [me]);
-  useEffect(() => { loadClaims(); const i = setInterval(loadClaims, 15000); return () => clearInterval(i); }, [loadClaims]);
+  useEffect(() => { loadClaims(); const i = setInterval(loadClaims, 30000); return () => clearInterval(i); }, [loadClaims]);
 
   if (!me) return null;
 
