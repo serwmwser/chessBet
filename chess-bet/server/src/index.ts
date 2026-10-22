@@ -5,6 +5,7 @@ import crypto from "node:crypto";
 import { WebSocketServer, WebSocket } from "ws";
 import { Chess } from "chess.js";
 import { ethers } from "ethers";
+import { createSession, checkSession } from "./session.js";
 
 const {
   RPC_URL,
@@ -161,7 +162,9 @@ function saveProfile(m: any): string | null {
   const body = JSON.stringify({ name: m.name ?? "", bio: m.bio ?? "", link: m.link ?? "", avatar: m.avatar ?? "" });
   const hash = crypto.createHash("sha256").update(body).digest("hex");
   const exp = `ChessBet profile\nAddress: ${m.address}\nHash: ${hash}\nTime: ${ts}`;
-  try { if (ethers.verifyMessage(exp, String(m.sig)).toLowerCase() !== addr) return "bad_signature"; } catch { return "bad_signature"; }
+  if (!(m.token && checkSession(addr, m.token))) {
+    try { if (ethers.verifyMessage(exp, String(m.sig)).toLowerCase() !== addr) return "bad_signature"; } catch { return "bad_signature"; }
+  }
   const p = cleanProfile(m);
   if (typeof p === "string") return p;
   if (p.name) {
@@ -463,6 +466,18 @@ const server = http.createServer((req, res) => {
     });
     return;
   }
+  if (req.method === "POST" && parts[0] === "session") {
+    if (origins.length && !originOk(origin)) { res.writeHead(403).end("{}"); return; }
+    let body = "";
+    req.on("data", (c) => { body += c; if (body.length > 2_000) req.destroy(); });
+    req.on("end", () => {
+      try {
+        const r = createSession(JSON.parse(body));
+        out(typeof r === "string" ? { ok: false, error: r } : { ok: true, token: r.token, exp: r.exp });
+      } catch { out({ ok: false, error: "bad_request" }); }
+    });
+    return;
+  }
   if (req.method === "POST" && parts[0] === "ref") {
     if (origins.length && !originOk(origin)) { res.writeHead(403).end("{}"); return; }
     let body = "";
@@ -557,6 +572,12 @@ wss.on("connection", (ws: WebSocket) => {
         c.addr = addr;
         return send({ t: "authed", address: addr });
       } catch { return err("bad_signature"); }
+    }
+    if (m.t === "resume") {
+      const addr = String(m.address ?? "").toLowerCase();
+      if (!checkSession(addr, m.token)) return err("bad_session");
+      c.addr = addr;
+      return send({ t: "authed", address: addr });
     }
     if (!c.addr) return err("not_authed");
 

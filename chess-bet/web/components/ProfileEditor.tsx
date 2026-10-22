@@ -4,6 +4,7 @@ import { useActiveAccount } from "thirdweb/react";
 import { postProfile, ProfileData } from "@/lib/api";
 import { forgetProfile, resizeAvatar, sha256Hex } from "@/lib/profile";
 import { useApp } from "@/lib/ctx";
+import { dropToken, ensureToken } from "@/lib/session";
 import { Key } from "@/lib/i18n";
 import Avatar from "./Avatar";
 
@@ -32,9 +33,15 @@ export default function ProfileEditor({ initial, onSaved, onClose }: { initial: 
       const body = { name: f.name.trim(), bio: f.bio.trim(), link: f.link.trim(), avatar: f.avatar };
       const ts = Date.now();
       const hash = await sha256Hex(JSON.stringify(body));
-      const message = `ChessBet profile\nAddress: ${account.address}\nHash: ${hash}\nTime: ${ts}`;
-      const sig = await account.signMessage({ message });
-      const r = await postProfile({ ...body, address: account.address, ts, sig });
+      const token = await ensureToken(account); // одна подпись на 24 часа
+      const sign = () => account.signMessage({ message: `ChessBet profile\nAddress: ${account.address}\nHash: ${hash}\nTime: ${ts}` });
+      let r = token
+        ? await postProfile({ ...body, address: account.address, ts, token })
+        : await postProfile({ ...body, address: account.address, ts, sig: await sign() });
+      if (!r.ok && token && r.error === "bad_signature") {
+        dropToken(account.address);
+        r = await postProfile({ ...body, address: account.address, ts, sig: await sign() });
+      }
       if (!r.ok) { toast(ERR[r.error ?? ""] ? t(ERR[r.error ?? ""]) : `${t("saveFailed")}: ${r.error ?? "?"}`, "err"); return; }
       forgetProfile(account.address);
       toast(t("saved"), "ok");

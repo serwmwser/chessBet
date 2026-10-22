@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useActiveAccount } from "thirdweb/react";
 import { shortAddr, usdc, WS_URL } from "@/lib/config";
 import { useApp } from "@/lib/ctx";
+import { dropToken, ensureToken, getToken } from "@/lib/session";
 import { useProfile } from "@/lib/profile";
 import { usePT } from "@/lib/pauseTxt";
 import { Key } from "@/lib/i18n";
@@ -53,6 +54,7 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
   useEffect(() => {
     if (!account) return;
     let closed = false;
+    let retried = false;
     let retry: ReturnType<typeof setTimeout>;
     setPhase("connect");
     setFailMsg("");
@@ -63,11 +65,16 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
       sock.onmessage = async (ev) => {
         const m = JSON.parse(ev.data);
         if (m.t === "challenge") {
-          setPhase("sign");
+          setPhase(getToken(account.address) ? "load" : "sign");
           try {
-            const message = `ChessBet login\nAddress: ${account.address}\nNonce: ${m.nonce}`;
-            const sig = await account.signMessage({ message });
-            sock.send(JSON.stringify({ t: "auth", address: account.address, message, sig }));
+            const token = await ensureToken(account); // одна подпись на 24 часа
+            if (token) {
+              sock.send(JSON.stringify({ t: "resume", address: account.address, token }));
+            } else {
+              const message = `ChessBet login\nAddress: ${account.address}\nNonce: ${m.nonce}`;
+              const sig = await account.signMessage({ message });
+              sock.send(JSON.stringify({ t: "auth", address: account.address, message, sig }));
+            }
             setPhase("load");
           } catch (e) {
             setPhase("fail");
@@ -77,7 +84,8 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
         else if (m.t === "state") { setSt(m); recv.current = Date.now(); }
         else if (m.t === "error") {
           if (m.message === "game_not_found") setTimeout(() => sock.readyState === 1 && join(), 1500);
-          else if (m.message === "bad_signature" || m.message === "bad_message") { setPhase("fail"); setFailMsg(m.message); }
+          else if (m.message === "bad_session" && !retried) { retried = true; dropToken(account.address); setAttempt((a) => a + 1); }
+          else if (m.message === "bad_signature" || m.message === "bad_message" || m.message === "bad_session") { setPhase("fail"); setFailMsg(m.message); }
           else if (m.message === "bad_chat") toast(ru ? "Сообщение не отправлено: ссылки и пустые сообщения запрещены" : "Message not sent: links and empty messages are not allowed", "err");
           else if (m.message !== "not_your_turn") toast(ptRef.current.err[m.message] ?? m.message, "err");
         }
