@@ -105,7 +105,7 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
     const msg = !account
       ? (ru ? "Подключите кошелёк" : "Connect your wallet")
       : phase === "connect" ? (ru ? "Соединение с сервером игры…" : "Connecting to the game server…")
-      : phase === "sign" ? (ru ? "Подтвердите подпись входа в вашем кошельке. Это бесплатно и не списывает деньги. Если запроса не видно, откройте приложение кошелька." : "Approve the sign-in signature in your wallet. It is free and moves no money. If you see no prompt, open your wallet app.")
+      : phase === "sign" ? (ru ? "Подтвердите подпись входа в вашем кошельке. Это бесплатно, не списывает деньги и нужна один раз в сутки. Если запроса не видно, откройте приложение кошелька." : "Approve the sign-in signature in your wallet. It is free, moves no money and is needed only once a day. If you see no prompt, open your wallet app.")
       : phase === "fail" ? (ru ? "Подпись не получена: " : "Signature failed: ") + failMsg
       : (ru ? "Загружаем партию…" : "Loading the game…");
     return (
