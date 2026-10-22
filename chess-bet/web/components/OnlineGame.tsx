@@ -43,6 +43,7 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
   const me = account?.address.toLowerCase();
   const oppAddr = st ? (st.white === me ? st.black : st.white) : undefined;
   const oppProf = useProfile(oppAddr);
+  const myProf = useProfile(me);
   const replay = useReplay(st?.history ?? EMPTY);
   const [intro, setIntro] = useState(true);
   const [endOpen, setEndOpen] = useState(true);
@@ -161,7 +162,7 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
       )}
       {intro && !st.over && st.history.length === 0 && <StartSplash white={iAmWhite} onDone={() => setIntro(false)} />}
       {/* таймер каждого игрока: общее время на партию, идёт только на своём ходу */}
-      <Clock ms={rem(iAmWhite ? "b" : "w")} active={started && !st.over && !paused && st.turn !== myColor} label={`${oppProf?.name || shortAddr(opp)} · ${iAmWhite ? t("black") : t("white")}`} />
+      <Clock ms={rem(iAmWhite ? "b" : "w")} active={started && !st.over && !paused && st.turn !== myColor} label={`${oppProf?.name || shortAddr(opp)} · ${iAmWhite ? t("black") : t("white")}`} who={{ name: oppProf?.name || opp, avatar: oppProf?.avatar }} />
       <div className="relative">
       <Board
         fen={replay.fen}
@@ -173,7 +174,7 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
       />
       {overlay}
       </div>
-      <Clock ms={rem(myColor)} active={started && myTurn} label={`${t("profile")} · ${iAmWhite ? t("white") : t("black")}`} />
+      <Clock ms={rem(myColor)} active={started && myTurn} label={`${myProf?.name || (me ? shortAddr(me) : t("profile"))} · ${iAmWhite ? t("white") : t("black")}`} who={{ name: myProf?.name || me, avatar: myProf?.avatar }} />
 
       <ReplayBar r={replay} />
 
