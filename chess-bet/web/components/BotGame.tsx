@@ -3,21 +3,32 @@ import { useState } from "react";
 import { BOT_TIMES } from "@/lib/config";
 import { useApp } from "@/lib/ctx";
 import { usePT } from "@/lib/pauseTxt";
-import { botMove, botPause, botReset, botResign, botResume, startBot, useBot, Res } from "@/lib/botStore";
+import { cartoonBot, mainBot, Res } from "@/lib/botStore";
 import Board, { Clock, Moves } from "./Board";
+import CartoonBoard from "./cartoon/CartoonBoard";
+import Piece from "./cartoon/Pieces";
 import PausePage, { PauseButton } from "./PausePage";
 import { LoseSplash, WinSplash } from "./Splash";
 import { ReplayBar, useReplay } from "./Replay";
 
-export default function BotGame() {
-  const { t } = useApp();
+const PAWNS_W = [["Ниндзя", "Ninja"], ["Полицейский", "Police"], ["Леди", "Lady"]];
+const PAWNS_B = [["Бандит", "Bandit"], ["Ниндзя", "Ninja"], ["Полицейский", "Police"], ["Леди", "Lady"]];
+
+/** cartoon = мультяшная вкладка: свои фигуры и своя, отдельная партия с ботом */
+export default function BotGame({ cartoon = false }: { cartoon?: boolean }) {
+  const { t, lang } = useApp();
+  const ru = lang === "ru";
+  const B = cartoon ? cartoonBot : mainBot;
+  const [pawnW, setPawnW] = useState(1);
+  const [pawnB, setPawnB] = useState(0);
+  const BoardX = (cartoon ? CartoonBoard : Board) as unknown as typeof CartoonBoard;
   const pt = usePT();
-  const s = useBot(); // партия хранится в lib/botStore и не теряется при смене вкладки
+  const s = B.useBot(); // партия хранится в lib/botStore и не теряется при смене вкладки
   const [minutes, setMinutes] = useState(s.minutes);
   const [level, setLevel] = useState(s.level);
   const [pick, setPick] = useState<"w" | "b" | "r">("w");
   const [hide, setHide] = useState(false); // окно результата закрыто крестиком: видна доска с итоговой позицией
-  const again = () => { setHide(false); botReset(); };
+  const again = () => { setHide(false); B.botReset(); };
   const san = s.chess.history();
   const replay = useReplay(san);
 
@@ -29,7 +40,7 @@ export default function BotGame() {
   if (!s.playing && !s.res) {
     return (
       <section className="card space-y-5">
-        <h2 className="text-lg font-bold">{t("bot")}</h2>
+        <h2 className="text-lg font-bold">{cartoon ? (ru ? "Мультяшные шахматы" : "Cartoon chess") : t("bot")}</h2>
         <div>
           <div className="text-sm opacity-70 mb-1">{t("time")}</div>
           <div className="flex gap-2 flex-wrap">
@@ -48,7 +59,23 @@ export default function BotGame() {
             ))}
           </div>
         </div>
-        <button className="btn btn-primary w-full" onClick={() => startBot(minutes, level, pick)}>{t("newGame")}</button>
+        {cartoon && (
+          <>
+            <div>
+              <div className="text-sm opacity-70 mb-1">{ru ? "Пешки белых" : "White pawns"}</div>
+              <div className="flex gap-2 flex-wrap">
+                {PAWNS_W.map((n, i) => <button key={i} className={"chip " + (pawnW === i ? "chip-on" : "")} onClick={() => setPawnW(i)}>{ru ? n[0] : n[1]}</button>)}
+              </div>
+            </div>
+            <div>
+              <div className="text-sm opacity-70 mb-1">{ru ? "Пешки чёрных" : "Black pawns"}</div>
+              <div className="flex gap-2 flex-wrap">
+                {PAWNS_B.map((n, i) => <button key={i} className={"chip " + (pawnB === i ? "chip-on" : "")} onClick={() => setPawnB(i)}>{ru ? n[0] : n[1]}</button>)}
+              </div>
+            </div>
+          </>
+        )}
+        <button className="btn btn-primary w-full" onClick={() => B.startBot(minutes, level, pick)}>{t("newGame")}</button>
       </section>
     );
   }
@@ -62,22 +89,24 @@ export default function BotGame() {
   return (
     <div className="space-y-3">
       {s.pause && s.playing && (
-        <PausePage mode="bot" until={s.pause.until} byMe color={s.pause.color} left={s.pausesLeft[s.pause.color]} onResume={botResume} />
+        <PausePage mode="bot" until={s.pause.until} byMe color={s.pause.color} left={s.pausesLeft[s.pause.color]} onResume={B.botResume} />
       )}
       <Clock ms={s[botColor]} active={s.playing && !s.pause && c.turn() === botColor} label={`🤖 ${t("level")} ${s.level}`} />
-      <Board
+      <BoardX
+        pawnW={pawnW}
+        pawnB={pawnB}
         fen={replay.fen}
         orientation={s.me === "w" ? "white" : "black"}
         lastMove={replay.last}
         disabled={!myTurn || !replay.isLive}
         mute={!replay.isLive}
-        onMove={botMove}
+        onMove={B.botMove}
       />
       <Clock ms={s[s.me]} active={myTurn} label={s.me === "w" ? t("white") : t("black")} />
       <ReplayBar r={replay} />
       <div className="flex items-center justify-between gap-2">
         <div className="text-sm font-medium min-h-5">{s.thinking ? t("thinking") : myTurn ? t("yourTurn") : ""}</div>
-        {!s.over && <PauseButton left={s.pausesLeft[s.me]} active={myTurn && started} onClick={botPause} />}
+        {!s.over && <PauseButton left={s.pausesLeft[s.me]} active={myTurn && started} onClick={B.botPause} />}
       </div>
       <Moves san={san} />
       {res ? (
@@ -90,13 +119,19 @@ export default function BotGame() {
               {s.res?.kind === "win" && <WinSplash sub={pt.botWin} />}
               {s.res?.kind === "lose" && <LoseSplash sub={pt.botLose} />}
               {s.res?.kind === "draw" && <div className="text-2xl font-extrabold py-4">{res.text}</div>}
+              {cartoon && s.res && (
+                <div className="flex justify-center items-end gap-8 pt-1">
+                  <Piece type="k" side={s.me} size={84} mood={s.res.kind === "win" ? "cheer" : s.res.kind === "lose" ? "sad" : "idle"} />
+                  <Piece type="k" side={s.me === "w" ? "b" : "w"} size={84} mood={s.res.kind === "win" ? "sad" : s.res.kind === "lose" ? "cheer" : "idle"} />
+                </div>
+              )}
               {res.sub && <div className="text-sm text-white/70">{res.sub}</div>}
               <button className="btn btn-primary w-full" onClick={again}>{t("newGame")}</button>
             </div>
           </div>
         )
       ) : (
-        <button className="btn btn-danger w-full" onClick={botResign}>{t("resign")}</button>
+        <button className="btn btn-danger w-full" onClick={B.botResign}>{t("resign")}</button>
       )}
     </div>
   );

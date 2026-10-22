@@ -60,9 +60,10 @@ type Props = {
   disabled?: boolean;
   mute?: boolean; // без звука (например, при просмотре истории партии)
   onMove: (from: string, to: string, promotion?: string) => void;
+  pieces?: ReturnType<typeof piecesFor>; // свои фигуры (мультяшная доска); без параметра — выбранный набор
 };
 
-export default function Board({ fen, orientation, lastMove, disabled, mute, onMove }: Props) {
+export default function Board({ fen, orientation, lastMove, disabled, mute, onMove, pieces }: Props) {
   const { board } = useApp();
   const [pset] = usePieceSet();
   const [sel, setSel] = useState<string | null>(null);
@@ -114,7 +115,7 @@ export default function Board({ fen, orientation, lastMove, disabled, mute, onMo
         animationDuration={180}
         customDarkSquareStyle={{ backgroundColor: BOARDS[board][1] }}
         customLightSquareStyle={{ backgroundColor: BOARDS[board][0] }}
-        customPieces={piecesFor(pset)}
+        customPieces={pieces ?? piecesFor(pset)}
         customBoardStyle={{ borderRadius: 16, overflow: "hidden", boxShadow: "0 18px 50px -18px rgba(0,0,0,.55)" }}
         customSquareStyles={styles}
         onPromotionCheck={() => false}
