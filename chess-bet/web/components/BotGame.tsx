@@ -9,6 +9,7 @@ import CartoonBoard from "./cartoon/CartoonBoard";
 import Piece from "./cartoon/Pieces";
 import type { Mood } from "./cartoon/Character";
 import { playNeigh } from "@/lib/neigh";
+import { cheerFor, speak } from "@/lib/cheers";
 import PausePage, { PauseButton } from "./PausePage";
 import { LoseSplash, WinSplash } from "./Splash";
 import { ReplayBar, useReplay } from "./Replay";
@@ -35,6 +36,13 @@ export default function BotGame({ cartoon = false }: { cartoon?: boolean }) {
   const replay = useReplay(san);
   // мимика фигур (мультяшная вкладка): после хода или взятия на 1,5 секунды; когда ходит конь, он ржёт
   const [react, setReact] = useState<{ by: "w" | "b"; piece: string; cap?: string } | null>(null);
+  const [say, setSay] = useState<string | null>(null);
+  const [voice, setVoice] = useState(() => { try { return localStorage.getItem("cb_voice") !== "0"; } catch { return true; } });
+  useEffect(() => {
+    if (!say) return undefined;
+    const id = setTimeout(() => setSay(null), 3500);
+    return () => clearTimeout(id);
+  }, [say]);
   const lastLen = useRef(san.length);
   useEffect(() => {
     const grew = san.length > lastLen.current;
@@ -43,6 +51,10 @@ export default function BotGame({ cartoon = false }: { cartoon?: boolean }) {
     const m = s.chess.history({ verbose: true }).slice(-1)[0];
     if (!m) return undefined;
     if (m.piece === "n") playNeigh();
+    if (m.color === s.me) {
+      const line = cheerFor({ san: m.san, piece: m.piece, captured: m.captured, promotion: m.promotion }, ru ? "ru" : "en");
+      if (line) { setSay(line); if (voice) speak(line, ru ? "ru-RU" : "en-US"); }
+    }
     setReact({ by: m.color, piece: m.piece, cap: m.captured });
     const id = setTimeout(() => setReact(null), 1500);
     return () => clearTimeout(id);
@@ -135,6 +147,12 @@ export default function BotGame({ cartoon = false }: { cartoon?: boolean }) {
         onMove={B.botMove}
       />
       <Clock ms={s[s.me]} active={myTurn} label={s.me === "w" ? t("white") : t("black")} icon={kingIcon(s.me)} />
+      {cartoon && (
+        <div className="flex items-center gap-2">
+          <button type="button" className="chip shrink-0" aria-label={ru ? "Голос" : "Voice"} onClick={() => { const v = !voice; setVoice(v); try { localStorage.setItem("cb_voice", v ? "1" : "0"); } catch { /* без сохранения */ } if (!v) window.speechSynthesis?.cancel(); }}>{voice ? "🔊" : "🔇"}</button>
+          <div className="flex-1 min-h-9 flex items-center rounded-2xl px-3 text-sm font-bold text-emerald-500">{say ? "💬 " + say : ""}</div>
+        </div>
+      )}
       <ReplayBar r={replay} />
       <div className="flex items-center justify-between gap-2">
         <div className="text-sm font-medium min-h-5">{s.thinking ? t("thinking") : myTurn ? t("yourTurn") : ""}</div>
