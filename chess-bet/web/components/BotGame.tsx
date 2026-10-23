@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BOT_TIMES } from "@/lib/config";
 import { useApp } from "@/lib/ctx";
 import { usePT } from "@/lib/pauseTxt";
@@ -7,6 +7,8 @@ import { cartoonBot, mainBot, Res } from "@/lib/botStore";
 import Board, { Clock, Moves } from "./Board";
 import CartoonBoard from "./cartoon/CartoonBoard";
 import Piece from "./cartoon/Pieces";
+import type { Mood } from "./cartoon/Character";
+import { playNeigh } from "@/lib/neigh";
 import PausePage, { PauseButton } from "./PausePage";
 import { LoseSplash, WinSplash } from "./Splash";
 import { ReplayBar, useReplay } from "./Replay";
@@ -31,6 +33,21 @@ export default function BotGame({ cartoon = false }: { cartoon?: boolean }) {
   const again = () => { setHide(false); B.botReset(); };
   const san = s.chess.history();
   const replay = useReplay(san);
+  // мимика фигур (мультяшная вкладка): после хода или взятия на 1,5 секунды; когда ходит конь, он ржёт
+  const [react, setReact] = useState<{ by: "w" | "b"; piece: string; cap?: string } | null>(null);
+  const lastLen = useRef(san.length);
+  useEffect(() => {
+    const grew = san.length > lastLen.current;
+    lastLen.current = san.length;
+    if (!grew || !cartoon) return undefined;
+    const m = s.chess.history({ verbose: true }).slice(-1)[0];
+    if (!m) return undefined;
+    if (m.piece === "n") playNeigh();
+    setReact({ by: m.color, piece: m.piece, cap: m.captured });
+    const id = setTimeout(() => setReact(null), 1500);
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [san.length]);
 
   const resText = (r: Res) => ({
     text: r.kind === "draw" ? t("rDraw") : r.kind === "win" ? t("won") : t("lost"),
@@ -85,16 +102,31 @@ export default function BotGame({ cartoon = false }: { cartoon?: boolean }) {
   const started = san.length > 0;
   const myTurn = s.playing && !s.over && !s.pause && c.turn() === s.me;
   const res = s.res ? resText(s.res) : null;
+  // настроение по ключу «цвет+тип»: ходившая фигура радуется, потерянная пугается (пешки не в счёт), король ещё реагирует на шах и конец партии
+  const moods: Record<string, Mood> = {};
+  if (react) {
+    if (react.piece !== "p") moods[react.by + react.piece.toUpperCase()] = "cheer";
+    if (react.cap && react.cap !== "p") moods[(react.by === "w" ? "b" : "w") + react.cap.toUpperCase()] = "scream";
+  }
+  const kingMood = (col: "w" | "b"): Mood => {
+    if (s.res) return s.res.kind === "draw" ? "idle" : (s.res.kind === "win") === (col === s.me) ? "cheer" : "sad";
+    if (c.inCheck() && c.turn() === col) return "scream";
+    return moods[col + "K"] ?? "idle";
+  };
+  moods.wK = kingMood("w");
+  moods.bK = kingMood("b");
+  const kingIcon = (col: "w" | "b") => (cartoon ? <span className="inline-flex w-9 shrink-0 justify-center"><Piece type="k" side={col} size={30} mood={kingMood(col)} /></span> : undefined);
 
   return (
     <div className="space-y-3">
       {s.pause && s.playing && (
         <PausePage mode="bot" until={s.pause.until} byMe color={s.pause.color} left={s.pausesLeft[s.pause.color]} onResume={B.botResume} />
       )}
-      <Clock ms={s[botColor]} active={s.playing && !s.pause && c.turn() === botColor} label={`🤖 ${t("level")} ${s.level}`} />
+      <Clock ms={s[botColor]} active={s.playing && !s.pause && c.turn() === botColor} label={`🤖 ${t("level")} ${s.level}`} icon={kingIcon(botColor)} />
       <BoardX
         pawnW={pawnW}
         pawnB={pawnB}
+        moods={moods}
         fen={replay.fen}
         orientation={s.me === "w" ? "white" : "black"}
         lastMove={replay.last}
@@ -102,7 +134,7 @@ export default function BotGame({ cartoon = false }: { cartoon?: boolean }) {
         mute={!replay.isLive}
         onMove={B.botMove}
       />
-      <Clock ms={s[s.me]} active={myTurn} label={s.me === "w" ? t("white") : t("black")} />
+      <Clock ms={s[s.me]} active={myTurn} label={s.me === "w" ? t("white") : t("black")} icon={kingIcon(s.me)} />
       <ReplayBar r={replay} />
       <div className="flex items-center justify-between gap-2">
         <div className="text-sm font-medium min-h-5">{s.thinking ? t("thinking") : myTurn ? t("yourTurn") : ""}</div>
