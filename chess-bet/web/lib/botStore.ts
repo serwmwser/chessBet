@@ -20,6 +20,9 @@ export function makeBot(KEY: string) {
   const MOVETIME = [100, 150, 250, 400, 600, 800, 1000, 1500];
   /** Бот отвечает не раньше чем через 2 секунды после хода игрока */
   const BOT_DELAY = 2000;
+  /** Если бот завис: через 5 с перезапускаем движок, через 10 с делаем запасной ход — первый ход бота не позже 10 секунд */
+  const BOT_RETRY = 5000, BOT_MAX = 10000;
+  let retried = false;
   const fresh = (): BotState => ({
     chess: new Chess(), w: 0, b: 0, last: 0, over: false, playing: false, me: "w", level: 3, minutes: 15, sid: 0, askedAt: 0, thinking: false,
     pausesLeft: { w: PAUSES_TOTAL, b: PAUSES_TOTAL }, pause: null, res: null,
@@ -67,6 +70,7 @@ export function makeBot(KEY: string) {
     if (worker) return;
     try { worker = new Worker(`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/stockfish.js`); } catch { return; }
     worker.postMessage("uci");
+    worker.onerror = () => { worker = null; };
     worker.onmessage = (ev) => {
       const line = String(ev.data);
       if (!line.startsWith("bestmove")) return;
@@ -94,10 +98,40 @@ export function makeBot(KEY: string) {
     if (s.over || s.pause) return;
     ensureWorker();
     if (!worker) return;
-    s.askedAt = Date.now(); s.thinking = true;
+    s.askedAt = Date.now(); s.thinking = true; retried = false;
+    sendToEngine(MOVETIME[s.level - 1]);
+  }
+  function sendToEngine(ms: number) {
+    const s = st;
+    if (!worker) return;
+    worker.postMessage("stop");
     worker.postMessage(`setoption name Skill Level value ${SKILL[s.level - 1]}`);
     worker.postMessage(`position fen ${s.chess.fen()}`);
-    worker.postMessage(`go movetime ${MOVETIME[s.level - 1]}`);
+    worker.postMessage(`go movetime ${ms}`);
+  }
+  /** Сторожок: движок молчит слишком долго */
+  function watchdog(now: number) {
+    const s = st;
+    if (!s.thinking || s.chess.turn() === s.me || s.pause) return;
+    const waited = now - s.askedAt;
+    if (waited > BOT_RETRY && !retried) {
+      retried = true;
+      try { worker?.terminate(); } catch { /* уже закрыт */ }
+      worker = null;
+      ensureWorker();
+      sendToEngine(300);
+    } else if (waited > BOT_MAX) {
+      const moves = s.chess.moves({ verbose: true });
+      if (!moves.length) return;
+      const caps = moves.filter((m) => m.captured);
+      const pool = caps.length ? caps : moves;
+      const m = pool[Math.floor(Math.random() * pool.length)];
+      if (s.chess.history().length > 0) s[s.chess.turn()] -= now - s.last;
+      s.last = now;
+      try { s.chess.move({ from: m.from, to: m.to, promotion: m.promotion }); } catch { return; }
+      s.thinking = false;
+      checkEnd(); persist(); emit();
+    }
   }
 
   function tick() {
@@ -108,6 +142,8 @@ export function makeBot(KEY: string) {
       if (now >= s.pause.until) end({ kind: "lose", why: "pause" }); else emit();
       return;
     }
+    watchdog(now);
+    if (s.over) return;
     if (s.chess.history().length === 0) { s.last = now; return; } // часы стоят до первого хода белых
     const side = s.chess.turn();
     s[side] -= now - s.last; s.last = now;
