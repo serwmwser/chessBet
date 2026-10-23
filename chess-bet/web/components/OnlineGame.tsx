@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useActiveAccount } from "thirdweb/react";
 import { shortAddr, usdc, WS_URL } from "@/lib/config";
@@ -13,6 +13,9 @@ import { LoseSplash, StartSplash, WaitingSplash, WinSplash } from "./Splash";
 import Claim from "./Claim";
 import PausePage, { PauseButton } from "./PausePage";
 import { ReplayBar, useReplay } from "./Replay";
+import Captured from "./Captured";
+import AnalysisPanel from "./Analysis";
+import { analyze } from "@/lib/material";
 
 type State = {
   t: "state"; id: number; fen: string; history: string[]; lastMove: { from: string; to: string } | null;
@@ -45,6 +48,9 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
   const oppProf = useProfile(oppAddr);
   const myProf = useProfile(me);
   const replay = useReplay(st?.history ?? EMPTY);
+  // взятые фигуры в той позиции, которая сейчас на доске (подсказок и оценки движка во время партии нет)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const mat = useMemo(() => analyze((st?.history ?? EMPTY).slice(0, replay.cur)), [replay.cur, st?.history.length]);
   const [intro, setIntro] = useState(true);
   const [endOpen, setEndOpen] = useState(true);
   const [msg, setMsg] = useState("");
@@ -163,6 +169,7 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
       {intro && !st.over && st.history.length === 0 && <StartSplash white={iAmWhite} onDone={() => setIntro(false)} />}
       {/* таймер каждого игрока: общее время на партию, идёт только на своём ходу */}
       <Clock ms={rem(iAmWhite ? "b" : "w")} active={started && !st.over && !paused && st.turn !== myColor} label={`${oppProf?.name || shortAddr(opp)} · ${iAmWhite ? t("black") : t("white")}`} who={{ name: oppProf?.name || opp, avatar: oppProf?.avatar }} />
+      <Captured taken={mat.taken[iAmWhite ? "b" : "w"]} color={myColor} plus={0} />
       <div className="relative">
       <Board
         fen={replay.fen}
@@ -175,6 +182,7 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
       {overlay}
       </div>
       <Clock ms={rem(myColor)} active={started && myTurn} label={`${myProf?.name || (me ? shortAddr(me) : t("profile"))} · ${iAmWhite ? t("white") : t("black")}`} who={{ name: myProf?.name || me, avatar: myProf?.avatar }} />
+      <Captured taken={mat.taken[myColor]} color={iAmWhite ? "b" : "w"} plus={0} />
 
       <ReplayBar r={replay} />
 
@@ -184,6 +192,7 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
       </div>
       {!st.over && <PauseButton left={pausesLeft} active={myTurn && started} onClick={() => send({ t: "pause" })} />}
       <Moves san={st.history} />
+      {st.over && <div className="card"><AnalysisPanel san={st.history} /></div>}
 
       {st.chat && (
         <div className="card space-y-2">

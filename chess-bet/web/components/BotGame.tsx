@@ -15,6 +15,7 @@ import { LoseSplash, WinSplash } from "./Splash";
 import { ReplayBar, useReplay } from "./Replay";
 import Captured from "./Captured";
 import AdvantageBar from "./AdvantageBar";
+import AnalysisPanel from "./Analysis";
 import { analyze } from "@/lib/material";
 
 const PAWNS_W = [["Ниндзя", "Ninja"], ["Полицейский", "Police"], ["Леди", "Lady"], ["Бандит", "Bandit"]];
@@ -168,6 +169,7 @@ export default function BotGame({ cartoon = false }: { cartoon?: boolean }) {
         {!s.over && <PauseButton left={s.pausesLeft[s.me]} active={myTurn && started} onClick={B.botPause} />}
       </div>
       <Moves san={san} />
+      {s.res && <div className="card"><AnalysisPanel san={san} /></div>}
       {res ? (
         hide ? (
           <button className="btn btn-primary w-full" onClick={again}>{t("newGame")}</button>
