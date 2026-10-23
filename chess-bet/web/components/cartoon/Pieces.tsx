@@ -9,8 +9,8 @@ const T = {
   b: { robe: "#32333f", robe2: "#1d1d27", gold: "#e4363f", hair: "#2a2335", beard: "#8a8da0", metal: "#4a4c5c", gem: "#7a2cff", horse: "#32333f", mane: "#e4363f", muzzle: "#4b4d5f" },
 };
 
-const PAWNS_W: Kind[] = ["ninja", "police", "lady"];
-const PAWNS_B: Kind[] = ["bandit", "ninja", "police", "lady"];
+const PAWNS_W: Kind[] = ["ninja", "police", "lady", "bandit"];
+const PAWNS_B: Kind[] = ["ninja", "police", "lady", "bandit"];
 const RIM = { stroke: OUT, strokeOpacity: 0.55 };
 
 /** Любая фигура в «глиняном» мультяшном стиле. variant выбирает персонажа-пешку. animate=false отключает анимацию (для доски с 32 фигурами). */

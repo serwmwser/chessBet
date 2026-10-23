@@ -11,8 +11,8 @@ import PausePage, { PauseButton } from "./PausePage";
 import { LoseSplash, WinSplash } from "./Splash";
 import { ReplayBar, useReplay } from "./Replay";
 
-const PAWNS_W = [["Ниндзя", "Ninja"], ["Полицейский", "Police"], ["Леди", "Lady"]];
-const PAWNS_B = [["Бандит", "Bandit"], ["Ниндзя", "Ninja"], ["Полицейский", "Police"], ["Леди", "Lady"]];
+const PAWNS_W = [["Ниндзя", "Ninja"], ["Полицейский", "Police"], ["Леди", "Lady"], ["Бандит", "Bandit"]];
+const PAWNS_B = [["Ниндзя", "Ninja"], ["Полицейский", "Police"], ["Леди", "Lady"], ["Бандит", "Bandit"]];
 
 /** cartoon = мультяшная вкладка: свои фигуры и своя, отдельная партия с ботом */
 export default function BotGame({ cartoon = false }: { cartoon?: boolean }) {
@@ -20,7 +20,7 @@ export default function BotGame({ cartoon = false }: { cartoon?: boolean }) {
   const ru = lang === "ru";
   const B = cartoon ? cartoonBot : mainBot;
   const [pawnW, setPawnW] = useState(1);
-  const [pawnB, setPawnB] = useState(0);
+  const [pawnB, setPawnB] = useState(3);
   const BoardX = (cartoon ? CartoonBoard : Board) as unknown as typeof CartoonBoard;
   const pt = usePT();
   const s = B.useBot(); // партия хранится в lib/botStore и не теряется при смене вкладки
