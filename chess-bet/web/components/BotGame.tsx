@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { BOT_TIMES } from "@/lib/config";
 import { useApp } from "@/lib/ctx";
 import { usePT } from "@/lib/pauseTxt";
@@ -13,6 +13,9 @@ import { cheerFor, speak } from "@/lib/cheers";
 import PausePage, { PauseButton } from "./PausePage";
 import { LoseSplash, WinSplash } from "./Splash";
 import { ReplayBar, useReplay } from "./Replay";
+import Captured from "./Captured";
+import AdvantageBar from "./AdvantageBar";
+import { analyze } from "@/lib/material";
 
 const PAWNS_W = [["Ниндзя", "Ninja"], ["Полицейский", "Police"], ["Леди", "Lady"], ["Бандит", "Bandit"]];
 const PAWNS_B = [["Ниндзя", "Ninja"], ["Полицейский", "Police"], ["Леди", "Lady"], ["Бандит", "Bandit"]];
@@ -34,6 +37,9 @@ export default function BotGame({ cartoon = false }: { cartoon?: boolean }) {
   const again = () => { setHide(false); B.botReset(); };
   const san = s.chess.history();
   const replay = useReplay(san);
+  // взятые фигуры и перевес в той позиции, которая сейчас на доске (при просмотре истории тоже)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const mat = useMemo(() => analyze(san.slice(0, replay.cur)), [replay.cur, san.length]);
   // мимика фигур (мультяшная вкладка): после хода или взятия на 1,5 секунды; когда ходит конь, он ржёт
   const [react, setReact] = useState<{ by: "w" | "b"; piece: string; cap?: string } | null>(null);
   const [say, setSay] = useState<string | null>(null);
@@ -135,6 +141,8 @@ export default function BotGame({ cartoon = false }: { cartoon?: boolean }) {
         <PausePage mode="bot" until={s.pause.until} byMe color={s.pause.color} left={s.pausesLeft[s.pause.color]} onResume={B.botResume} />
       )}
       <Clock ms={s[botColor]} active={s.playing && !s.pause && c.turn() === botColor} label={`🤖 ${t("level")} ${s.level}`} icon={kingIcon(botColor)} />
+      <Captured taken={mat.taken[botColor]} color={s.me} plus={Math.max(0, botColor === "w" ? mat.diff : -mat.diff)} cartoon={cartoon} pawn={s.me === "w" ? pawnW : pawnB} />
+      <AdvantageBar diff={mat.diff} />
       <BoardX
         pawnW={pawnW}
         pawnB={pawnB}
@@ -147,6 +155,7 @@ export default function BotGame({ cartoon = false }: { cartoon?: boolean }) {
         onMove={B.botMove}
       />
       <Clock ms={s[s.me]} active={myTurn} label={s.me === "w" ? t("white") : t("black")} icon={kingIcon(s.me)} />
+      <Captured taken={mat.taken[s.me]} color={botColor} plus={Math.max(0, s.me === "w" ? mat.diff : -mat.diff)} cartoon={cartoon} pawn={botColor === "w" ? pawnW : pawnB} />
       {cartoon && (
         <div className="flex items-center gap-2">
           <button type="button" className="chip shrink-0" aria-label={ru ? "Голос" : "Voice"} onClick={() => { const v = !voice; setVoice(v); try { localStorage.setItem("cb_voice", v ? "1" : "0"); } catch { /* без сохранения */ } if (!v) window.speechSynthesis?.cancel(); }}>{voice ? "🔊" : "🔇"}</button>
