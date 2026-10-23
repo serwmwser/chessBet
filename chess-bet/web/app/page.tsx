@@ -16,7 +16,7 @@ import { fetchMine } from "@/lib/api";
 import { TERMS_URL } from "@/lib/config";
 import { useApp } from "@/lib/ctx";
 import { captureRef, registerRef } from "@/lib/ref";
-import { useBotActive } from "@/lib/botStore";
+import { cartoonBot, useBotActive } from "@/lib/botStore";
 
 /** Сигнал о начале партии: звук, вибрация, системное уведомление и заголовок вкладки, если она в фоне */
 function alertJoin(title: string, body: string) {
@@ -54,6 +54,7 @@ export default function Home() {
   const [inviteId, setInviteId] = useState<number | null>(null);
   const addr = account?.address.toLowerCase();
   const botActive = useBotActive();
+  const cartActive = cartoonBot.useBotActive();
 
   useEffect(() => { captureRef(); }, []);
   useEffect(() => { if (account) void registerRef(account as never); }, [account]);
@@ -115,11 +116,12 @@ export default function Home() {
           ? <OnlineGame id={gid} onExit={() => { setGid(null); setTab("lobby"); }} />
           : openCount ? <WaitingSplash /> : <div className="card text-center space-y-1 py-10"><div className="text-4xl">♞</div><div className="font-medium">{t("noActive")}</div></div>)}
         {tab === "bot" && <BotGame />}
+        {tab === "cartoon" && <BotGame cartoon />}
         {tab === "earn" && <Earn />}
         {tab === "profile" && <Profile onOpenGame={openGame} />}
         <p className="text-center text-xs opacity-50 mt-8">18+ · <a className="underline" href={TERMS_URL}>Terms</a> · Play responsibly</p>
       </main>
-      <BottomNav tab={tab} setTab={setTab} badge={gid !== null} botBadge={botActive} />
+      <BottomNav tab={tab} setTab={setTab} badge={gid !== null} botBadge={botActive} cartBadge={cartActive} />
     </>
   );
 }
