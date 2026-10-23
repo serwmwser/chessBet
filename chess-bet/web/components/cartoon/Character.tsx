@@ -1,4 +1,5 @@
 "use client";
+import { useMemo } from "react";
 
 export type Kind = "ninja" | "police" | "lady" | "bandit";
 export type Side = "w" | "b";
@@ -15,6 +16,8 @@ export const CARTOON_CSS = `
 .cc-idle .head { animation: cc-bob 2.8s ease-in-out infinite; }
 .cc-idle .eyes { animation: cc-blink 4s infinite; }
 .cc-idle .tail { animation: cc-tail 1.6s ease-in-out infinite; }
+.cc-blinkonly .eyes { animation: cc-blink2 3.2s infinite; animation-delay: var(--d, 0s); }
+.cc-blinkonly .head { animation: cc-bob 3.6s ease-in-out infinite; animation-delay: var(--d, 0s); }
 .cc-sad .head { animation: cc-droop 2.4s ease-in-out infinite; }
 .cc-sad .tear { animation: cc-tear 1.6s ease-in infinite; }
 .cc-cheer { animation: cc-jump .55s ease-in-out infinite; }
@@ -22,6 +25,7 @@ export const CARTOON_CSS = `
 .cc-scream { animation: cc-shake .12s linear infinite; }
 @keyframes cc-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
 @keyframes cc-blink { 0%,92%,100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
+@keyframes cc-blink2 { 0%,84%,100% { transform: scaleY(1); } 88%,94% { transform: scaleY(.08); } }
 @keyframes cc-tail { 0%,100% { transform: rotate(-6deg); } 50% { transform: rotate(10deg); } }
 @keyframes cc-droop { 0%,100% { transform: rotate(0) translateY(0); } 50% { transform: rotate(7deg) translateY(3px); } }
 @keyframes cc-tear { 0% { opacity: 0; transform: translateY(0); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateY(14px); } }
@@ -149,14 +153,15 @@ export function Mouth({ mood, kind }: { mood: Mood; kind: Kind }) {
 const RIM = { stroke: OUT, strokeOpacity: 0.55 };
 
 /** Мультяшная пешка в «глиняном» стиле. side "w" = белые (светлые, добрые, золотая отделка, тёплая белая аура), "b" = чёрные (тёмные, злые, красная отделка, красно-фиолетовая аура). animate=false отключает анимацию (для доски с 32 фигурами). */
-export default function Character({ kind, mood = "idle", size = 120, side, animate = true }: { kind: Kind; mood?: Mood; size?: number; side?: Side; animate?: boolean }) {
+export default function Character({ kind, mood = "idle", size = 120, side, animate = true }: { kind: Kind; mood?: Mood; size?: number; side?: Side; animate?: boolean | "blink" }) {
   const sd: Side = side ?? (kind === "bandit" ? "b" : "w");
+  const dl = useMemo(() => "-" + (Math.random() * 4).toFixed(2) + "s", []);
   const p = PAL[sd];
   const lit = sd === "b" && kind === "bandit";
   const used = new Set<string>();
   const G = (c: string) => { used.add(c); return grad(c); };
   return (
-    <svg className={"cc cc-" + sd + " " + (animate ? "cc-" + mood : "cc-still")} viewBox="0 0 100 120" width={size} height={size * 1.2} role="img" aria-label={kind} style={{ display: "block", overflow: "visible" }}>
+    <svg className={"cc cc-" + sd + " " + (animate === "blink" ? "cc-blinkonly" : animate ? "cc-" + mood : "cc-still")} viewBox="0 0 100 120" width={size} height={size * 1.2} role="img" aria-label={kind} style={{ display: "block", overflow: "visible", ...({ "--d": dl } as object) }}>
       <Aura side={sd} />
       <ellipse cx="50" cy="113" rx="30" ry="5" fill="rgba(0,0,0,.2)" />
       <ellipse cx="50" cy="106" rx="30" ry="9" fill={G(p.base)} {...RIM} strokeWidth="1.6" />

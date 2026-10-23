@@ -1,4 +1,5 @@
 "use client";
+import { useMemo } from "react";
 import Character, { Aura, ClayDefs, Eyes, Gloss, Mouth, grad, OUT, SKIN, type Kind, type Mood, type Side } from "./Character";
 
 export type PieceType = "p" | "n" | "b" | "r" | "q" | "k";
@@ -13,7 +14,8 @@ const PAWNS_B: Kind[] = ["bandit", "ninja", "police", "lady"];
 const RIM = { stroke: OUT, strokeOpacity: 0.55 };
 
 /** Любая фигура в «глиняном» мультяшном стиле. variant выбирает персонажа-пешку. animate=false отключает анимацию (для доски с 32 фигурами). */
-export default function Piece({ type, side, mood = "idle", size = 110, variant = 0, animate = true }: { type: PieceType; side: Side; mood?: Mood; size?: number; variant?: number; animate?: boolean }) {
+export default function Piece({ type, side, mood = "idle", size = 110, variant = 0, animate = true }: { type: PieceType; side: Side; mood?: Mood; size?: number; variant?: number; animate?: boolean | "blink" }) {
+  const dl = useMemo(() => "-" + (Math.random() * 4).toFixed(2) + "s", []);
   if (type === "p") {
     const list = side === "w" ? PAWNS_W : PAWNS_B;
     return <Character kind={list[variant % list.length]} side={side} mood={mood} size={size} animate={animate} />;
@@ -35,7 +37,7 @@ export default function Piece({ type, side, mood = "idle", size = 110, variant =
     </>
   );
   return (
-    <svg className={"cc cc-" + side + " " + (animate ? "cc-" + mood : "cc-still")} viewBox="0 0 100 120" width={size} height={size * 1.2} role="img" aria-label={type} style={{ display: "block", overflow: "visible" }}>
+    <svg className={"cc cc-" + side + " " + (animate === "blink" ? "cc-blinkonly" : animate ? "cc-" + mood : "cc-still")} viewBox="0 0 100 120" width={size} height={size * 1.2} role="img" aria-label={type} style={{ display: "block", overflow: "visible", ...({ "--d": dl } as object) }}>
       <Aura side={side} />
       <ellipse cx="50" cy="113" rx="32" ry="5" fill="rgba(0,0,0,.2)" />
       <ellipse cx="50" cy="106" rx="32" ry="9" fill={G(p.robe)} {...RIM} strokeWidth="1.6" />

@@ -1,7 +1,7 @@
 "use client";
 import { Chessboard } from "react-chessboard";
 import { Chess, Square } from "chess.js";
-import { CSSProperties, useEffect, useMemo, useRef, useState } from "react";
+import { CSSProperties, ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { BOARDS, useApp } from "@/lib/ctx";
 import { piecesFor, usePieceSet } from "@/lib/pieces";
 import Avatar from "./Avatar";
@@ -13,11 +13,12 @@ export const fmtClock = (ms: number) => {
   return h ? `${h}:${p(m)}:${p(x)}` : `${m}:${p(x)}`;
 };
 
-export function Clock({ ms, active, label, who }: { ms: number; active: boolean; label: string; who?: { name?: string; avatar?: string } }) {
+export function Clock({ ms, active, label, who, icon }: { ms: number; active: boolean; label: string; who?: { name?: string; avatar?: string }; icon?: ReactNode }) {
   const low = ms < 30_000;
   return (
     <div className={`flex items-center justify-between rounded-2xl px-4 py-2.5 border transition ${active ? "border-emerald-500/60 bg-emerald-500/10" : "border-transparent bg-black/5 dark:bg-white/5"}`}>
       <span className="flex items-center gap-2 min-w-0">
+        {icon}
         {who && <Avatar src={who.avatar} name={who.name || label} size={32} />}
         <span className="text-sm opacity-80 truncate">{label}</span>
       </span>
