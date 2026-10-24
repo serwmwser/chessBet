@@ -539,6 +539,15 @@ const server = http.createServer((req, res) => {
     });
   }
   if (parts[0] === "history" && parts[1]) return out(stats(lc(parts[1])));
+  // запись завершённой партии для просмотра: игроки, итог и все ходы (SAN)
+  if (parts[0] === "pgn" && parts[1] && /^\d+$/.test(parts[1])) {
+    const d = done.find((x) => x.id === Number(parts[1]));
+    if (!d) { res.writeHead(404).end("{}"); return; }
+    const c = new Chess();
+    try { c.loadPgn(d.pgn); } catch { /* пустая запись */ }
+    const { pgn: _pgn, ...info } = d;
+    return out({ ...info, san: c.history() });
+  }
   res.writeHead(404).end("{}");
 });
 
