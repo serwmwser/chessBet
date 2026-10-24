@@ -16,6 +16,7 @@ import { ReplayBar, useReplay } from "./Replay";
 import Captured from "./Captured";
 import AnalysisPanel from "./Analysis";
 import { analyze } from "@/lib/material";
+import { playLose, playWin, useEndDelay } from "@/lib/sfx";
 
 type State = {
   t: "state"; id: number; fen: string; history: string[]; lastMove: { from: string; to: string } | null;
@@ -53,6 +54,19 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
   const mat = useMemo(() => analyze((st?.history ?? EMPTY).slice(0, replay.cur)), [replay.cur, st?.history.length]);
   const [intro, setIntro] = useState(true);
   const [endOpen, setEndOpen] = useState(true);
+  // окно результата после мата или ничьей на доске появляется через 5 секунд; сдача, время, пауза и отмена — сразу
+  const instantEnd = ["resign", "timeout", "timeout_draw", "abort", "pause_timeout"].includes(st?.reason ?? "");
+  const endGate = useEndDelay(!!st?.over, instantEnd ? 0 : 5000);
+  // фанфара или тромбон в момент окончания (не при открытии уже законченной партии)
+  const sawLive = useRef(false);
+  useEffect(() => {
+    if (st && !st.over) sawLive.current = true;
+    if (st?.over && sawLive.current) {
+      sawLive.current = false;
+      if (st.winner && st.winner === me) playWin(); else if (st.winner) playLose();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [st?.over]);
   const [msg, setMsg] = useState("");
   const chatBox = useRef<HTMLDivElement>(null);
   const chatLen = st?.chat?.length ?? 0;
@@ -146,7 +160,7 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
   const reasonText = st.reason === "pause_timeout" ? pt.lostPause : st.reason && REASON[st.reason] ? t(REASON[st.reason]) : drawn ? t("rDraw") : "";
 
   // итог партии показываем поверх доски
-  const overlay = st.over && endOpen ? (
+  const overlay = st.over && endGate && endOpen ? (
     <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}
       className="absolute inset-0 z-20 grid place-items-center overflow-y-auto rounded-xl bg-ink-950/85 backdrop-blur-sm p-2 text-white text-center">
       <button aria-label="close" onClick={() => setEndOpen(false)} className="absolute top-2 end-2 z-30 w-8 h-8 rounded-full bg-white/15 hover:bg-white/25">✕</button>
@@ -225,7 +239,7 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
         </div>
       )}
 
-      {st.over && !endOpen && (
+      {st.over && endGate && !endOpen && (
         <motion.div initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }} className="card text-center space-y-3 !bg-gradient-to-br from-brand-500/15 to-brand-violet/15">
           {won && <WinSplash />}
           {lost && <LoseSplash />}

@@ -10,6 +10,7 @@ import Piece from "./cartoon/Pieces";
 import type { Mood } from "./cartoon/Character";
 import { playNeigh } from "@/lib/neigh";
 import { cheerFor, speak } from "@/lib/cheers";
+import { playCastle, playCheck, playLose, playPromo, playVoice, playWin, useEndDelay } from "@/lib/sfx";
 import PausePage, { PauseButton } from "./PausePage";
 import { LoseSplash, WinSplash } from "./Splash";
 import { ReplayBar, useReplay } from "./Replay";
@@ -57,7 +58,15 @@ export default function BotGame({ cartoon = false }: { cartoon?: boolean }) {
     if (!grew || !cartoon) return undefined;
     const m = s.chess.history({ verbose: true }).slice(-1)[0];
     if (!m) return undefined;
-    if (m.piece === "n") playNeigh();
+    // звуки эмоций: шах, превращение, рокировка, визг взятой фигуры, ржание коня, радостный голос походившей фигуры (мат озвучивает фанфара конца партии)
+    if (voice && !m.san.endsWith("#")) {
+      if (m.san.endsWith("+")) playCheck();
+      else if (m.promotion) playPromo();
+      else if (m.san.startsWith("O-O")) playCastle();
+      else if (m.captured) playVoice(m.captured, "scream");
+      else if (m.piece === "n") playNeigh();
+      else playVoice(m.piece, "cheer");
+    }
     if (m.color === s.me) {
       const line = cheerFor({ san: m.san, piece: m.piece, captured: m.captured, promotion: m.promotion }, ru ? "ru" : "en");
       if (line) { setSay(line); if (voice) speak(line, ru ? "ru-RU" : "en-US"); }
@@ -67,6 +76,19 @@ export default function BotGame({ cartoon = false }: { cartoon?: boolean }) {
     return () => clearTimeout(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [san.length]);
+
+  // фанфара или грустный тромбон при окончании партии (не при восстановлении старой после перезагрузки)
+  const wasPlaying = useRef(false);
+  useEffect(() => {
+    if (s.playing && !s.over) wasPlaying.current = true;
+    if (s.res && wasPlaying.current) {
+      wasPlaying.current = false;
+      if (!cartoon || voice) { if (s.res.kind === "win") playWin(); else if (s.res.kind === "lose") playLose(); }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [s.res, s.playing, s.over]);
+  // окно результата после мата или ничьей на доске появляется через 5 секунд; сдача, время и пауза — сразу
+  const showEnd = useEndDelay(!!s.res, s.res && (s.res.why === "chk" || s.res.why === "") ? 5000 : 0);
 
   const resText = (r: Res) => ({
     text: r.kind === "draw" ? t("rDraw") : r.kind === "win" ? t("won") : t("lost"),
@@ -171,7 +193,7 @@ export default function BotGame({ cartoon = false }: { cartoon?: boolean }) {
       <Moves san={san} />
       {s.res && <div className="card"><AnalysisPanel san={san} /></div>}
       {res ? (
-        hide ? (
+        !showEnd ? null : hide ? (
           <button className="btn btn-primary w-full" onClick={again}>{t("newGame")}</button>
         ) : (
           <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 grid place-items-center p-4 bg-black/70 backdrop-blur-sm">
