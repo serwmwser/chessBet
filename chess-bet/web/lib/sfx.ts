@@ -3,13 +3,31 @@ import { useEffect, useState } from "react";
 
 /** Звуки эмоций фигур, шаха, рокировки, превращения и конца партии: синтез на Web Audio, без звуковых файлов. */
 
-function run(total: number, build: (c: AudioContext, t0: number) => void) {
+let shared: AudioContext | null = null;
+/** Общий звуковой контекст на всё приложение: создаётся один раз и просыпается от касания */
+export function getAudio(): AudioContext | null {
   try {
-    const AC = window.AudioContext || (window as any).webkitAudioContext;
-    const c = new AC();
-    void c.resume();
-    build(c, c.currentTime);
-    setTimeout(() => c.close(), (total + 0.4) * 1000);
+    if (!shared) {
+      const AC = window.AudioContext || (window as any).webkitAudioContext;
+      shared = new AC();
+    }
+    if (shared && shared.state === "suspended") void shared.resume();
+    return shared;
+  } catch { return null; }
+}
+/** Браузеры включают звук только после касания экрана: первое же касание «будит» контекст, дальше звук работает и когда ходит бот */
+if (typeof window !== "undefined") {
+  const wake = () => { getAudio(); };
+  ["pointerdown", "touchstart", "keydown", "click"].forEach((e) => window.addEventListener(e, wake, { passive: true }));
+}
+
+function run(total: number, build: (c: AudioContext, t0: number) => void) {
+  void total;
+  const c = getAudio();
+  if (!c) return;
+  try {
+    if (c.state === "running") build(c, c.currentTime + 0.02);
+    else c.resume().then(() => build(c, c.currentTime + 0.02)).catch(() => { /* без касания звук недоступен */ });
   } catch { /* звук необязателен */ }
 }
 

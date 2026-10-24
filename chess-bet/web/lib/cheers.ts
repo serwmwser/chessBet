@@ -17,6 +17,32 @@ const LINES = {
     capture: ["Nice capture!", "Keep it up!", "Bravo, a good trade!", "Spot on!"],
   },
 };
+/** Возгласы фигуры, которая берёт другую: у каждой свой характер */
+const SHOUT = {
+  ru: {
+    p: ["Получай!", "Ха, попался!", "Я тебя сделал!"],
+    n: ["Иго-го! Попался!", "Скачу и бью!", "Иго-го-го!"],
+    b: ["Диагональ моя!", "Получите по диагонали!", "Прости, брат!"],
+    r: ["Тарарах!", "Ладья идёт напролом!", "Бум! Моё!"],
+    q: ["Королева берёт своё!", "Склонись перед королевой!", "Мой ход, дорогой!"],
+    k: ["Ха-ха! Сам справился!", "Король бьёт лично!", "Ай да я!"],
+  },
+  en: {
+    p: ["Take that!", "Ha, caught you!", "Got you!"],
+    n: ["Neigh! Gotcha!", "Galloping in!", "Hee-haw, mine!"],
+    b: ["The diagonal is mine!", "Diagonal strike!", "Sorry, pal!"],
+    r: ["Boom!", "The rook charges in!", "Smash! Mine!"],
+    q: ["The queen takes what is hers!", "Bow to the queen!", "My move, darling!"],
+    k: ["Ha-ha! Did it myself!", "The king strikes in person!", "Look at me!"],
+  },
+};
+/** Высота голоса фигуры при озвучке: пешка пищит, ладья басит */
+export const PITCH: Record<string, number> = { p: 1.7, n: 1.4, b: 1.2, r: 0.7, q: 1.5, k: 0.85 };
+/** Восторженный возглас фигуры, которая только что взяла другую */
+export function shoutFor(piece: string, lang: "ru" | "en"): string {
+  const L = (SHOUT[lang] as Record<string, string[]>)[piece] ?? SHOUT[lang].p;
+  return pick(L);
+}
 const VAL: Record<string, number> = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 0 };
 const pick = (a: string[]) => a[Math.floor(Math.random() * a.length)];
 
@@ -32,7 +58,7 @@ export function cheerFor(m: Move, lang: "ru" | "en"): string | null {
 }
 
 /** Озвучка голосом устройства; если подходящего голоса нет, остаётся текст на экране. */
-export function speak(text: string, lang: string) {
+export function speak(text: string, lang: string, pitch = 1.2) {
   try {
     const ss = window.speechSynthesis;
     if (!ss) return;
@@ -40,7 +66,7 @@ export function speak(text: string, lang: string) {
     const u = new SpeechSynthesisUtterance(text);
     u.lang = lang;
     u.rate = 1.05;
-    u.pitch = 1.2;
+    u.pitch = pitch;
     const v = ss.getVoices().find((x) => x.lang.toLowerCase().startsWith(lang.slice(0, 2)));
     if (v) u.voice = v;
     ss.speak(u);

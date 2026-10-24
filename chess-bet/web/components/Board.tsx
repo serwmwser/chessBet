@@ -5,6 +5,7 @@ import { CSSProperties, ReactNode, useEffect, useMemo, useRef, useState } from "
 import { BOARDS, useApp } from "@/lib/ctx";
 import { piecesFor, usePieceSet } from "@/lib/pieces";
 import Avatar from "./Avatar";
+import { getAudio } from "@/lib/sfx";
 
 export const fmtClock = (ms: number) => {
   const s = Math.max(0, Math.ceil(ms / 1000));
@@ -43,14 +44,13 @@ export function Moves({ san }: { san: string[] }) {
 
 function beep() {
   try {
-    const AC = window.AudioContext || (window as any).webkitAudioContext;
-    const ctx = new AC();
+    const ctx = getAudio();
+    if (!ctx) return;
     const o = ctx.createOscillator(), g = ctx.createGain();
     o.frequency.value = 220; o.type = "triangle";
     g.gain.setValueAtTime(0.15, ctx.currentTime);
     g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.09);
     o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime + 0.1);
-    setTimeout(() => ctx.close(), 300);
   } catch { /* звук необязателен */ }
 }
 

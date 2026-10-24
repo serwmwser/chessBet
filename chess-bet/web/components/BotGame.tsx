@@ -9,7 +9,7 @@ import CartoonBoard from "./cartoon/CartoonBoard";
 import Piece from "./cartoon/Pieces";
 import type { Mood } from "./cartoon/Character";
 import { playNeigh } from "@/lib/neigh";
-import { cheerFor, speak } from "@/lib/cheers";
+import { cheerFor, PITCH, shoutFor, speak } from "@/lib/cheers";
 import { playCastle, playCheck, playLose, playPromo, playVoice, playWin, useEndDelay } from "@/lib/sfx";
 import PausePage, { PauseButton } from "./PausePage";
 import { LoseSplash, WinSplash } from "./Splash";
@@ -67,7 +67,12 @@ export default function BotGame({ cartoon = false }: { cartoon?: boolean }) {
       else if (m.piece === "n") playNeigh();
       else playVoice(m.piece, "cheer");
     }
-    if (m.color === s.me) {
+    if (m.captured && !m.san.endsWith("#")) {
+      // фигура, которая взяла другую, сама восторженно комментирует (и свою, и бота)
+      const line = shoutFor(m.piece, ru ? "ru" : "en");
+      setSay(line);
+      if (voice) setTimeout(() => speak(line, ru ? "ru-RU" : "en-US", PITCH[m.piece] ?? 1.2), 450);
+    } else if (m.color === s.me) {
       const line = cheerFor({ san: m.san, piece: m.piece, captured: m.captured, promotion: m.promotion }, ru ? "ru" : "en");
       if (line) { setSay(line); if (voice) speak(line, ru ? "ru-RU" : "en-US"); }
     }

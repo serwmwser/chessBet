@@ -1,10 +1,11 @@
+import { getAudio } from "./sfx";
+
 /** Ржание коня: синтез на Web Audio (без звуковых файлов). Вызывается, когда ходит конь. */
 export function playNeigh() {
   try {
-    const AC = window.AudioContext || (window as any).webkitAudioContext;
-    const ctx = new AC();
-    void ctx.resume();
-    const t0 = ctx.currentTime, dur = 1.1;
+    const ctx = getAudio();
+    if (!ctx) return;
+    const t0 = ctx.currentTime + 0.02, dur = 1.1;
     const osc = ctx.createOscillator();
     osc.type = "sawtooth";
     // высота: быстрый подъём, затем дрожащее падение
@@ -38,6 +39,5 @@ export function playNeigh() {
     lfo.start(t0);
     osc.stop(t0 + dur + 0.05);
     lfo.stop(t0 + dur + 0.05);
-    setTimeout(() => ctx.close(), (dur + 0.3) * 1000);
   } catch { /* звук необязателен */ }
 }
