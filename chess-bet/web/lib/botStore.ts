@@ -18,11 +18,18 @@ export type BotState = {
 export function makeBot(KEY: string) {
   const SKILL = [0, 3, 5, 8, 11, 14, 17, 20];
   const MOVETIME = [100, 150, 250, 400, 600, 800, 1000, 1500];
-  /** Бот отвечает не раньше чем через 2 секунды после хода игрока */
-  const BOT_DELAY = 2000;
-  /** Если бот завис: через 5 с перезапускаем движок, через 10 с делаем запасной ход — первый ход бота не позже 10 секунд */
+  /** Если движок завис: через 5 с перезапускаем его, а если ответа нет к назначенному времени (не раньше 10 с) — делаем запасной ход */
   const BOT_RETRY = 5000, BOT_MAX = 10000;
+  /** Вероятность «человеческой» неточности по уровням 1–8: бот иногда выбирает не лучший, но разумный ход */
+  const MISTAKE = [0.3, 0.24, 0.18, 0.13, 0.09, 0.06, 0.04, 0.025];
   let retried = false;
+  /** Назначенное «человеческое» время на ход, мс (10–24 с по сложности позиции) */
+  let planned = 10_000;
+  /** Движок уже выбрал ход, он ждёт назначенного времени */
+  let moveQueued = false;
+  /** В этот раз бот допускает неточность: считаем 4 варианта и выбираем не лучший */
+  let wantMistake = false;
+  let cands: { mv: string; cp: number }[] = [];
   const fresh = (): BotState => ({
     chess: new Chess(), w: 0, b: 0, last: 0, over: false, playing: false, me: "w", level: 3, minutes: 15, sid: 0, askedAt: 0, thinking: false,
     pausesLeft: { w: PAUSES_TOTAL, b: PAUSES_TOTAL }, pause: null, res: null,
@@ -66,6 +73,30 @@ export function makeBot(KEY: string) {
     else end(win(winner, "time"));
   }
 
+  /** Время «на раздумье»: 10–24 с (сложнее позиция — дольше); единственный ход — почти сразу; на малых часах быстрее */
+  function humanDelay(): number {
+    const s = st, c = s.chess;
+    const moves = c.moves({ verbose: true });
+    if (moves.length === 1) return 1800 + Math.random() * 1200;
+    if (c.history().length === 0) return 9500 + Math.random() * 1500; // первый ход белых — около 10 с
+    let d: number;
+    if (c.history().length < 8) d = 10_000 + Math.random() * 3500; // дебют: привычные ходы
+    else {
+      const caps = moves.filter((m) => m.captured).length;
+      const comp = 0.5 * Math.min(1, Math.max(0, (moves.length - 8) / 32)) + 0.3 * Math.min(1, caps / 4) + 0.2 * Math.random();
+      d = 10_000 + comp * 14_000;
+    }
+    const left = s[c.turn()];
+    return Math.min(d, Math.max(1500, left * 0.05));
+  }
+  /** Из вариантов движка выбираем разумный, но не лучший ход (потеря не больше 2,5 пешки) */
+  function humanPick(best: string): string {
+    const top = cands[0];
+    if (!top || Math.abs(top.cp) > 9000) return best;
+    const alt = cands.slice(1).filter((x) => x && top.cp - x.cp <= 250 && x.cp > -9000);
+    return alt.length ? alt[Math.floor(Math.random() * alt.length)].mv : best;
+  }
+
   function ensureWorker() {
     if (worker) return;
     try { worker = new Worker(`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/stockfish.js`); } catch { return; }
@@ -73,13 +104,23 @@ export function makeBot(KEY: string) {
     worker.onerror = () => { worker = null; };
     worker.onmessage = (ev) => {
       const line = String(ev.data);
-      if (!line.startsWith("bestmove")) return;
+      if (line.startsWith("info") && line.includes(" multipv ") && line.includes(" pv ")) {
+        const k = line.match(/multipv (\d+)/), cp = line.match(/score cp (-?\d+)/), ma = line.match(/score mate (-?\d+)/), pv = line.match(/ pv (\S+)/);
+        if (k && pv && (cp || ma)) {
+          const mate = ma ? parseInt(ma[1], 10) : 0;
+          cands[parseInt(k[1], 10) - 1] = { mv: pv[1], cp: cp ? parseInt(cp[1], 10) : (mate >= 0 ? 1 : -1) * (10000 - Math.abs(mate)) };
+        }
+        return;
+      }
+      if (!line.startsWith("bestmove") || moveQueued) return;
       const s0 = st;
-      const mv = line.split(" ")[1];
+      let mv = line.split(" ")[1];
       if (!s0.playing || s0.over || !mv || mv === "(none)") return;
+      if (wantMistake) mv = humanPick(mv);
+      moveQueued = true;
       const sid = s0.sid, ply = s0.chess.history().length;
-      // ждём, пока с момента хода игрока пройдёт BOT_DELAY (часы бота при этом идут)
-      const wait = Math.max(0, BOT_DELAY - (Date.now() - s0.askedAt));
+      // ходим только когда пройдёт назначенное время раздумья (часы бота при этом идут)
+      const wait = Math.max(0, planned - (Date.now() - s0.askedAt));
       setTimeout(() => {
         const s = st;
         if (s.sid !== sid || !s.playing || s.over || s.pause || s.chess.history().length !== ply) return;
@@ -98,21 +139,25 @@ export function makeBot(KEY: string) {
     if (s.over || s.pause) return;
     ensureWorker();
     if (!worker) return;
-    s.askedAt = Date.now(); s.thinking = true; retried = false;
+    s.askedAt = Date.now(); s.thinking = true; retried = false; moveQueued = false;
+    planned = humanDelay();
+    wantMistake = s.chess.history().length >= 8 && s.chess.moves().length >= 3 && Math.random() < MISTAKE[s.level - 1];
     sendToEngine(MOVETIME[s.level - 1]);
   }
   function sendToEngine(ms: number) {
     const s = st;
     if (!worker) return;
+    cands = [];
     worker.postMessage("stop");
-    worker.postMessage(`setoption name Skill Level value ${SKILL[s.level - 1]}`);
+    worker.postMessage(`setoption name Skill Level value ${wantMistake ? 20 : SKILL[s.level - 1]}`);
+    worker.postMessage(`setoption name MultiPV value ${wantMistake ? 4 : 1}`);
     worker.postMessage(`position fen ${s.chess.fen()}`);
-    worker.postMessage(`go movetime ${ms}`);
+    worker.postMessage(`go movetime ${wantMistake ? Math.max(ms, 250) : ms}`);
   }
   /** Сторожок: движок молчит слишком долго */
   function watchdog(now: number) {
     const s = st;
-    if (!s.thinking || s.chess.turn() === s.me || s.pause) return;
+    if (!s.thinking || s.chess.turn() === s.me || s.pause || moveQueued) return;
     const waited = now - s.askedAt;
     if (waited > BOT_RETRY && !retried) {
       retried = true;
@@ -120,7 +165,7 @@ export function makeBot(KEY: string) {
       worker = null;
       ensureWorker();
       sendToEngine(300);
-    } else if (waited > BOT_MAX) {
+    } else if (waited > Math.max(BOT_MAX, planned)) {
       const moves = s.chess.moves({ verbose: true });
       if (!moves.length) return;
       const caps = moves.filter((m) => m.captured);
