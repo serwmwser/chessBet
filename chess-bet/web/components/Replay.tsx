@@ -33,6 +33,7 @@ export function useReplay(san: string[]) {
     prev: () => setIdx(Math.max(0, cur - 1)),
     next: () => setIdx(cur + 1 >= total ? null : cur + 1),
     toLive: () => setIdx(null),
+    goto: (n: number) => setIdx(n >= total ? null : Math.max(0, n)),
   };
 }
 

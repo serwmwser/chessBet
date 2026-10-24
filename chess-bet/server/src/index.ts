@@ -348,6 +348,8 @@ function finalize(g: Live) {
   save();
 }
 
+/** Окно на первый ход белых: 72 часа для любой партии со ставкой */
+const FIRST_MOVE_MS = 72 * 3600 * 1000;
 setInterval(() => {
   for (const g of live.values()) {
     if (g.over) continue;
@@ -357,8 +359,8 @@ setInterval(() => {
       continue;
     }
     if (g.chess.history().length === 0) {
-      // белые не сделали первый ход за отведённое время партии → отмена, ставки возвращаются без комиссии
-      if (Date.now() - g.startedAt > g.duration * 1000) finish(g, null, "abort");
+      // белые не сделали первый ход за 72 часа → отмена, ставки возвращаются без комиссии
+      if (Date.now() - g.startedAt > FIRST_MOVE_MS) finish(g, null, "abort");
       continue;
     }
     const t = g.chess.turn();

@@ -191,7 +191,7 @@ export default function BotGame({ cartoon = false }: { cartoon?: boolean }) {
         {!s.over && <PauseButton left={s.pausesLeft[s.me]} active={myTurn && started} onClick={B.botPause} />}
       </div>
       <Moves san={san} />
-      {s.res && <div className="card"><AnalysisPanel san={san} /></div>}
+      {s.res && <div className="card"><AnalysisPanel san={san} replay={replay} me={s.me} /></div>}
       {res ? (
         !showEnd ? null : hide ? (
           <button className="btn btn-primary w-full" onClick={again}>{t("newGame")}</button>

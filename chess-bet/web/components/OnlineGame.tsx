@@ -206,7 +206,7 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
       </div>
       {!st.over && <PauseButton left={pausesLeft} active={myTurn && started} onClick={() => send({ t: "pause" })} />}
       <Moves san={st.history} />
-      {st.over && <div className="card"><AnalysisPanel san={st.history} /></div>}
+      {st.over && <div className="card"><AnalysisPanel san={st.history} replay={replay} me={myColor} /></div>}
 
       {st.chat && (
         <div className="card space-y-2">
