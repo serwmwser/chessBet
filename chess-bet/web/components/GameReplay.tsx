@@ -40,8 +40,8 @@ export default function GameReplay({ id, me, onClose }: { id: number; me: string
           </div>
           {g && (
             <>
-              <Board fen={replay.fen} orientation={color === "b" ? "black" : "white"} lastMove={replay.last} disabled mute onMove={() => {}} />
-              <ReplayBar r={replay} />
+              <Board fen={replay.fen} orientation={color === "b" ? "black" : "white"} lastMove={replay.last} disabled mute={!replay.playing} onMove={() => {}} />
+              <ReplayBar r={replay} auto />
             </>
           )}
         </div>

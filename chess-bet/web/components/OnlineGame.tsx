@@ -190,7 +190,7 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
         orientation={iAmWhite ? "white" : "black"}
         lastMove={replay.last}
         disabled={!myTurn || !replay.isLive}
-        mute={!replay.isLive}
+        mute={!replay.isLive && !replay.playing}
         onMove={(from, to, promotion) => send({ t: "move", from, to, promotion })}
       />
       {overlay}
@@ -198,7 +198,7 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
       <Clock ms={rem(myColor)} active={started && myTurn} label={`${myProf?.name || (me ? shortAddr(me) : t("profile"))} · ${iAmWhite ? t("white") : t("black")}`} who={{ name: myProf?.name || me, avatar: myProf?.avatar }} />
       <Captured taken={mat.taken[myColor]} color={iAmWhite ? "b" : "w"} plus={0} />
 
-      <ReplayBar r={replay} />
+      <ReplayBar r={replay} auto={st.over} />
 
       <div className="flex items-center justify-between text-sm">
         <span className="font-medium">{st.over ? "" : myTurn ? t("yourTurn") : t("oppTurn")}</span>

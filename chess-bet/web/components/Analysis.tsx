@@ -40,7 +40,7 @@ export function AnalysisView({ res, replay, me }: { res: Analysis; replay?: Rep;
     <div className="space-y-3 text-sm">
       {replay && (
         <div className="space-y-2">
-          <ReplayBar r={replay} />
+          <ReplayBar r={replay} auto />
           <div className="rounded-xl bg-black/5 dark:bg-white/5 px-3 py-2 min-h-[3.25rem]">
             {here ? (
               <>

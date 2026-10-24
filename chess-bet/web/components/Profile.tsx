@@ -176,6 +176,8 @@ export default function Profile({ onOpenGame }: { onOpenGame: (id: number) => vo
           ))}
         </div>
       </section>
+
+      <p className="text-center text-[11px] opacity-40">{uiLang === "ru" ? "Версия сайта" : "Site build"}: {process.env.NEXT_PUBLIC_BUILD}</p>
     </div>
   );
 }

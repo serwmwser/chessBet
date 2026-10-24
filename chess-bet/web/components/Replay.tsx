@@ -25,23 +25,36 @@ export function useReplay(san: string[]) {
   const isLive = idx === null || idx >= total;
   const cur = isLive ? total : idx;
 
+  // автовоспроизведение: партия идёт ход за ходом, как была сыграна
+  const [playing, setPlaying] = useState(false);
+  const [speed, setSpeed] = useState(1);
+  useEffect(() => {
+    if (!playing) return undefined;
+    if (cur >= total) { setPlaying(false); return undefined; }
+    const id = setTimeout(() => setIdx(cur + 1 >= total ? null : cur + 1), 1500 / speed);
+    return () => clearTimeout(id);
+  }, [playing, cur, total, speed]);
+
   return {
     fen: frames[cur].fen,
     last: frames[cur].last,
     isLive, cur, total,
-    first: () => setIdx(0),
-    prev: () => setIdx(Math.max(0, cur - 1)),
-    next: () => setIdx(cur + 1 >= total ? null : cur + 1),
-    toLive: () => setIdx(null),
-    goto: (n: number) => setIdx(n >= total ? null : Math.max(0, n)),
+    first: () => { setPlaying(false); setIdx(0); },
+    prev: () => { setPlaying(false); setIdx(Math.max(0, cur - 1)); },
+    next: () => { setPlaying(false); setIdx(cur + 1 >= total ? null : cur + 1); },
+    toLive: () => { setPlaying(false); setIdx(null); },
+    goto: (n: number) => { setPlaying(false); setIdx(n >= total ? null : Math.max(0, n)); },
+    playing, speed,
+    togglePlay: () => { if (playing) { setPlaying(false); return; } if (isLive) setIdx(0); setPlaying(true); },
+    cycleSpeed: () => setSpeed((v) => (v === 1 ? 2 : v === 2 ? 4 : 1)),
   };
 }
 
-export function ReplayBar({ r }: { r: ReturnType<typeof useReplay> }) {
+export function ReplayBar({ r, auto }: { r: ReturnType<typeof useReplay>; auto?: boolean }) {
   const { t } = useApp();
   const btn = "btn btn-ghost !px-3 !py-2 text-base";
   return (
-    <div className="flex items-center justify-center gap-2" dir="ltr">
+    <div className="flex flex-wrap items-center justify-center gap-2" dir="ltr">
       <button className={btn} onClick={r.first} disabled={r.total === 0 || r.cur === 0} aria-label="First move">⏮</button>
       <button className={btn} onClick={r.prev} disabled={r.total === 0 || r.cur === 0} aria-label="Previous move">◀</button>
       <span className="mono text-sm min-w-[84px] text-center opacity-80">
@@ -49,6 +62,12 @@ export function ReplayBar({ r }: { r: ReturnType<typeof useReplay> }) {
       </span>
       <button className={btn} onClick={r.next} disabled={r.isLive} aria-label="Next move">▶</button>
       <button className={btn} onClick={r.toLive} disabled={r.isLive} aria-label="Last move">⏭</button>
+      {auto && r.total > 0 && (
+        <>
+          <button className={btn} onClick={r.togglePlay} aria-label="Play">{r.playing ? "⏸" : "▶▶"}</button>
+          <button className={btn + " mono"} onClick={r.cycleSpeed} aria-label="Speed">{r.speed}×</button>
+        </>
+      )}
     </div>
   );
 }

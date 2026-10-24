@@ -174,7 +174,7 @@ export default function BotGame({ cartoon = false }: { cartoon?: boolean }) {
         orientation={s.me === "w" ? "white" : "black"}
         lastMove={replay.last}
         disabled={!myTurn || !replay.isLive}
-        mute={!replay.isLive}
+        mute={!replay.isLive && !replay.playing}
         onMove={B.botMove}
       />
       <Clock ms={s[s.me]} active={myTurn} label={s.me === "w" ? t("white") : t("black")} icon={kingIcon(s.me)} />
@@ -185,7 +185,7 @@ export default function BotGame({ cartoon = false }: { cartoon?: boolean }) {
           <div className="flex-1 min-h-9 flex items-center rounded-2xl px-3 text-sm font-bold text-emerald-500">{say ? "💬 " + say : ""}</div>
         </div>
       )}
-      <ReplayBar r={replay} />
+      <ReplayBar r={replay} auto={!!s.res} />
       <div className="flex items-center justify-between gap-2">
         <div className="text-sm font-medium min-h-5">{s.thinking ? t("thinking") : myTurn ? t("yourTurn") : ""}</div>
         {!s.over && <PauseButton left={s.pausesLeft[s.me]} active={myTurn && started} onClick={B.botPause} />}
