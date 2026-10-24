@@ -8,6 +8,7 @@ import { PIECE_SETS, usePieceSet } from "@/lib/pieces";
 import { PTHEMES, usePTheme } from "@/lib/ptheme";
 import { gameUrl } from "@/lib/invite";
 import Avatar from "./Avatar";
+import GameReplay from "./GameReplay";
 import BuyCrypto from "./BuyCrypto";
 import HowTo from "./HowTo";
 import MyGames from "./MyGames";
@@ -26,6 +27,7 @@ export default function Profile({ onOpenGame }: { onOpenGame: (id: number) => vo
   const [data, setData] = useState<{ games: DoneGame[]; stats: Stats } | null>(null);
   const [prof, setProf] = useState<ProfileData | null>(null);
   const [editing, setEditing] = useState(false);
+  const [view, setView] = useState<number | null>(null); // открытая для просмотра партия из истории
   const [faucetBusy, setFaucetBusy] = useState(false);
   const getTest = async () => {
     if (!me) return;
@@ -54,6 +56,7 @@ export default function Profile({ onOpenGame }: { onOpenGame: (id: number) => vo
 
   return (
     <div className="space-y-4">
+      {view !== null && me && <GameReplay id={view} me={me.toLowerCase()} onClose={() => setView(null)} />}
       {!me ? (
         <div className="card text-center opacity-80">{t("signIn")}</div>
       ) : (
@@ -133,6 +136,7 @@ export default function Profile({ onOpenGame }: { onOpenGame: (id: number) => vo
                     <div className="text-sm font-medium">{drawn ? t("rDraw") : won ? t("won") : t("lost")}</div>
                     <div className="text-xs opacity-60" dir="ltr">#{g.id} · {shortAddr(opp)} · {new Date(g.at).toLocaleDateString()}</div>
                   </div>
+                  <button type="button" className="chip" onClick={() => setView(g.id)}>{uiLang === "ru" ? "Анализ игры" : "Game analysis"}</button>
                   <span className={`mono font-semibold ${delta > 0 ? "text-emerald-500" : delta < 0 ? "text-red-500" : "opacity-60"}`}>{delta > 0 ? "+" : ""}{usdc(delta)}</span>
                 </div>
               );

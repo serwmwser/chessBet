@@ -14,6 +14,9 @@ export const fetchGames = () => get<{ feeBps: number; games: OpenGame[] }>("/gam
 export const fetchGame = (id: number) => get<{ status: "open" | "active" | "done" | "unknown"; game?: OpenGame }>(`/game/${id}`);
 export const fetchMine = (a: string) => get<{ open: OpenGame[]; active: LiveInfo[] }>(`/mine/${a}`);
 export const fetchHistory = (a: string) => get<{ games: DoneGame[]; stats: Stats }>(`/history/${a}`);
+/** Запись завершённой партии: игроки, итог и все ходы (SAN) */
+export type SavedGame = DoneGame & { san: string[] };
+export const fetchSaved = (id: number) => get<SavedGame>(`/pgn/${id}`);
 
 export type ProfileData = { name: string; bio: string; link: string; avatar: string };
 export const fetchProfile = (a: string) => get<ProfileData | null>(`/profile/${a}`);
