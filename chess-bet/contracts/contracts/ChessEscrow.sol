@@ -9,7 +9,7 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 
 /// @title ChessEscrow v2
-/// @notice Эскроу шахматных ставок в USDC (6 знаков). Ставка 0.05–5 USDC с шагом 0.05.
+/// @notice Эскроу шахматных ставок в USDC (6 знаков). Ставка 0.5–500 USDC с шагом 0.5 (действующий потолок задаёт maxBet).
 ///         Победитель получает 94% банка (6% сразу уходит владельцу проекта). Ничья — возврат ставок.
 ///         Выплаты "pull": после результата игрок сам вызывает claim(id) и получает USDC на кошелёк.
 ///         Приватные игры: создатель задаёт inviteSigner (одноразовый адрес из ссылки-приглашения);

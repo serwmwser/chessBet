@@ -1,8 +1,8 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { CSSProperties, useCallback, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { fetchGames, fetchMine, OpenGame } from "@/lib/api";
-import { BETS, BIG_BETS, BET_MAX, DEFAULT_FEE_BPS, DURATIONS, shortAddr, TERMS_URL, usdc } from "@/lib/config";
+import { BETS, BIG_BETS, BIG_MAX, VIP_BETS, BET_MAX, DEFAULT_FEE_BPS, DURATIONS, shortAddr, TERMS_URL, usdc } from "@/lib/config";
 import { useApp } from "@/lib/ctx";
 import { gameUrl, newInvite } from "@/lib/invite";
 import { Step, useEscrow } from "@/lib/tx";
@@ -10,7 +10,11 @@ import Share from "./Share";
 import { useLT } from "@/lib/lobbyTxt";
 
 export const durLabel = (sec: number, min: string, hr: string) => (sec < 3600 ? `${sec / 60} ${min}` : `${sec / 3600} ${hr}`);
-const QUICK = [500_000, 1_000_000, 2_500_000, 5_000_000, 5_500_000, 7_500_000, 10_000_000, 12_500_000, 15_000_000, 17_500_000, 20_000_000, 22_500_000, 25_000_000, 50_000_000, 100_000_000, 250_000_000, 500_000_000];
+const QUICK = [500_000, 1_000_000, 2_500_000, 5_000_000, 5_500_000, 7_500_000, 10_000_000, 12_500_000, 15_000_000, 17_500_000, 20_000_000, 22_500_000, 25_000_000, 25_500_000, 50_000_000, 100_000_000, 250_000_000, 500_000_000];
+/** Золотая кнопка VIP */
+const vipStyle = (on: boolean): CSSProperties => on
+  ? { background: "linear-gradient(90deg,#fde68a,#f5b301,#b8860b)", color: "#2b1a00", fontWeight: 700, boxShadow: "0 4px 14px -2px rgba(245,179,1,.55)" }
+  : { border: "1px solid #d4a017", color: "#d4a017", fontWeight: 700 };
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export default function Lobby() {
@@ -19,7 +23,9 @@ export default function Lobby() {
   const [games, setGames] = useState<OpenGame[] | null>(null);
   const [feeBps, setFeeBps] = useState(DEFAULT_FEE_BPS);
   const [betIdx, setBetIdx] = useState(1); // 1 USDC
-  const [big, setBig] = useState(false);
+  const [tier, setTier] = useState<0 | 1 | 2>(0); // 0 Стандарт, 1 Крупные, 2 VIP
+  const big = tier === 1;
+  const vip = tier === 2;
   const lt = useLT();
   const [dur, setDur] = useState(900);
   const [priv, setPriv] = useState(false);
@@ -34,7 +40,7 @@ export default function Lobby() {
   }, []);
   useEffect(() => { refresh(); const i = setInterval(refresh, 4000); return () => clearInterval(i); }, [refresh]);
 
-  const LIST = big ? BIG_BETS : BETS;
+  const LIST = vip ? VIP_BETS : big ? BIG_BETS : BETS;
   const bet = LIST[Math.min(betIdx, LIST.length - 1)];
   const pot = bet * 2;
   const win = pot - Math.floor((pot * feeBps) / 10_000);
@@ -91,9 +97,9 @@ export default function Lobby() {
             <label htmlFor="bet" className="text-sm opacity-70">{t("bet")}</label>
             <span className="mono text-2xl font-bold bg-gradient-to-r from-brand-400 to-brand-violet bg-clip-text text-transparent">{usdc(bet)} USDC</span>
           </div>
-<div className="flex gap-2 mb-2"><button type="button" className={"chip " + (!big ? "chip-on" : "")} onClick={() => { setBig(false); setBetIdx(1); }}>{lt.stdName} 0.5-5</button>{BIG_BETS.length > 0 ? <button type="button" className={"chip " + (big ? "chip-on" : "")} onClick={() => { setBig(true); setBetIdx(0); }}>{lt.bigName} 5.5-{BET_MAX / 1e6}</button> : null}</div>
-<p className="text-xs opacity-70 mb-2">{big ? lt.bigInfo(String(BET_MAX / 1e6)) : lt.stdInfo}</p>
-<p className="text-xs opacity-70 mb-2">{lt.switchHint} {big ? lt.quickBig(String(BET_MAX / 1e6)) : lt.quickStd}</p>
+<div className="flex flex-wrap gap-2 mb-2"><button type="button" className={"chip " + (tier === 0 ? "chip-on" : "")} onClick={() => { setTier(0); setBetIdx(1); }}>{lt.stdName} 0.5-5</button>{BIG_BETS.length > 0 ? <button type="button" className={"chip " + (big ? "chip-on" : "")} onClick={() => { setTier(1); setBetIdx(0); }}>{lt.bigName} 5.5-{BIG_MAX / 1e6}</button> : null}{VIP_BETS.length > 0 ? <button type="button" className="chip" style={vipStyle(vip)} onClick={() => { setTier(2); setBetIdx(0); }}>👑 {lt.vipName} 25.5-{BET_MAX / 1e6}</button> : null}</div>
+<p className="text-xs opacity-70 mb-2">{vip ? lt.vipInfo(String(BET_MAX / 1e6)) : big ? lt.bigInfo(String(BIG_MAX / 1e6)) : lt.stdInfo}</p>
+<p className="text-xs opacity-70 mb-2">{lt.switchHint} {vip ? lt.quickVip(String(BET_MAX / 1e6)) : big ? lt.quickBig(String(BIG_MAX / 1e6)) : lt.quickStd}</p>
           <input id="bet" type="range" min={0} max={LIST.length - 1} value={betIdx} onChange={(e) => setBetIdx(+e.target.value)} className="w-full h-8" />
           <div className="flex flex-wrap gap-2 mt-1">
             {QUICK.filter((q) => LIST.includes(q)).map((q) => (

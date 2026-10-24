@@ -10,21 +10,21 @@ type K = "title" | "intro" | "buyPol" | "buyUsdc" | "polNote" | "usdcNote" | "st
 const D: Record<Lang, Record<K, string>> = {
   ru: {
     title: "Пополнить баланс", intro: "В игре все ставки и выигрыши идут в USDC в сети Polygon. USDC нужен, чтобы создать игру или присоединиться к ней. Немного POL нужно для комиссии сети.",
-    buyPol: "Купить POL на бирже", buyUsdc: "Купить USDC на бирже", polNote: "POL: оплата комиссий сети. Для начала хватит 1–2 POL.", usdcNote: "USDC: ваши ставки. Минимальная ставка 0.05 USDC.",
+    buyPol: "Купить POL на бирже", buyUsdc: "Купить USDC на бирже", polNote: "POL: оплата комиссий сети. Для начала хватит 1–2 POL.", usdcNote: "USDC: ваши ставки. Минимальная ставка 0.5 USDC.",
     steps: "1) Купите монету на бирже. 2) Выведите её на адрес ниже. 3) Через пару минут она появится в балансе.",
     warn: "При выводе выбирайте только сеть Polygon (POL / MATIC). Другая сеть приведёт к потере средств. Сначала отправьте небольшую сумму для проверки.",
     addr: "Ваш адрес для вывода", copy: "Скопировать", copied: "Скопировано", partner: "Ссылки на биржу партнёрские. Доступность биржи зависит от вашей страны. Это не финансовая рекомендация.",
   },
   en: {
     title: "Top up your balance", intro: "All stakes and winnings in the game are in USDC on the Polygon network. You need USDC to create or join a game. A little POL is needed for network fees.",
-    buyPol: "Buy POL on an exchange", buyUsdc: "Buy USDC on an exchange", polNote: "POL pays network fees. 1–2 POL is enough to start.", usdcNote: "USDC is your stake. The minimum stake is 0.05 USDC.",
+    buyPol: "Buy POL on an exchange", buyUsdc: "Buy USDC on an exchange", polNote: "POL pays network fees. 1–2 POL is enough to start.", usdcNote: "USDC is your stake. The minimum stake is 0.5 USDC.",
     steps: "1) Buy the coin on the exchange. 2) Withdraw it to the address below. 3) It shows up in your balance in a couple of minutes.",
     warn: "When withdrawing, choose only the Polygon network (POL / MATIC). Any other network will lose your funds. Send a small test amount first.",
     addr: "Your withdrawal address", copy: "Copy", copied: "Copied", partner: "Exchange links are partner links. Availability depends on your country. This is not financial advice.",
   },
   es: {
     title: "Recargar saldo", intro: "En el juego todas las apuestas y ganancias son en USDC en la red Polygon. Necesitas USDC para crear una partida o unirte. Hace falta un poco de POL para las comisiones de red.",
-    buyPol: "Comprar POL en un exchange", buyUsdc: "Comprar USDC en un exchange", polNote: "POL paga las comisiones de red. 1–2 POL bastan para empezar.", usdcNote: "USDC es tu apuesta. La apuesta mínima es 0.05 USDC.",
+    buyPol: "Comprar POL en un exchange", buyUsdc: "Comprar USDC en un exchange", polNote: "POL paga las comisiones de red. 1–2 POL bastan para empezar.", usdcNote: "USDC es tu apuesta. La apuesta mínima es 0.5 USDC.",
     steps: "1) Compra la moneda en el exchange. 2) Retírala a la dirección de abajo. 3) En un par de minutos aparece en tu saldo.",
     warn: "Al retirar elige solo la red Polygon (POL / MATIC). Cualquier otra red hará que pierdas los fondos. Envía primero una cantidad pequeña de prueba.",
     addr: "Tu dirección de retiro", copy: "Copiar", copied: "Copiado", partner: "Los enlaces al exchange son de afiliado. La disponibilidad depende de tu país. No es asesoramiento financiero.",
@@ -59,14 +59,14 @@ const D: Record<Lang, Record<K, string>> = {
   },
   zh: {
     title: "充值余额", intro: "游戏中所有赌注和奖金均为 Polygon 网络上的 USDC。创建或加入对局需要 USDC，网络手续费需要少量 POL。",
-    buyPol: "在交易所购买 POL", buyUsdc: "在交易所购买 USDC", polNote: "POL 用于支付网络手续费，开始时 1–2 个 POL 就够了。", usdcNote: "USDC 是你的赌注，最低赌注为 0.05 USDC。",
+    buyPol: "在交易所购买 POL", buyUsdc: "在交易所购买 USDC", polNote: "POL 用于支付网络手续费，开始时 1–2 个 POL 就够了。", usdcNote: "USDC 是你的赌注，最低赌注为 0.5 USDC。",
     steps: "1）在交易所购买代币。2）提现到下方地址。3）几分钟后会显示在余额中。",
     warn: "提现时只选择 Polygon 网络（POL / MATIC），选择其他网络会导致资金丢失。请先转一小笔测试金额。",
     addr: "你的提现地址", copy: "复制", copied: "已复制", partner: "交易所链接为合作推广链接，是否可用取决于你所在的国家，非投资建议。",
   },
   ar: {
     title: "شحن الرصيد", intro: "في اللعبة تتم جميع الرهانات والأرباح بعملة USDC على شبكة Polygon. تحتاج USDC لإنشاء لعبة أو الانضمام إليها، وقليلًا من POL لرسوم الشبكة.",
-    buyPol: "اشترِ POL من منصة تداول", buyUsdc: "اشترِ USDC من منصة تداول", polNote: "يُستخدم POL لدفع رسوم الشبكة. يكفي 1–2 POL للبدء.", usdcNote: "USDC هو رهانك. الحد الأدنى للرهان 0.05 USDC.",
+    buyPol: "اشترِ POL من منصة تداول", buyUsdc: "اشترِ USDC من منصة تداول", polNote: "يُستخدم POL لدفع رسوم الشبكة. يكفي 1–2 POL للبدء.", usdcNote: "USDC هو رهانك. الحد الأدنى للرهان 0.5 USDC.",
     steps: "1) اشترِ العملة من المنصة. 2) اسحبها إلى العنوان أدناه. 3) تظهر في رصيدك خلال دقائق.",
     warn: "عند السحب اختر شبكة Polygon فقط (POL / MATIC). أي شبكة أخرى تعني ضياع الأموال. أرسل مبلغًا تجريبيًا صغيرًا أولًا.",
     addr: "عنوان السحب الخاص بك", copy: "نسخ", copied: "تم النسخ", partner: "روابط المنصة هي روابط شراكة. التوفر يعتمد على بلدك. هذه ليست نصيحة مالية.",

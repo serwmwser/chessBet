@@ -24,7 +24,11 @@ export const BET_MAX = Number(process.env.NEXT_PUBLIC_BET_MAX_USDC || 500) * 1_0
 export const BET_STEP = 500_000; // 0.5 USDC
 export const STD_MAX = 5_000_000; // standard section up to 5 USDC
 export const BETS = Array.from({ length: Math.min(BET_MAX, STD_MAX) / BET_STEP }, (_, i) => (i + 1) * BET_STEP);
-export const BIG_BETS = Array.from({ length: Math.max(0, (BET_MAX - STD_MAX) / BET_STEP) }, (_, i) => STD_MAX + (i + 1) * BET_STEP);
+export const BIG_FROM = 25_000_000; // «Крупные» до 25 USDC, выше — VIP
+export const BIG_MAX = Math.min(BET_MAX, BIG_FROM);
+export const BIG_BETS = Array.from({ length: Math.max(0, (BIG_MAX - STD_MAX) / BET_STEP) }, (_, i) => STD_MAX + (i + 1) * BET_STEP);
+/** VIP: 25.5–500 USDC (шаг 0.5); работает, когда потолок maxBet на контракте поднят до нужной суммы */
+export const VIP_BETS = Array.from({ length: Math.max(0, (BET_MAX - BIG_FROM) / BET_STEP) }, (_, i) => BIG_FROM + (i + 1) * BET_STEP);
 export const DURATIONS = [900, 1800, 2700, 3600, 10800, 86400];
 export const BOT_TIMES = [5, 15, 30, 45]; // минуты
 export const DEFAULT_FEE_BPS = 600;
