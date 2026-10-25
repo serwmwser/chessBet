@@ -23,6 +23,7 @@ const {
   FAUCET_NATIVE = "1",
   FAUCET_USDC = "1000",
   SYNC_MS = "60000",
+  NFT_ADDRESS = "",
 } = process.env;
 if (!RPC_URL || !ESCROW || !ORACLE_PK) {
   console.error("Нужны RPC_URL, ESCROW, ORACLE_PK (см. .env.example)");
@@ -52,6 +53,7 @@ const provider: ethers.AbstractProvider = rpcUrls.length > 1
   : mkRpc(rpcUrls[0]);
 const wallet = new ethers.Wallet(ORACLE_PK, provider);
 const escrow = new ethers.Contract(ESCROW, ABI, wallet);
+const NFT = NFT_ADDRESS ? ethers.getAddress(NFT_ADDRESS) : ""; // адрес контракта GameNFT (пусто = NFT выключены)
 const ev = process.env.EVENTS === "0" ? (..._a: unknown[]) => {} : (...a: unknown[]) => (escrow as any).on(...a);
 
 // ---------- типы и состояние ----------
@@ -547,6 +549,24 @@ const server = http.createServer((req, res) => {
     try { c.loadPgn(d.pgn); } catch { /* пустая запись */ }
     const { pgn: _pgn, ...info } = d;
     return out({ ...info, san: c.history() });
+  }
+  // подпись для NFT партии: сервер подтверждает конечную позицию и запись ходов
+  // (игроков, ставку и победителя контракт GameNFT берёт из эскроу сам, подделать их нельзя)
+  if (parts[0] === "nft" && parts[1] && /^d+$/.test(parts[1])) {
+    if (!NFT) { res.writeHead(503).end(JSON.stringify({ error: "nft_off" })); return; }
+    const id = Number(parts[1]);
+    const d = done.find((x) => x.id === id);
+    if (!d) { res.writeHead(404).end(JSON.stringify({ error: "not_finished" })); return; }
+    const c = new Chess();
+    try { c.loadPgn(d.pgn); } catch { /* пустая запись */ }
+    const fen = c.fen();
+    const pgn = c.history().map((m, i) => (i % 2 === 0 ? `${i / 2 + 1}. ${m}` : m)).join(" ").slice(0, 2000);
+    const digest = ethers.keccak256(ethers.AbiCoder.defaultAbiCoder().encode(
+      ["address", "uint256", "uint256", "string", "string"], [NFT, net.chainId, id, fen, pgn]));
+    wallet.signMessage(ethers.getBytes(digest))
+      .then((sig) => out({ id, fen, pgn, sig, nft: NFT }))
+      .catch(() => { res.writeHead(500).end(JSON.stringify({ error: "sign_failed" })); });
+    return;
   }
   res.writeHead(404).end("{}");
 });
