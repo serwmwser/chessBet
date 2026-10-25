@@ -550,21 +550,30 @@ const server = http.createServer((req, res) => {
     const { pgn: _pgn, ...info } = d;
     return out({ ...info, san: c.history() });
   }
-  // подпись для NFT партии: сервер подтверждает конечную позицию и запись ходов
-  // (игроков, ставку и победителя контракт GameNFT берёт из эскроу сам, подделать их нельзя)
-  if (parts[0] === "nft" && parts[1] && /^d+$/.test(parts[1])) {
+  // подпись для NFT выбранного момента партии: /nft/номер_партии/номер_хода (без хода = итоговая позиция).
+  // Игроков, ставку и победителя контракт GameNFT берёт из эскроу сам; сервер подтверждает только позицию, ход и запись ходов.
+  if (parts[0] === "nft" && parts[1] && /^[0-9]+$/.test(parts[1])) {
     if (!NFT) { res.writeHead(503).end(JSON.stringify({ error: "nft_off" })); return; }
     const id = Number(parts[1]);
     const d = done.find((x) => x.id === id);
     if (!d) { res.writeHead(404).end(JSON.stringify({ error: "not_finished" })); return; }
+    const full = new Chess();
+    try { full.loadPgn(d.pgn); } catch { /* пустая запись */ }
+    const moves = full.history({ verbose: true });
+    const total = moves.length;
+    const ply = parts[2] && /^[0-9]+$/.test(parts[2]) ? Number(parts[2]) : total;
+    if (ply < 1 || ply > total) { res.writeHead(400).end(JSON.stringify({ error: "bad_ply" })); return; }
     const c = new Chess();
-    try { c.loadPgn(d.pgn); } catch { /* пустая запись */ }
-    const fen = c.fen();
-    const pgn = c.history().map((m, i) => (i % 2 === 0 ? `${i / 2 + 1}. ${m}` : m)).join(" ").slice(0, 2000);
+    for (let i = 0; i < ply; i++) c.move(moves[i].san);
+    const m = moves[ply - 1];
+    const sq = (x: string) => (8 - Number(x[1])) * 8 + (x.charCodeAt(0) - 97); // 0 = a8, 63 = h1
+    const pgn = c.history().map((x, i) => (i % 2 === 0 ? String(i / 2 + 1) + ". " + x : x)).join(" ").slice(0, 2000);
+    const snap = { gameId: id, ply, total, from: sq(m.from), to: sq(m.to), san: m.san, fen: c.fen(), pgn };
     const digest = ethers.keccak256(ethers.AbiCoder.defaultAbiCoder().encode(
-      ["address", "uint256", "uint256", "string", "string"], [NFT, net.chainId, id, fen, pgn]));
+      ["address", "uint256", "tuple(uint64 gameId,uint16 ply,uint16 total,uint8 from,uint8 to,string san,string fen,string pgn)"],
+      [NFT, net.chainId, snap]));
     wallet.signMessage(ethers.getBytes(digest))
-      .then((sig) => out({ id, fen, pgn, sig, nft: NFT }))
+      .then((sig) => out({ ...snap, sig, nft: NFT }))
       .catch(() => { res.writeHead(500).end(JSON.stringify({ error: "sign_failed" })); });
     return;
   }
