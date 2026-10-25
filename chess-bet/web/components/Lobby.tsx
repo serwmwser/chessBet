@@ -2,7 +2,7 @@
 import { CSSProperties, useCallback, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { fetchGames, fetchMine, OpenGame } from "@/lib/api";
-import { BETS, BIG_BETS, BIG_MAX, VIP_BETS, BET_MAX, DEFAULT_FEE_BPS, DURATIONS, shortAddr, TERMS_URL, usdc } from "@/lib/config";
+import { ARENA_MIN, BETS, BIG_BETS, BIG_MAX, VIP_BETS, BET_MAX, DEFAULT_FEE_BPS, DURATIONS, shortAddr, TERMS_URL, usdc } from "@/lib/config";
 import { useApp } from "@/lib/ctx";
 import { gameUrl, newInvite } from "@/lib/invite";
 import { Step, useEscrow } from "@/lib/tx";
@@ -17,13 +17,13 @@ const vipStyle = (on: boolean): CSSProperties => on
   : { border: "1px solid #d4a017", color: "#d4a017", fontWeight: 700 };
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-export default function Lobby() {
-  const { t, toast, agreed, setAgreed } = useApp();
+export default function Lobby({ arena = false }: { arena?: boolean } = {}) {
+  const { t, toast, agreed, setAgreed, lang } = useApp();
   const { account, create, join, cancel } = useEscrow();
   const [games, setGames] = useState<OpenGame[] | null>(null);
   const [feeBps, setFeeBps] = useState(DEFAULT_FEE_BPS);
-  const [betIdx, setBetIdx] = useState(1); // 1 USDC
-  const [tier, setTier] = useState<0 | 1 | 2>(0); // 0 Стандарт, 1 Крупные, 2 VIP
+  const [betIdx, setBetIdx] = useState(arena ? 0 : 1); // 1 USDC (в арене с 25.5)
+  const [tier, setTier] = useState<0 | 1 | 2>(arena ? 2 : 0); // 0 Стандарт, 1 Крупные, 2 VIP
   const big = tier === 1;
   const vip = tier === 2;
   const lt = useLT();
@@ -85,19 +85,20 @@ export default function Lobby() {
     try { await cancel(g.id); await refresh(); } catch (e) { toast(errMsg(e), "err"); } finally { setBusy(null); }
   };
 
-  const list = (games ?? []).filter((g) => (!fMax || Number(g.bet) <= fMax) && (!fDur || g.duration === fDur));
+  const list = (games ?? []).filter((g) => (!fMax || Number(g.bet) <= fMax) && (!fDur || g.duration === fDur) && (!arena || Number(g.bet) >= ARENA_MIN));
 
   return (
     <div className="space-y-4">
       <section className="card space-y-4">
-        <h2 className="text-lg font-bold">{t("createGame")}</h2>
+        <h2 className="text-lg font-bold">{arena ? (lang === "ru" ? "🎭👑 Мульт-арена" : "🎭👑 Cartoon arena") : t("createGame")}</h2>
+        {arena && <p className="text-sm opacity-80">{lang === "ru" ? "Игры на токены от 25.5 до 500 USDC с мультяшными фигурами, голосами и реакциями. Играют настоящие люди, не боты." : "Token games from 25.5 to 500 USDC with cartoon pieces, voices and reactions. You play real people, not bots."}</p>}
 
         <div>
           <div className="flex items-baseline justify-between mb-1">
             <label htmlFor="bet" className="text-sm opacity-70">{t("bet")}</label>
             <span className="mono text-2xl font-bold bg-gradient-to-r from-brand-400 to-brand-violet bg-clip-text text-transparent">{usdc(bet)} USDC</span>
           </div>
-<div className="flex flex-wrap gap-2 mb-2"><button type="button" className={"chip " + (tier === 0 ? "chip-on" : "")} onClick={() => { setTier(0); setBetIdx(1); }}>{lt.stdName} 0.5-5</button>{BIG_BETS.length > 0 ? <button type="button" className={"chip " + (big ? "chip-on" : "")} onClick={() => { setTier(1); setBetIdx(0); }}>{lt.bigName} 5.5-{BIG_MAX / 1e6}</button> : null}{VIP_BETS.length > 0 ? <button type="button" className="chip" style={vipStyle(vip)} onClick={() => { setTier(2); setBetIdx(0); }}>👑 {lt.vipName} 25.5-{BET_MAX / 1e6}</button> : null}</div>
+{!arena && <div className="flex flex-wrap gap-2 mb-2"><button type="button" className={"chip " + (tier === 0 ? "chip-on" : "")} onClick={() => { setTier(0); setBetIdx(1); }}>{lt.stdName} 0.5-5</button>{BIG_BETS.length > 0 ? <button type="button" className={"chip " + (big ? "chip-on" : "")} onClick={() => { setTier(1); setBetIdx(0); }}>{lt.bigName} 5.5-{BIG_MAX / 1e6}</button> : null}{VIP_BETS.length > 0 ? <button type="button" className="chip" style={vipStyle(vip)} onClick={() => { setTier(2); setBetIdx(0); }}>👑 {lt.vipName} 25.5-{BET_MAX / 1e6}</button> : null}</div>}
 <p className="text-xs opacity-70 mb-2">{vip ? lt.vipInfo(String(BET_MAX / 1e6)) : big ? lt.bigInfo(String(BIG_MAX / 1e6)) : lt.stdInfo}</p>
 <p className="text-xs opacity-70 mb-2">{lt.switchHint} {vip ? lt.quickVip(String(BET_MAX / 1e6)) : big ? lt.quickBig(String(BIG_MAX / 1e6)) : lt.quickStd}</p>
           <input id="bet" type="range" min={0} max={LIST.length - 1} value={betIdx} onChange={(e) => setBetIdx(+e.target.value)} className="w-full h-8" />

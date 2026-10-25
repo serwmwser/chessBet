@@ -40,3 +40,6 @@ export const DEFAULT_FEE_BPS = 600;
 
 export const usdc = (n: number | bigint | string) => (Number(n) / 1e6).toFixed(2);
 export const shortAddr = (a: string) => `${a.slice(0, 6)}…${a.slice(-4)}`;
+
+/** Мульт-арена: игры со ставкой от 25.5 USDC идут с мультяшными фигурами, голосами и реакциями */
+export const ARENA_MIN = 25_500_000;

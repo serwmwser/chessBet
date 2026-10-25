@@ -51,6 +51,7 @@ export default function Home() {
   const [tab, setTab] = useState<Tab>("lobby");
   const [gid, setGid] = useState<number | null>(null);
   const [openCount, setOpenCount] = useState(0);
+  const [cartMode, setCartMode] = useState<"bot" | "arena">("bot");
   const [inviteId, setInviteId] = useState<number | null>(null);
   const addr = account?.address.toLowerCase();
   const botActive = useBotActive();
@@ -116,7 +117,15 @@ export default function Home() {
           ? <OnlineGame id={gid} onExit={() => { setGid(null); setTab("lobby"); }} />
           : openCount ? <WaitingSplash /> : <div className="card text-center space-y-1 py-10"><div className="text-4xl">♞</div><div className="font-medium">{t("noActive")}</div></div>)}
         {tab === "bot" && <BotGame />}
-        {tab === "cartoon" && <BotGame cartoon />}
+        {tab === "cartoon" && (
+          <div className="space-y-3">
+            <div className="flex gap-2">
+              <button type="button" className={"chip flex-1 justify-center " + (cartMode === "bot" ? "chip-on" : "")} onClick={() => setCartMode("bot")}>{ru ? "🤖 С ботом (бесплатно)" : "🤖 Vs bot (free)"}</button>
+              <button type="button" className={"chip flex-1 justify-center " + (cartMode === "arena" ? "chip-on" : "")} style={cartMode === "arena" ? { background: "linear-gradient(90deg,#fde68a,#f5b301,#b8860b)", color: "#2b1a00", fontWeight: 700 } : { border: "1px solid #d4a017", color: "#d4a017", fontWeight: 700 }} onClick={() => setCartMode("arena")}>{ru ? "🎭👑 Мульт-арена на токены" : "🎭👑 Cartoon arena (tokens)"}</button>
+            </div>
+            {cartMode === "bot" ? <BotGame cartoon /> : <Lobby arena />}
+          </div>
+        )}
         {tab === "earn" && <Earn />}
         {tab === "profile" && <Profile onOpenGame={openGame} />}
         <p className="text-center text-xs opacity-50 mt-8">18+ · <a className="underline" href={TERMS_URL}>Terms</a> · Play responsibly</p>

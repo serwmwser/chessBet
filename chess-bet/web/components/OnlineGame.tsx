@@ -2,7 +2,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useActiveAccount } from "thirdweb/react";
-import { shortAddr, usdc, WS_URL } from "@/lib/config";
+import { Chess } from "chess.js";
+import { ARENA_MIN, shortAddr, usdc, WS_URL } from "@/lib/config";
 import { useApp } from "@/lib/ctx";
 import { dropToken, ensureToken, getToken } from "@/lib/session";
 import { useProfile } from "@/lib/profile";
@@ -16,7 +17,12 @@ import { ReplayBar, useReplay } from "./Replay";
 import Captured from "./Captured";
 import AnalysisPanel from "./Analysis";
 import { analyze } from "@/lib/material";
-import { playLose, playWin, useEndDelay } from "@/lib/sfx";
+import { playCastle, playCheck, playLose, playPromo, playVoice, playWin, useEndDelay } from "@/lib/sfx";
+import { playNeigh } from "@/lib/neigh";
+import { cheerFor, PITCH, shoutFor, speak } from "@/lib/cheers";
+import CartoonBoard from "./cartoon/CartoonBoard";
+import Piece from "./cartoon/Pieces";
+import type { Mood } from "./cartoon/Character";
 
 type State = {
   t: "state"; id: number; fen: string; history: string[]; lastMove: { from: string; to: string } | null;
@@ -67,6 +73,50 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [st?.over]);
+  // мульт-арена: партии со ставкой от 25.5 USDC идут с мультяшными фигурами, голосами и реакциями
+  const cartoon = !!st && Number(st.bet) >= ARENA_MIN;
+  const [voice, setVoice] = useState(() => { try { return localStorage.getItem("cb_voice") !== "0"; } catch { return true; } });
+  const [say, setSay] = useState<string | null>(null);
+  const [react, setReact] = useState<{ by: "w" | "b"; piece: string; cap?: string } | null>(null);
+  useEffect(() => {
+    if (!say) return undefined;
+    const id = setTimeout(() => setSay(null), 3500);
+    return () => clearTimeout(id);
+  }, [say]);
+  const lastLen = useRef<number | null>(null);
+  useEffect(() => {
+    if (!st) return undefined;
+    const h = st.history;
+    if (lastLen.current === null) { lastLen.current = h.length; return undefined; } // при открытии партии не озвучиваем старые ходы
+    const grew = h.length > lastLen.current;
+    lastLen.current = h.length;
+    if (!grew || !cartoon) return undefined;
+    const c = new Chess();
+    try { h.forEach((x) => c.move(x)); } catch { return undefined; }
+    const m = c.history({ verbose: true }).slice(-1)[0];
+    if (!m) return undefined;
+    const mine = st.white === me ? "w" : "b";
+    if (voice && !m.san.endsWith("#")) {
+      if (m.san.endsWith("+")) playCheck();
+      else if (m.promotion) playPromo();
+      else if (m.san.startsWith("O-O")) playCastle();
+      else if (m.captured) playVoice(m.captured, "scream");
+      else if (m.piece === "n") playNeigh();
+      else playVoice(m.piece, "cheer");
+    }
+    if (m.captured && !m.san.endsWith("#")) {
+      const line = shoutFor(m.piece, ru ? "ru" : "en");
+      setSay(line);
+      if (voice) setTimeout(() => speak(line, ru ? "ru-RU" : "en-US", PITCH[m.piece] ?? 1.2), 450);
+    } else if (m.color === mine) {
+      const line = cheerFor({ san: m.san, piece: m.piece, captured: m.captured, promotion: m.promotion }, ru ? "ru" : "en");
+      if (line) { setSay(line); if (voice) speak(line, ru ? "ru-RU" : "en-US"); }
+    }
+    setReact({ by: m.color, piece: m.piece, cap: m.captured });
+    const id = setTimeout(() => setReact(null), 1500);
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [st?.history.length]);
   const [msg, setMsg] = useState("");
   const chatBox = useRef<HTMLDivElement>(null);
   const chatLen = st?.chat?.length ?? 0;
@@ -159,6 +209,22 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
   const drawn = st.over && !st.winner;
   const reasonText = st.reason === "pause_timeout" ? pt.lostPause : st.reason && REASON[st.reason] ? t(REASON[st.reason]) : drawn ? t("rDraw") : "";
 
+  const BoardX = (cartoon ? CartoonBoard : Board) as unknown as typeof CartoonBoard;
+  const pawnOf = (col: "w" | "b") => (col === "w" ? 1 : 3);
+  const moods: Record<string, Mood> = {};
+  if (react) {
+    if (react.piece !== "p") moods[react.by + react.piece.toUpperCase()] = "cheer";
+    if (react.cap && react.cap !== "p") moods[(react.by === "w" ? "b" : "w") + react.cap.toUpperCase()] = "scream";
+  }
+  const kingMood = (col: "w" | "b"): Mood => {
+    if (st.over) return !st.winner ? "idle" : st.winner === (col === "w" ? st.white : st.black) ? "cheer" : "sad";
+    try { const g = new Chess(replay.fen); if (g.inCheck() && g.turn() === col) return "scream"; } catch { /* позиция не разобрана */ }
+    return moods[col + "K"] ?? "idle";
+  };
+  moods.wK = kingMood("w");
+  moods.bK = kingMood("b");
+  const kingIcon = (col: "w" | "b") => (cartoon ? <span className="inline-flex w-9 shrink-0 justify-center"><Piece type="k" side={col} size={30} mood={kingMood(col)} /></span> : undefined);
+
   // итог партии показываем поверх доски
   const overlay = st.over && endGate && endOpen ? (
     <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}
@@ -180,23 +246,31 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
       {st.pause && !st.over && (
         <PausePage mode="pvp" until={pauseUntil} byMe={st.pause.by === me} color={st.pause.color} left={st.pausesLeft?.[st.pause.color] ?? 0} onResume={() => send({ t: "resume" })} />
       )}
+      {cartoon && <div className="text-center text-xs font-bold text-amber-400">{ru ? "🎭👑 Мульт-арена" : "🎭👑 Cartoon arena"}</div>}
       {intro && !st.over && st.history.length === 0 && <StartSplash white={iAmWhite} onDone={() => setIntro(false)} />}
       {/* таймер каждого игрока: общее время на партию, идёт только на своём ходу */}
-      <Clock ms={rem(iAmWhite ? "b" : "w")} active={started && !st.over && !paused && st.turn !== myColor} label={`${oppProf?.name || shortAddr(opp)} · ${iAmWhite ? t("black") : t("white")}`} who={{ name: oppProf?.name || opp, avatar: oppProf?.avatar }} />
-      <Captured taken={mat.taken[iAmWhite ? "b" : "w"]} color={myColor} plus={0} />
+      <Clock ms={rem(iAmWhite ? "b" : "w")} active={started && !st.over && !paused && st.turn !== myColor} label={`${oppProf?.name || shortAddr(opp)} · ${iAmWhite ? t("black") : t("white")}`} who={{ name: oppProf?.name || opp, avatar: oppProf?.avatar }} icon={kingIcon(iAmWhite ? "b" : "w")} />
+      <Captured taken={mat.taken[iAmWhite ? "b" : "w"]} color={myColor} plus={0} cartoon={cartoon} pawn={pawnOf(myColor)} />
       <div className="relative">
-      <Board
+      <BoardX
         fen={replay.fen}
         orientation={iAmWhite ? "white" : "black"}
         lastMove={replay.last}
         disabled={!myTurn || !replay.isLive}
         mute={!replay.isLive && !replay.playing}
         onMove={(from, to, promotion) => send({ t: "move", from, to, promotion })}
+        {...(cartoon ? { pawnW: 1, pawnB: 3, moods } : {})}
       />
       {overlay}
       </div>
-      <Clock ms={rem(myColor)} active={started && myTurn} label={`${myProf?.name || (me ? shortAddr(me) : t("profile"))} · ${iAmWhite ? t("white") : t("black")}`} who={{ name: myProf?.name || me, avatar: myProf?.avatar }} />
-      <Captured taken={mat.taken[myColor]} color={iAmWhite ? "b" : "w"} plus={0} />
+      <Clock ms={rem(myColor)} active={started && myTurn} label={`${myProf?.name || (me ? shortAddr(me) : t("profile"))} · ${iAmWhite ? t("white") : t("black")}`} who={{ name: myProf?.name || me, avatar: myProf?.avatar }} icon={kingIcon(myColor)} />
+      <Captured taken={mat.taken[myColor]} color={iAmWhite ? "b" : "w"} plus={0} cartoon={cartoon} pawn={pawnOf(iAmWhite ? "b" : "w")} />
+      {cartoon && (
+        <div className="flex items-center gap-2">
+          <button type="button" className="chip shrink-0" aria-label={ru ? "Голос" : "Voice"} onClick={() => { const v = !voice; setVoice(v); try { localStorage.setItem("cb_voice", v ? "1" : "0"); } catch { /* без сохранения */ } if (!v) window.speechSynthesis?.cancel(); }}>{voice ? "🔊" : "🔇"}</button>
+          <div className="flex-1 min-h-9 flex items-center rounded-2xl px-3 text-sm font-bold text-emerald-500">{say ? "💬 " + say : ""}</div>
+        </div>
+      )}
 
       <ReplayBar r={replay} auto={st.over} />
 
