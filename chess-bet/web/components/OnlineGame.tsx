@@ -16,6 +16,7 @@ import PausePage, { PauseButton } from "./PausePage";
 import { ReplayBar, useReplay } from "./Replay";
 import Captured from "./Captured";
 import AnalysisPanel from "./Analysis";
+import NftPanel from "./NftPanel";
 import { analyze } from "@/lib/material";
 import { playCastle, playCheck, playLose, playPromo, playVoice, playWin, useEndDelay } from "@/lib/sfx";
 import { playNeigh } from "@/lib/neigh";
@@ -281,6 +282,7 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
       {!st.over && <PauseButton left={pausesLeft} active={myTurn && started} onClick={() => send({ t: "pause" })} />}
       <Moves san={st.history} />
       {st.over && <div className="card"><AnalysisPanel san={st.history} replay={replay} me={myColor} /></div>}
+      {st.over && <NftPanel id={st.id} san={st.history} replay={replay} />}
 
       {st.chat && (
         <div className="card space-y-2">

@@ -6,6 +6,7 @@ import { useApp } from "@/lib/ctx";
 import Board from "./Board";
 import { ReplayBar, useReplay } from "./Replay";
 import AnalysisPanel from "./Analysis";
+import NftPanel from "./NftPanel";
 
 const EMPTY: string[] = [];
 
@@ -48,6 +49,7 @@ export default function GameReplay({ id, me, onClose }: { id: number; me: string
         {!g && !fail && <div className="skeleton h-40" />}
         {fail && <div className="card text-center text-sm opacity-80">{ru ? "Запись партии не найдена." : "Game record not found."}</div>}
         {g && <div className="card"><AnalysisPanel san={g.san} replay={replay} me={color} /></div>}
+        {g && color && <NftPanel id={id} san={g.san} replay={replay} />}
       </div>
     </div>
   );
