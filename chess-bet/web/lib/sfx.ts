@@ -31,6 +31,23 @@ function run(total: number, build: (c: AudioContext, t0: number) => void) {
   } catch { /* звук необязателен */ }
 }
 
+/** Общий выход: усилитель + компрессор, чтобы звуки были громкими и не трещали */
+let master: AudioNode | null = null;
+let masterCtx: AudioContext | null = null;
+function out(c: AudioContext): AudioNode {
+  if (master && masterCtx === c) return master;
+  const gain = c.createGain();
+  gain.gain.value = 2.6;
+  const comp = c.createDynamicsCompressor();
+  comp.threshold.value = -14;
+  comp.ratio.value = 6;
+  gain.connect(comp);
+  comp.connect(c.destination);
+  master = gain;
+  masterCtx = c;
+  return gain;
+}
+
 function note(c: AudioContext, t0: number, f0: number, f1: number, dur: number, type: OscillatorType, vol: number, vibHz = 0, vibDepth = 0) {
   const o = c.createOscillator();
   o.type = type;
@@ -51,7 +68,7 @@ function note(c: AudioContext, t0: number, f0: number, f1: number, dur: number, 
     l.stop(t0 + dur + 0.05);
   }
   o.connect(g);
-  g.connect(c.destination);
+  g.connect(out(c));
   o.start(t0);
   o.stop(t0 + dur + 0.05);
 }
@@ -65,7 +82,10 @@ export function playVoice(piece: string, mood: "cheer" | "scream" | "sad") {
   if (mood === "cheer") {
     run(0.5, (c, t) => { note(c, t, f, f * 1.5, 0.12, "triangle", 0.2); note(c, t + 0.13, f * 1.3, f * 1.8, 0.16, "triangle", 0.2); });
   } else if (mood === "scream") {
-    run(0.6, (c, t) => note(c, t, f * 1.9, f * 0.55, 0.5, "sawtooth", 0.14, 22, f * 0.08));
+    run(0.7, (c, t) => {
+      note(c, t, f * 1.9, f * 0.55, 0.55, "sawtooth", 0.3, 22, f * 0.08);
+      note(c, t, f * 3.8, f * 1.1, 0.5, "square", 0.12, 26, f * 0.1);
+    });
   } else {
     run(0.9, (c, t) => note(c, t, f, f * 0.55, 0.8, "triangle", 0.18, 5, f * 0.03));
   }
