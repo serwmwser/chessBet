@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useApp } from "@/lib/ctx";
-import { Color, roomLink, useRoom } from "@/lib/room";
+import { Color, removeMyRoom, roomLink, useRoom } from "@/lib/room";
 import AnalysisPanel from "./Analysis";
 import Board, { Clock, Moves } from "./Board";
 import { ReplayBar, useReplay } from "./Replay";
@@ -10,11 +10,15 @@ import Share from "./Share";
 const EMPTY: string[] = [];
 
 /** Бесплатная партия с другом по ссылке: без кошелька и без ставок. roomId пустой — создаём новую комнату. */
-export default function FriendGame({ roomId, color = "r", minutes = 60, onExit }: { roomId: string | null; color?: Color | "r"; minutes?: number; onExit: () => void }) {
+export default function FriendGame({ roomId, color = "r", minutes = 60, onExit, onRoom }: { roomId: string | null; color?: Color | "r"; minutes?: number; onExit: () => void; onRoom?: (id: string) => void }) {
   const { lang } = useApp();
   const ru = lang === "ru";
   const room = useRoom(roomId, color, minutes);
   const { st, seat, id } = room;
+  // номер комнаты запоминаем наверху: при возврате на эту страницу подключаемся к той же партии, а не создаём новую
+  useEffect(() => { if (id) onRoom?.(id); // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+  useEffect(() => { if (room.error === "room_not_found" && roomId) removeMyRoom(roomId); }, [room.error, roomId]);
   const replay = useReplay(st?.history ?? EMPTY);
   const [confirm, setConfirm] = useState(false);
   const [now, setNow] = useState(() => Date.now()); // для хода часов

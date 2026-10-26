@@ -32,6 +32,24 @@ const tokKey = (id: string) => "cb_room_" + id;
 const readTok = (id: string) => { try { return localStorage.getItem(tokKey(id)) || undefined; } catch { return undefined; } };
 const saveTok = (id: string, t: string) => { try { localStorage.setItem(tokKey(id), t); } catch { /* хранилище недоступно */ } };
 
+// Список моих бесплатных партий (в этом браузере): чтобы партия не пропадала при переходе по страницам
+export type MyRoom = { id: string; color: Color; at: number };
+const ROOMS_KEY = "cb_my_rooms";
+const ROOM_TTL = 6 * 3600_000; // как на сервере: комната живёт до 6 часов без ходов
+export function listMyRooms(): MyRoom[] {
+  try {
+    const a = JSON.parse(localStorage.getItem(ROOMS_KEY) || "[]") as MyRoom[];
+    return a.filter((r) => r && typeof r.id === "string" && Date.now() - r.at < ROOM_TTL);
+  } catch { return []; }
+}
+function writeRooms(a: MyRoom[]) { try { localStorage.setItem(ROOMS_KEY, JSON.stringify(a.slice(0, 20))); } catch { /* хранилище недоступно */ } }
+export function addMyRoom(id: string, color: Color) {
+  const a = listMyRooms().filter((r) => r.id !== id);
+  a.unshift({ id, color, at: Date.now() });
+  writeRooms(a);
+}
+export function removeMyRoom(id: string) { writeRooms(listMyRooms().filter((r) => r.id !== id)); }
+
 /** Ссылка-приглашение в комнату */
 export const roomLink = (id: string) => `${location.origin}${process.env.NEXT_PUBLIC_BASE_PATH || ""}/?room=${id}`;
 
@@ -61,7 +79,7 @@ export function useRoom(roomId: string | null, create: Color | "r" = "r", minute
         let m: any;
         try { m = JSON.parse(String(e.data)); } catch { return; }
         if (m.t === "state") { setSt(m as RoomState); setAt(Date.now()); setError(null); }
-        else if (m.t === "seat") { cur.current = m.id; setId(m.id); setSeat(m.color); if (m.token) saveTok(m.id, m.token); }
+        else if (m.t === "seat") { cur.current = m.id; setId(m.id); setSeat(m.color); if (m.token) saveTok(m.id, m.token); if (m.color === "w" || m.color === "b") addMyRoom(m.id, m.color); }
         else if (m.t === "error") setError(String(m.message));
       };
       s.onclose = () => {

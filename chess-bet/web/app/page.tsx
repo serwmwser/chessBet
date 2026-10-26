@@ -8,6 +8,7 @@ import FriendCard from "@/components/FriendCard";
 import LobbyLinks from "@/components/LobbyLinks";
 import Roadmap from "@/components/Roadmap";
 import FriendGame from "@/components/FriendGame";
+import MyFriendRooms from "@/components/MyFriendRooms";
 import type { Color } from "@/lib/room";
 import Header from "@/components/Header";
 import Earn from "@/components/Earn";
@@ -63,6 +64,7 @@ export default function Home() {
   const addr = account?.address.toLowerCase();
   const botActive = useBotActive();
   const cartActive = cartoonBot.useBotActive();
+  const openRoom = (id: string) => { setFriend((f) => ({ room: id, color: "r", minutes: 60, n: (f?.n ?? 0) + 1 })); setTab("friend"); }; // вернуться в свою бесплатную партию
 
   useEffect(() => { captureRef(); }, []);
   useEffect(() => { if (account) void registerRef(account as never); }, [account]);
@@ -121,11 +123,11 @@ export default function Home() {
           </div>
         )}
         {inviteId !== null && <Invite id={inviteId} onClose={() => setInviteId(null)} />}
-        {tab === "lobby" && <div className="space-y-4"><Hero onBot={() => setTab("bot")} onEarn={() => setTab("earn")} /><FriendCard onStart={(c, mins) => { setFriend((f) => ({ room: null, color: c, minutes: mins, n: (f?.n ?? 0) + 1 })); setTab("friend"); }} /><RefBanner onEarn={() => setTab("earn")} /><LobbyLinks onArena={() => { setCartMode("arena"); setTab("cartoon"); }} /><Lobby /></div>}
+        {tab === "lobby" && <div className="space-y-4"><Hero onBot={() => setTab("bot")} onEarn={() => setTab("earn")} /><FriendCard onStart={(c, mins) => { setFriend((f) => ({ room: null, color: c, minutes: mins, n: (f?.n ?? 0) + 1 })); setTab("friend"); }} /><MyFriendRooms onOpen={openRoom} /><RefBanner onEarn={() => setTab("earn")} /><LobbyLinks onArena={() => { setCartMode("arena"); setTab("cartoon"); }} /><Lobby /></div>}
         {tab === "play" && (gid !== null
           ? <OnlineGame id={gid} onExit={() => { setGid(null); setTab("lobby"); }} />
           : openCount ? <WaitingSplash /> : <div className="card text-center space-y-1 py-10"><div className="text-4xl">♞</div><div className="font-medium">{t("noActive")}</div></div>)}
-        {tab === "friend" && friend && <FriendGame key={friend.n} roomId={friend.room} color={friend.color} minutes={friend.minutes} onExit={() => { setFriend(null); setTab("lobby"); }} />}
+        {tab === "friend" && friend && <FriendGame key={friend.n} roomId={friend.room} color={friend.color} minutes={friend.minutes} onRoom={(id) => setFriend((f) => (f && f.room !== id ? { ...f, room: id } : f))} onExit={() => { setFriend(null); setTab("lobby"); }} />}
         {tab === "bot" && <BotGame />}
         {tab === "cartoon" && (
           <div className="space-y-3">
@@ -143,7 +145,7 @@ export default function Home() {
             <Roadmap open />
           </div>
         )}
-        {tab === "profile" && <Profile onOpenGame={openGame} />}
+        {tab === "profile" && <Profile onOpenGame={openGame} onOpenRoom={openRoom} />}
         <p className="text-center text-xs opacity-50 mt-8">18+ · <a className="underline" href={TERMS_URL}>Terms</a> · <a className="underline" href={(process.env.NEXT_PUBLIC_BASE_PATH || "") + "/roadmap/"}>{ru ? "Дорожная карта" : "Roadmap"}</a> · Play responsibly</p>
       </main>
       <BottomNav tab={tab} setTab={setTab} badge={gid !== null} botBadge={botActive} cartBadge={cartActive} />
