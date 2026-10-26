@@ -4,6 +4,9 @@ import { useActiveAccount } from "thirdweb/react";
 import BotGame from "@/components/BotGame";
 import BottomNav, { Tab } from "@/components/BottomNav";
 import RefBanner from "@/components/RefBanner";
+import FriendCard from "@/components/FriendCard";
+import FriendGame from "@/components/FriendGame";
+import type { Color } from "@/lib/room";
 import Header from "@/components/Header";
 import Earn from "@/components/Earn";
 import FaucetBar from "@/components/FaucetBar";
@@ -54,6 +57,7 @@ export default function Home() {
   const [openCount, setOpenCount] = useState(0);
   const [cartMode, setCartMode] = useState<"bot" | "arena">("bot");
   const [inviteId, setInviteId] = useState<number | null>(null);
+  const [friend, setFriend] = useState<{ room: string | null; color: Color | "r"; n: number } | null>(null); // бесплатная партия с другом
   const addr = account?.address.toLowerCase();
   const botActive = useBotActive();
   const cartActive = cartoonBot.useBotActive();
@@ -65,6 +69,8 @@ export default function Home() {
   useEffect(() => {
     const p = new URLSearchParams(location.search).get("game");
     if (p && /^\d+$/.test(p)) setInviteId(Number(p));
+    const r = new URLSearchParams(location.search).get("room"); // ссылка в бесплатную комнату: /?room=ID
+    if (r && /^[0-9a-f]{10}$/.test(r)) { setFriend({ room: r, color: "r", n: 1 }); setTab("friend"); }
   }, []);
 
   // Следим за своими играми: как только соперник принял вызов, переключаемся на доску
@@ -113,10 +119,11 @@ export default function Home() {
           </div>
         )}
         {inviteId !== null && <Invite id={inviteId} onClose={() => setInviteId(null)} />}
-        {tab === "lobby" && <div className="space-y-4"><Hero onBot={() => setTab("bot")} onEarn={() => setTab("earn")} /><RefBanner onEarn={() => setTab("earn")} /><Lobby /></div>}
+        {tab === "lobby" && <div className="space-y-4"><Hero onBot={() => setTab("bot")} onEarn={() => setTab("earn")} /><FriendCard onStart={(c) => { setFriend((f) => ({ room: null, color: c, n: (f?.n ?? 0) + 1 })); setTab("friend"); }} /><RefBanner onEarn={() => setTab("earn")} /><Lobby /></div>}
         {tab === "play" && (gid !== null
           ? <OnlineGame id={gid} onExit={() => { setGid(null); setTab("lobby"); }} />
           : openCount ? <WaitingSplash /> : <div className="card text-center space-y-1 py-10"><div className="text-4xl">♞</div><div className="font-medium">{t("noActive")}</div></div>)}
+        {tab === "friend" && friend && <FriendGame key={friend.n} roomId={friend.room} color={friend.color} onExit={() => { setFriend(null); setTab("lobby"); }} />}
         {tab === "bot" && <BotGame />}
         {tab === "cartoon" && (
           <div className="space-y-3">

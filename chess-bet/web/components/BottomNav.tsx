@@ -2,7 +2,7 @@
 import { useApp } from "@/lib/ctx";
 import { Key } from "@/lib/i18n";
 
-export type Tab = "lobby" | "play" | "bot" | "cartoon" | "profile" | "earn";
+export type Tab = "lobby" | "play" | "bot" | "cartoon" | "profile" | "earn" | "friend";
 const TABS: { id: Tab; key: Key; icon: string }[] = [
   { id: "lobby", key: "lobby", icon: "♜" },
   { id: "play", key: "play", icon: "♞" },
