@@ -18,12 +18,17 @@ type Room = {
   drawOffer: Color | null;
   socks: Map<WebSocket, Who>;
   touched: number;
+  limit: number; // время на партию каждому игроку, мс
+  clock: { w: number; b: number }; // остаток времени на момент last
+  last: number; // когда начался текущий ход
 };
 
 const MAX_ROOMS = 3000;
 const IDLE_MS = 6 * 3600_000; // комната без действий живёт 6 часов
 const DONE_MS = 3600_000; // оконченная партия остаётся ещё час
 const CREATE_PER_HOUR = 20; // новых комнат в час с одного адреса
+const DEFAULT_MIN = 60; // время на партию по умолчанию, минут (каждому игроку)
+const MAX_MIN = 180;
 
 export const roomsWss = new WebSocketServer({ noServer: true, maxPayload: 2048 });
 const rooms = new Map<string, Room>();
@@ -35,6 +40,13 @@ const ipOf = (req: http.IncomingMessage) => {
   return f || req.socket.remoteAddress || "?";
 };
 
+/** Часы идут после первого хода белых, только у того, чей ход */
+const running = (r: Room) => !r.over && r.chess.history().length > 0;
+function remaining(r: Room, now = Date.now()) {
+  const used = running(r) ? now - r.last : 0;
+  const t = r.chess.turn();
+  return { w: Math.max(0, r.clock.w - (t === "w" ? used : 0)), b: Math.max(0, r.clock.b - (t === "b" ? used : 0)) };
+}
 function state(r: Room) {
   const h = r.chess.history({ verbose: true });
   const lm = h[h.length - 1];
@@ -44,6 +56,7 @@ function state(r: Room) {
     turn: r.chess.turn(), over: r.over, reason: r.reason, winner: r.winner, drawOffer: r.drawOffer,
     seats: { w: !!r.tokens.w, b: !!r.tokens.b }, online: { w: on("w"), b: on("b") },
     watchers: [...r.socks.values()].filter((x) => x === "s").length,
+    limit: r.limit, clock: remaining(r), running: running(r),
   };
 }
 function broadcast(r: Room) {
@@ -51,6 +64,7 @@ function broadcast(r: Room) {
   for (const ws of r.socks.keys()) if (ws.readyState === WebSocket.OPEN) ws.send(s);
 }
 function finish(r: Room, winner: Color | null, reason: string) {
+  if (running(r)) { const t = r.chess.turn(); r.clock[t] = Math.max(0, r.clock[t] - (Date.now() - r.last)); } // замораживаем часы
   r.over = true; r.winner = winner; r.reason = reason; r.drawOffer = null;
 }
 /** Конец партии по правилам шахмат (мат, пат, нехватка материала, повтор, 50 ходов) */
@@ -62,6 +76,16 @@ function checkEnd(r: Room) {
   if (c.isThreefoldRepetition()) return finish(r, null, "repetition");
   if (c.isDraw()) return finish(r, null, "fifty");
 }
+
+// раз в секунду проверяем, не кончилось ли у кого-то время
+setInterval(() => {
+  const now = Date.now();
+  for (const r of rooms.values()) {
+    if (!running(r)) continue;
+    const t = r.chess.turn();
+    if (remaining(r, now)[t] <= 0) { finish(r, t === "w" ? "b" : "w", "timeout"); broadcast(r); }
+  }
+}, 1000).unref();
 
 setInterval(() => {
   const now = Date.now();
@@ -99,7 +123,9 @@ roomsWss.on("connection", (ws: WebSocket, req: http.IncomingMessage) => {
       if (list.length >= CREATE_PER_HOUR) return err("too_many_rooms");
       list.push(now); created.set(ip, list);
       const color: Color = m.color === "w" || m.color === "b" ? m.color : Math.random() < 0.5 ? "w" : "b";
-      const r: Room = { id: crypto.randomBytes(5).toString("hex"), tokens: {}, chess: new Chess(), over: false, reason: null, winner: null, drawOffer: null, socks: new Map(), touched: now };
+      const mins = Math.min(MAX_MIN, Math.max(1, Math.round(Number(m.minutes) || DEFAULT_MIN)));
+      const r: Room = { id: crypto.randomBytes(5).toString("hex"), tokens: {}, chess: new Chess(), over: false, reason: null, winner: null, drawOffer: null, socks: new Map(), touched: now,
+        limit: mins * 60_000, clock: { w: mins * 60_000, b: mins * 60_000 }, last: now };
       const token = newToken();
       r.tokens[color] = token;
       rooms.set(r.id, r);
@@ -126,9 +152,13 @@ roomsWss.on("connection", (ws: WebSocket, req: http.IncomingMessage) => {
     if (m.t === "move") {
       if (r.chess.turn() !== who) return err("not_your_turn");
       if (!r.tokens.w || !r.tokens.b) return err("wait_opponent");
+      const first = r.chess.history().length === 0; // первый ход белых время не расходует
+      if (!first && r.clock[who] - (now - r.last) <= 0) { finish(r, who === "w" ? "b" : "w", "timeout"); return broadcast(r); }
       try {
         r.chess.move({ from: String(m.from), to: String(m.to), promotion: m.promotion ? String(m.promotion) : undefined });
       } catch { return err("illegal_move"); }
+      if (!first) r.clock[who] -= now - r.last;
+      r.last = now;
       r.drawOffer = null;
       checkEnd(r);
       return broadcast(r);
