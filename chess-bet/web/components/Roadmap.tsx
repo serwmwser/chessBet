@@ -78,12 +78,12 @@ const EN: Stage[] = [
 ];
 
 /** Дорожная карта приложения до III квартала 2027 для сообщества игроков */
-export default function Roadmap() {
+export default function Roadmap({ open }: { open?: boolean } = {}) {
   const { lang } = useApp();
   const ru = lang === "ru";
   const stages = ru ? RU : EN;
   return (
-    <details className="card group">
+    <details className="card group" open={open}>
       <summary className="cursor-pointer list-none flex items-center justify-between text-lg font-bold">
         <span>🗺 {ru ? "Дорожная карта" : "Roadmap"}</span>
         <span className="opacity-50 transition group-open:rotate-180" aria-hidden>▾</span>
