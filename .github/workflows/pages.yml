@@ -26,13 +26,12 @@ jobs:
         working-directory: chess-bet/web
         env:
           GITHUB_PAGES: "1"
-          NEXT_PUBLIC_BASE_PATH: /chessBet
           NEXT_PUBLIC_THIRDWEB_CLIENT_ID: fc1b95eb7453e110e8e2007b00301f0e
           NEXT_PUBLIC_CHAIN_ID: "137"
           NEXT_PUBLIC_RPC_URL: "https://polygon-bor-rpc.publicnode.com"
           NEXT_PUBLIC_ESCROW: "0xaf8714656261dc770A41857706FF4b2f495e92e9"
-          NEXT_PUBLIC_API_URL: "https://84-200-80-66.sslip.io"
-          NEXT_PUBLIC_WS_URL: "wss://84-200-80-66.sslip.io/ws"
+          NEXT_PUBLIC_API_URL: "https://api.chessbet.lol"
+          NEXT_PUBLIC_WS_URL: "wss://api.chessbet.lol/ws"
           NEXT_PUBLIC_BET_MAX_USDC: "500"
           NEXT_PUBLIC_REFERRAL: "1"
       - uses: actions/upload-pages-artifact@v3
