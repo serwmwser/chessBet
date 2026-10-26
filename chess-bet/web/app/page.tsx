@@ -6,6 +6,7 @@ import BottomNav, { Tab } from "@/components/BottomNav";
 import RefBanner from "@/components/RefBanner";
 import FriendCard from "@/components/FriendCard";
 import LobbyLinks from "@/components/LobbyLinks";
+import Roadmap from "@/components/Roadmap";
 import FriendGame from "@/components/FriendGame";
 import type { Color } from "@/lib/room";
 import Header from "@/components/Header";
@@ -120,7 +121,7 @@ export default function Home() {
           </div>
         )}
         {inviteId !== null && <Invite id={inviteId} onClose={() => setInviteId(null)} />}
-        {tab === "lobby" && <div className="space-y-4"><Hero onBot={() => setTab("bot")} onEarn={() => setTab("earn")} /><LobbyLinks onArena={() => { setCartMode("arena"); setTab("cartoon"); }} /><FriendCard onStart={(c) => { setFriend((f) => ({ room: null, color: c, n: (f?.n ?? 0) + 1 })); setTab("friend"); }} /><RefBanner onEarn={() => setTab("earn")} /><Lobby /></div>}
+        {tab === "lobby" && <div className="space-y-4"><Hero onBot={() => setTab("bot")} onEarn={() => setTab("earn")} /><FriendCard onStart={(c) => { setFriend((f) => ({ room: null, color: c, n: (f?.n ?? 0) + 1 })); setTab("friend"); }} /><RefBanner onEarn={() => setTab("earn")} /><LobbyLinks onArena={() => { setCartMode("arena"); setTab("cartoon"); }} /><Lobby /></div>}
         {tab === "play" && (gid !== null
           ? <OnlineGame id={gid} onExit={() => { setGid(null); setTab("lobby"); }} />
           : openCount ? <WaitingSplash /> : <div className="card text-center space-y-1 py-10"><div className="text-4xl">♞</div><div className="font-medium">{t("noActive")}</div></div>)}
@@ -136,6 +137,12 @@ export default function Home() {
           </div>
         )}
         {tab === "earn" && <Earn />}
+        {tab === "roadmap" && (
+          <div className="space-y-3">
+            <h1 className="text-xl font-bold">🗺 {ru ? "Дорожная карта" : "Roadmap"}</h1>
+            <Roadmap open />
+          </div>
+        )}
         {tab === "profile" && <Profile onOpenGame={openGame} />}
         <p className="text-center text-xs opacity-50 mt-8">18+ · <a className="underline" href={TERMS_URL}>Terms</a> · <a className="underline" href={(process.env.NEXT_PUBLIC_BASE_PATH || "") + "/roadmap/"}>{ru ? "Дорожная карта" : "Roadmap"}</a> · Play responsibly</p>
       </main>

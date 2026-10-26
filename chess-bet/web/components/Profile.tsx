@@ -11,7 +11,6 @@ import Avatar from "./Avatar";
 import GameReplay from "./GameReplay";
 import BuyCrypto from "./BuyCrypto";
 import HowTo from "./HowTo";
-import Roadmap from "./Roadmap";
 import MyGames from "./MyGames";
 import ProfileEditor from "./ProfileEditor";
 import Share from "./Share";
@@ -80,7 +79,6 @@ export default function Profile({ onOpenGame }: { onOpenGame: (id: number) => vo
           )}
 
           <HowTo />
-          <Roadmap />
           <BuyCrypto />
 
           {FAUCET_ENABLED && (
