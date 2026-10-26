@@ -15,8 +15,20 @@ export const VOICE_PACKS: VoicePack[] = [
 ];
 export const packOf = (id: string): VoicePack => VOICE_PACKS.find((p) => p.id === id) ?? VOICE_PACKS[0];
 
-export type CartoonPrefs = { pawnW: number; pawnB: number; pack: string };
-export const DEFAULT_PREFS: CartoonPrefs = { pawnW: 1, pawnB: 3, pack: "std" };
+// Яркие доски: только для мультяшных фигур (обычные доски не меняются)
+export type CBoard = { id: string; ru: string; en: string; light: string; dark: string };
+export const CARTOON_BOARDS: CBoard[] = [
+  { id: "lime", ru: "Лайм", en: "Lime", light: "#F2FBD9", dark: "#58CC02" },
+  { id: "sky", ru: "Небо", en: "Sky", light: "#E6F7FF", dark: "#1CB0F6" },
+  { id: "candy", ru: "Конфета", en: "Candy", light: "#FFF0F8", dark: "#FF86D0" },
+  { id: "sun", ru: "Солнце", en: "Sun", light: "#FFF4CC", dark: "#FF9600" },
+  { id: "grape", ru: "Виноград", en: "Grape", light: "#F4E8FF", dark: "#CE82FF" },
+  { id: "mint", ru: "Мята", en: "Mint", light: "#E8FFF6", dark: "#2FCE8C" },
+];
+export const cboardOf = (id: string): CBoard => CARTOON_BOARDS.find((b) => b.id === id) ?? CARTOON_BOARDS[0];
+
+export type CartoonPrefs = { pawnW: number; pawnB: number; pack: string; cboard: string };
+export const DEFAULT_PREFS: CartoonPrefs = { pawnW: 1, pawnB: 3, pack: "std", cboard: "lime" };
 const KEY = "cb_cprefs";
 const EVT = "cb-cprefs";
 
@@ -24,7 +36,7 @@ export function readPrefs(): CartoonPrefs {
   try {
     const o = JSON.parse(localStorage.getItem(KEY) || "{}");
     const n = (v: unknown, d: number) => (typeof v === "number" && v >= 0 && v < PAWN_NAMES.length ? v : d);
-    return { pawnW: n(o.pawnW, DEFAULT_PREFS.pawnW), pawnB: n(o.pawnB, DEFAULT_PREFS.pawnB), pack: packOf(String(o.pack)).id };
+    return { pawnW: n(o.pawnW, DEFAULT_PREFS.pawnW), pawnB: n(o.pawnB, DEFAULT_PREFS.pawnB), pack: packOf(String(o.pack)).id, cboard: cboardOf(String(o.cboard)).id };
   } catch { return DEFAULT_PREFS; }
 }
 

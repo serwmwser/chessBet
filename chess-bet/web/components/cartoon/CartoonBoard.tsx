@@ -1,6 +1,7 @@
 "use client";
 import { ComponentProps, ReactElement, useMemo } from "react";
 import Board from "../Board";
+import { cboardOf, useCartoonPrefs } from "@/lib/cartoonPrefs";
 import Piece, { PieceType } from "./Pieces";
 import { CARTOON_CSS, type Mood } from "./Character";
 
@@ -31,13 +32,15 @@ function build(pawnW: number, pawnB: number, moods: Record<string, Mood>, hop: H
 
 /** Доска с мультяшными фигурами: вся логика (ходы, подсветка, превращение, звук) та же, что у обычной доски. */
 export default function CartoonBoard({ pawnW = 1, pawnB = 0, moods, hop = null, ...rest }: Omit<BoardProps, "pieces"> & { pawnW?: number; pawnB?: number; moods?: Record<string, Mood>; hop?: Hop }) {
+  const [prefs] = useCartoonPrefs();
+  const cb = cboardOf(prefs.cboard);
   const key = JSON.stringify(moods ?? {}) + "|" + (hop ? hop.square + hop.mood : "");
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const pieces = useMemo(() => build(pawnW, pawnB, moods ?? {}, hop), [pawnW, pawnB, key]);
   return (
     <>
       <style>{CARTOON_CSS}</style>
-      <Board {...rest} pieces={pieces} />
+      <Board {...rest} pieces={pieces} colors={[cb.light, cb.dark]} />
     </>
   );
 }
