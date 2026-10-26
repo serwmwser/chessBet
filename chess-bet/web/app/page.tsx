@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useActiveAccount } from "thirdweb/react";
 import BotGame from "@/components/BotGame";
 import BottomNav, { Tab } from "@/components/BottomNav";
+import RefBanner from "@/components/RefBanner";
 import Header from "@/components/Header";
 import Earn from "@/components/Earn";
 import FaucetBar from "@/components/FaucetBar";
@@ -112,7 +113,7 @@ export default function Home() {
           </div>
         )}
         {inviteId !== null && <Invite id={inviteId} onClose={() => setInviteId(null)} />}
-        {tab === "lobby" && <div className="space-y-4"><Hero onBot={() => setTab("bot")} onEarn={() => setTab("earn")} /><Lobby /></div>}
+        {tab === "lobby" && <div className="space-y-4"><Hero onBot={() => setTab("bot")} onEarn={() => setTab("earn")} /><RefBanner onEarn={() => setTab("earn")} /><Lobby /></div>}
         {tab === "play" && (gid !== null
           ? <OnlineGame id={gid} onExit={() => { setGid(null); setTab("lobby"); }} />
           : openCount ? <WaitingSplash /> : <div className="card text-center space-y-1 py-10"><div className="text-4xl">♞</div><div className="font-medium">{t("noActive")}</div></div>)}
