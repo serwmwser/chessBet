@@ -4,10 +4,12 @@ import { useApp } from "@/lib/ctx";
 import type { Color } from "@/lib/room";
 
 /** Кнопка на главной: бесплатная партия с другом по ссылке (без кошелька и ставок) */
-export default function FriendCard({ onStart }: { onStart: (c: Color | "r") => void }) {
+export default function FriendCard({ onStart }: { onStart: (c: Color | "r", minutes: number) => void }) {
   const { lang } = useApp();
   const ru = lang === "ru";
   const [c, setC] = useState<Color | "r">("r");
+  const [mins, setMins] = useState(60); // время на партию каждому игроку, по умолчанию 1 час
+  const times: [number, string][] = [[10, ru ? "10 мин" : "10 min"], [30, ru ? "30 мин" : "30 min"], [60, ru ? "1 час" : "1 hour"], [180, ru ? "3 часа" : "3 hours"]];
   const opts: [Color | "r", string][] = [["w", ru ? "Белые" : "White"], ["b", ru ? "Чёрные" : "Black"], ["r", ru ? "Случайно" : "Random"]];
   return (
     <section className="card space-y-3">
@@ -22,7 +24,15 @@ export default function FriendCard({ onStart }: { onStart: (c: Color | "r") => v
           <button key={k} type="button" className={"chip flex-1 justify-center " + (c === k ? "chip-on" : "")} onClick={() => setC(k)}>{l}</button>
         ))}
       </div>
-      <button type="button" className="btn btn-primary w-full" onClick={() => onStart(c)}>{ru ? "Создать партию и получить ссылку" : "Create a game and get the link"}</button>
+      <div>
+        <div className="text-sm opacity-70 mb-1">{ru ? "Время на партию каждому игроку" : "Time per player for the game"}</div>
+        <div className="flex gap-2">
+          {times.map(([k, l]) => (
+            <button key={k} type="button" className={"chip flex-1 justify-center " + (mins === k ? "chip-on" : "")} onClick={() => setMins(k)}>{l}</button>
+          ))}
+        </div>
+      </div>
+      <button type="button" className="btn btn-primary w-full" onClick={() => onStart(c, mins)}>{ru ? "Создать партию и получить ссылку" : "Create a game and get the link"}</button>
     </section>
   );
 }

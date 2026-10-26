@@ -3,20 +3,22 @@ import { useEffect, useState } from "react";
 import { useApp } from "@/lib/ctx";
 import { Color, roomLink, useRoom } from "@/lib/room";
 import AnalysisPanel from "./Analysis";
-import Board, { Moves } from "./Board";
+import Board, { Clock, Moves } from "./Board";
 import { ReplayBar, useReplay } from "./Replay";
 import Share from "./Share";
 
 const EMPTY: string[] = [];
 
 /** Бесплатная партия с другом по ссылке: без кошелька и без ставок. roomId пустой — создаём новую комнату. */
-export default function FriendGame({ roomId, color = "r", onExit }: { roomId: string | null; color?: Color | "r"; onExit: () => void }) {
+export default function FriendGame({ roomId, color = "r", minutes = 60, onExit }: { roomId: string | null; color?: Color | "r"; minutes?: number; onExit: () => void }) {
   const { lang } = useApp();
   const ru = lang === "ru";
-  const room = useRoom(roomId, color);
+  const room = useRoom(roomId, color, minutes);
   const { st, seat, id } = room;
   const replay = useReplay(st?.history ?? EMPTY);
   const [confirm, setConfirm] = useState(false);
+  const [now, setNow] = useState(() => Date.now()); // для хода часов
+  useEffect(() => { const i = setInterval(() => setNow(Date.now()), 250); return () => clearInterval(i); }, []);
 
   // ссылка в адресной строке: её можно скопировать, а при обновлении страницы партия сохранится
   useEffect(() => {
@@ -52,16 +54,22 @@ export default function FriendGame({ roomId, color = "r", onExit }: { roomId: st
   const REASON: Record<string, [string, string]> = {
     checkmate: ["Мат", "Checkmate"], resign: ["Соперник сдался", "Resignation"], stalemate: ["Пат: ничья", "Stalemate: draw"],
     insufficient: ["Не хватает фигур для мата: ничья", "Insufficient material: draw"], repetition: ["Троекратное повторение: ничья", "Threefold repetition: draw"],
-    fifty: ["Правило 50 ходов: ничья", "Fifty-move rule: draw"], agreement: ["Ничья по соглашению", "Draw by agreement"],
+    fifty: ["Правило 50 ходов: ничья", "Fifty-move rule: draw"], timeout: ["Время вышло", "Time is up"], agreement: ["Ничья по соглашению", "Draw by agreement"],
   };
   const reasonText = st.reason && REASON[st.reason] ? REASON[st.reason][ru ? 0 : 1] : "";
   const oppOffered = player && st.drawOffer !== null && st.drawOffer !== seat;
   const iOffered = player && st.drawOffer === seat;
   const link = roomLink(st.id);
+  const rem = (c: Color) => Math.max(0, st.clock[c] - (st.running && st.turn === c ? now - room.at : 0)); // остаток времени с учётом хода часов
+  const topC: Color = seat === "b" ? "w" : "b";
+  const botC: Color = seat === "b" ? "b" : "w";
+  const clk = (c: Color) => <Clock ms={rem(c)} active={st.running && !st.over && st.turn === c} label={names(c) + (player && c === seat ? (ru ? " (вы)" : " (you)") : "")} />;
+  const lim = Math.round(st.limit / 60000);
+  const limText = lim >= 60 ? (lim % 60 === 0 ? lim / 60 + (ru ? " ч" : " h") : lim + (ru ? " мин" : " min")) : lim + (ru ? " мин" : " min");
 
   return (
     <div className="space-y-3">
-      <div className="text-center text-xs font-bold text-emerald-500">🤝 {ru ? "Партия с другом: бесплатно, без ставок" : "Game with a friend: free, no stakes"}</div>
+      <div className="text-center text-xs font-bold text-emerald-500">🤝 {ru ? "Партия с другом: бесплатно, без ставок" : "Game with a friend: free, no stakes"} · ⏱ {limText}</div>
 
       {player && !full && !st.over && (
         <div className="card space-y-3" style={{ border: "1px solid #d4a017" }}>
@@ -86,6 +94,7 @@ export default function FriendGame({ roomId, color = "r", onExit }: { roomId: st
         </span>
       </div>
 
+      {clk(topC)}
       <div className="relative">
         <Board
           fen={replay.fen}
@@ -97,6 +106,7 @@ export default function FriendGame({ roomId, color = "r", onExit }: { roomId: st
         />
       </div>
 
+      {clk(botC)}
       <ReplayBar r={replay} auto={st.over} />
       <Moves san={st.history} />
 
