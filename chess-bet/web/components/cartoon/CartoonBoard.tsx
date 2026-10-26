@@ -3,6 +3,7 @@ import { ComponentProps, ReactElement, useMemo } from "react";
 import Board from "../Board";
 import { cboardOf, useCartoonPrefs } from "@/lib/cartoonPrefs";
 import Piece, { PieceType } from "./Pieces";
+import Knight from "./Knights";
 import { CARTOON_CSS, type Mood } from "./Character";
 
 type BoardProps = ComponentProps<typeof Board>;
@@ -10,7 +11,7 @@ type PieceFn = (a: { squareWidth: number; square?: string }) => ReactElement;
 type Hop = { square: string; mood: Mood } | null;
 
 /** Набор для доски: wP, bN и т.д. pawnW / pawnB выбирают персонажа-пешку. moods: настроение королей (wK, bK). hop: фигура на этой клетке реагирует (подпрыгивает), остальные такого же типа не затрагиваются. */
-function build(pawnW: number, pawnB: number, moods: Record<string, Mood>, hop: Hop): BoardProps["pieces"] {
+function build(pawnW: number, pawnB: number, moods: Record<string, Mood>, hop: Hop, knights: boolean): BoardProps["pieces"] {
   const out: Record<string, PieceFn> = {};
   for (const side of ["w", "b"] as const) {
     for (const t of ["P", "N", "B", "R", "Q", "K"]) {
@@ -21,7 +22,9 @@ function build(pawnW: number, pawnB: number, moods: Record<string, Mood>, hop: H
         const animate: boolean | "blink" = t === "K" || mood !== "idle" ? true : "blink";
         return (
           <div style={{ width: squareWidth, height: squareWidth, display: "flex", alignItems: "center", justifyContent: "center", overflow: "visible" }}>
-            <Piece type={type} side={side} size={squareWidth * 0.8} variant={variant} animate={animate} mood={mood} />
+            {knights
+              ? <Knight type={type} side={side} size={squareWidth * 0.8} animate={animate} mood={mood} />
+              : <Piece type={type} side={side} size={squareWidth * 0.8} variant={variant} animate={animate} mood={mood} />}
           </div>
         );
       };
@@ -36,7 +39,8 @@ export default function CartoonBoard({ pawnW = 1, pawnB = 0, moods, hop = null, 
   const cb = cboardOf(prefs.cboard);
   const key = JSON.stringify(moods ?? {}) + "|" + (hop ? hop.square + hop.mood : "");
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const pieces = useMemo(() => build(pawnW, pawnB, moods ?? {}, hop), [pawnW, pawnB, key]);
+  const knights = prefs.team === "knights";
+  const pieces = useMemo(() => build(pawnW, pawnB, moods ?? {}, hop, knights), [pawnW, pawnB, key, knights]);
   return (
     <>
       <style>{CARTOON_CSS}</style>

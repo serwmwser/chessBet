@@ -23,6 +23,13 @@ export default function CartoonSettings() {
       <div className="mt-3 space-y-3 text-sm">
         <p className="text-xs opacity-70">{ru ? "Это видите только вы: у соперника свои настройки." : "Only you see this: your opponent has their own settings."}</p>
         <div>
+          <div className="opacity-70 mb-1">{ru ? "Набор фигур" : "Piece set"}</div>
+          <div className="flex gap-2 flex-wrap">
+            <button type="button" className={"chip " + (p.team === "clay" ? "chip-on" : "")} onClick={() => set({ team: "clay" })}>{ru ? "Мультяшные" : "Cartoon"}</button>
+            <button type="button" className={"chip " + (p.team === "knights" ? "chip-on" : "")} onClick={() => set({ team: "knights" })}>⚔️ {ru ? "Рыцари" : "Knights"}</button>
+          </div>
+        </div>
+        <div>
           <div className="opacity-70 mb-1">{ru ? "Доска" : "Board"}</div>
           <div className="flex gap-2 flex-wrap">
             {CARTOON_BOARDS.map((b) => (
@@ -33,8 +40,8 @@ export default function CartoonSettings() {
             ))}
           </div>
         </div>
-        <div><div className="opacity-70 mb-1">{ru ? "Пешки белых" : "White pawns"}</div>{chips(p.pawnW, (i) => set({ pawnW: i }))}</div>
-        <div><div className="opacity-70 mb-1">{ru ? "Пешки чёрных" : "Black pawns"}</div>{chips(p.pawnB, (i) => set({ pawnB: i }))}</div>
+        {p.team === "clay" && <div><div className="opacity-70 mb-1">{ru ? "Пешки белых" : "White pawns"}</div>{chips(p.pawnW, (i) => set({ pawnW: i }))}</div>}
+        {p.team === "clay" && <div><div className="opacity-70 mb-1">{ru ? "Пешки чёрных" : "Black pawns"}</div>{chips(p.pawnB, (i) => set({ pawnB: i }))}</div>}
         <div>
           <div className="opacity-70 mb-1">{ru ? "Голос фигур" : "Voice of the pieces"}</div>
           <div className="flex gap-2 flex-wrap">
