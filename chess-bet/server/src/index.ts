@@ -6,6 +6,7 @@ import { WebSocketServer, WebSocket } from "ws";
 import { Chess } from "chess.js";
 import { ethers } from "ethers";
 import { createSession, checkSession } from "./session.js";
+import { roomsWss } from "./rooms.js";
 
 const {
   RPC_URL,
@@ -583,7 +584,8 @@ const server = http.createServer((req, res) => {
 // ---------- WebSocket ----------
 const wss = new WebSocketServer({ noServer: true });
 server.on("upgrade", (req, socket, head) => {
-  if (req.url !== "/ws" || geoBlocked(req) || !originOk(req.headers.origin as string | undefined)) { socket.destroy(); return; }
+  if ((req.url !== "/ws" && req.url !== "/room") || geoBlocked(req) || !originOk(req.headers.origin as string | undefined)) { socket.destroy(); return; }
+  if (req.url === "/room") { roomsWss.handleUpgrade(req, socket, head, (ws) => roomsWss.emit("connection", ws, req)); return; } // бесплатные комнаты с другом
   wss.handleUpgrade(req, socket, head, (ws) => wss.emit("connection", ws));
 });
 
