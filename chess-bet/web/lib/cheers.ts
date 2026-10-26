@@ -58,14 +58,14 @@ export function cheerFor(m: Move, lang: "ru" | "en"): string | null {
 }
 
 /** Озвучка голосом устройства; если подходящего голоса нет, остаётся текст на экране. */
-export function speak(text: string, lang: string, pitch = 1.2) {
+export function speak(text: string, lang: string, pitch = 1.2, rate = 1.05) {
   try {
     const ss = window.speechSynthesis;
     if (!ss) return;
     ss.cancel();
     const u = new SpeechSynthesisUtterance(text);
     u.lang = lang;
-    u.rate = 1.05;
+    u.rate = rate;
     u.pitch = pitch;
     const v = ss.getVoices().find((x) => x.lang.toLowerCase().startsWith(lang.slice(0, 2)));
     if (v) u.voice = v;
