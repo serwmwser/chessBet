@@ -13,7 +13,6 @@ import BuyCrypto from "./BuyCrypto";
 import HowTo from "./HowTo";
 import MyGames from "./MyGames";
 import MyNfts from "./MyNfts";
-import MyNfts from "./MyNfts";
 import ProfileEditor from "./ProfileEditor";
 import Share from "./Share";
 
@@ -98,7 +97,6 @@ export default function Profile({ onOpenGame }: { onOpenGame: (id: number) => vo
           </section>
 
           <MyGames onOpenGame={onOpenGame} />
-          <MyNfts />
           <MyNfts />
           <section className="card space-y-3">
             <div className="flex items-center justify-between">
