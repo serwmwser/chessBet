@@ -91,6 +91,37 @@ export async function listMyNfts(owner: string): Promise<MyNft[]> {
   }));
 }
 
+export type MyNft = { id: number; gameId: number; ply: number; total: number; san: string; image: string };
+
+/** NFT игрока: перебираем номера токенов (их немного), берём те, чей владелец сейчас этот кошелёк */
+export async function listMyNfts(owner: string): Promise<MyNft[]> {
+  if (!nftEnabled) return [];
+  const supply = Number(await readContract({ contract: nftContract, method: "function totalSupply() view returns (uint256)", params: [] }));
+  const ids = Array.from({ length: Math.min(supply, 300) }, (_, i) => supply - i);
+  const mine: number[] = [];
+  await Promise.all(ids.map(async (id) => {
+    try {
+      const o = await readContract({ contract: nftContract, method: "function ownerOf(uint256) view returns (address)", params: [BigInt(id)] });
+      if (o.toLowerCase() === owner.toLowerCase()) mine.push(id);
+    } catch { /* токен не найден */ }
+  }));
+  mine.sort((a, b) => b - a);
+  return Promise.all(mine.map(async (id) => {
+    let gameId = 0, ply = 0, total = 0, san = "", image = "";
+    try {
+      const m = await readContract({ contract: nftContract, method: "function momentOf(uint256) view returns (uint256 gameId, uint16 ply, uint16 total, string san, string fen, string pgn)", params: [BigInt(id)] });
+      gameId = Number(m[0]); ply = Number(m[1]); total = Number(m[2]); san = String(m[3]);
+    } catch { /* без подписи */ }
+    try {
+      const uri = await readContract({ contract: nftContract, method: "function tokenURI(uint256) view returns (string)", params: [BigInt(id)] });
+      const b64 = uri.split(",")[1] || "";
+      const json = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(b64), (c) => c.charCodeAt(0))));
+      image = typeof json.image === "string" ? json.image : "";
+    } catch { /* без картинки */ }
+    return { id, gameId, ply, total, san, image };
+  }));
+}
+
 export function useNft() {
   const account = useActiveAccount();
   const { mutateAsync: send } = useSendTransaction();
