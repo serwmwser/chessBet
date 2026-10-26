@@ -19,7 +19,7 @@ type D = {
   msgT: string; m1: string; m2: string; cpm: string;
   faqT: string; faq: [string, string][];
   feedT: string; feedE: string;
-  cta: string; ctaSub: string; disc: string; pay: string;
+  cta: string; ctaSub: string; disc: string[]; pay: string;
 };
 
 const RU: D = {
@@ -45,7 +45,13 @@ const RU: D = {
   ],
   feedT: "Лента начислений", feedE: "Здесь появятся реальные начисления по твоим друзьям.",
   cta: "Скопировать ссылку", ctaSub: "Хватит просто играть — пора зарабатывать.",
-  disc: "Доход не гарантирован. Условия программы могут меняться.", pay: "Забрать",
+  disc: [
+    "Доход не гарантирован: он зависит от того, сколько ваших друзей играют на деньги и как часто.",
+    "Друг засчитывается после его первой платной партии. Бесплатные партии с другом, игры с ботом и создание NFT выплат не дают.",
+    "Доля выплачивается из комиссии приложения в USDC (сеть Polygon) на ваш кошелёк при завершении партии друга. Если перевод не прошёл, сумма ждёт на этой странице кнопки «Забрать»; для неё нужен небольшой запас POL на комиссию сети.",
+    "Ставки связаны с риском проигрыша. Приглашайте только совершеннолетних и тех, кому игра на деньги разрешена законом. Спам и обман запрещены.",
+    "Условия программы, уровни и проценты могут меняться, о важных изменениях сообщим в приложении. Программа может быть недоступна в некоторых странах. Налоги со своего дохода вы платите сами.",
+  ], pay: "Забрать",
 };
 const EN: D = {
   badge: "ETERNAL GAMBIT", h1: "They play — YOU earn",
@@ -70,7 +76,13 @@ const EN: D = {
   ],
   feedT: "Earnings feed", feedE: "Real earnings from your friends will appear here.",
   cta: "Copy link", ctaSub: "Stop just playing — start earning.",
-  disc: "Income is not guaranteed. Terms may change.", pay: "Claim",
+  disc: [
+    "Income is not guaranteed: it depends on how many of your friends play for money and how often.",
+    "A friend counts after their first paid game. Free games with a friend, bot games and creating NFTs do not earn payouts.",
+    "Your share is paid from the app's fee in USDC (Polygon network) to your wallet when your friend's game ends. If a transfer fails, the amount waits on this page for the Claim button; you need a small reserve of POL for the network fee.",
+    "Stakes carry the risk of losing. Invite only adults and people for whom playing for money is legal. Spam and deception are forbidden.",
+    "Program terms, levels and percentages may change, and we will announce important changes in the app. The program may be unavailable in some countries. You pay taxes on your own income.",
+  ], pay: "Claim",
 };
 const tierIdx = (pct: number) => (pct >= 30 ? 2 : pct >= 20 ? 1 : 0);
 const L: Record<string, D> = { ru: RU, en: EN };
@@ -223,7 +235,7 @@ export default function Earn() {
       <div className="card text-center space-y-2">
         <p className="font-bold">{x.ctaSub}</p>
         <button className="btn btn-primary w-full" onClick={() => (link ? copy(link, "z") : login())}>{done === "z" ? x.copied : account ? x.cta : x.connect}</button>
-        <p className="text-[11px] opacity-60">{x.disc}</p>
+        <ul className="text-[11px] opacity-60 space-y-1 list-disc ps-4">{x.disc.map((d) => <li key={d}>{d}</li>)}</ul>
       </div>
     </div>
   );
