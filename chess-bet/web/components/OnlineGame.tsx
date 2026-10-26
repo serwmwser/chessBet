@@ -21,6 +21,8 @@ import { analyze } from "@/lib/material";
 import { playCastle, playCheck, playLose, playPromo, playVoice, playWin, useEndDelay } from "@/lib/sfx";
 import { playNeigh } from "@/lib/neigh";
 import { cheerFor, PITCH, shoutFor, speak } from "@/lib/cheers";
+import { packOf, useCartoonPrefs } from "@/lib/cartoonPrefs";
+import CartoonSettings from "./CartoonSettings";
 import CartoonBoard from "./cartoon/CartoonBoard";
 import Piece from "./cartoon/Pieces";
 import type { Mood } from "./cartoon/Character";
@@ -78,6 +80,7 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
   const cartoon = !!st && Number(st.bet) >= ARENA_MIN;
   const [voice, setVoice] = useState(() => { try { return localStorage.getItem("cb_voice") !== "0"; } catch { return true; } });
   const [say, setSay] = useState<string | null>(null);
+  const [cp] = useCartoonPrefs(); // личные пешки и голос
   const [react, setReact] = useState<{ by: "w" | "b"; piece: string; cap?: string } | null>(null);
   useEffect(() => {
     if (!say) return undefined;
@@ -108,10 +111,10 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
     if (m.captured && !m.san.endsWith("#")) {
       const line = shoutFor(m.piece, ru ? "ru" : "en");
       setSay(line);
-      if (voice) setTimeout(() => speak(line, ru ? "ru-RU" : "en-US", PITCH[m.piece] ?? 1.2), 450);
+      if (voice) setTimeout(() => speak(line, ru ? "ru-RU" : "en-US", (PITCH[m.piece] ?? 1.2) * packOf(cp.pack).pitch, packOf(cp.pack).rate), 450);
     } else if (m.color === mine) {
       const line = cheerFor({ san: m.san, piece: m.piece, captured: m.captured, promotion: m.promotion }, ru ? "ru" : "en");
-      if (line) { setSay(line); if (voice) speak(line, ru ? "ru-RU" : "en-US"); }
+      if (line) { setSay(line); if (voice) speak(line, ru ? "ru-RU" : "en-US", 1.2 * packOf(cp.pack).pitch, packOf(cp.pack).rate); }
     }
     setReact({ by: m.color, piece: m.piece, cap: m.captured });
     const id = setTimeout(() => setReact(null), 1500);
@@ -211,7 +214,7 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
   const reasonText = st.reason === "pause_timeout" ? pt.lostPause : st.reason && REASON[st.reason] ? t(REASON[st.reason]) : drawn ? t("rDraw") : "";
 
   const BoardX = (cartoon ? CartoonBoard : Board) as unknown as typeof CartoonBoard;
-  const pawnOf = (col: "w" | "b") => (col === "w" ? 1 : 3);
+  const pawnOf = (col: "w" | "b") => (col === "w" ? cp.pawnW : cp.pawnB);
   const moods: Record<string, Mood> = {};
   if (react) {
     if (react.piece !== "p") moods[react.by + react.piece.toUpperCase()] = "cheer";
@@ -260,7 +263,7 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
         disabled={!myTurn || !replay.isLive}
         mute={!replay.isLive && !replay.playing}
         onMove={(from, to, promotion) => send({ t: "move", from, to, promotion })}
-        {...(cartoon ? { pawnW: 1, pawnB: 3, moods } : {})}
+        {...(cartoon ? { pawnW: cp.pawnW, pawnB: cp.pawnB, moods } : {})}
       />
       {overlay}
       </div>
@@ -274,6 +277,7 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
       )}
 
       <ReplayBar r={replay} auto={st.over} />
+      {cartoon && <CartoonSettings />}
 
       <div className="flex items-center justify-between text-sm">
         <span className="font-medium">{st.over ? "" : myTurn ? t("yourTurn") : t("oppTurn")}</span>

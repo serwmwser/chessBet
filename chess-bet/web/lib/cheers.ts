@@ -66,7 +66,7 @@ export function speak(text: string, lang: string, pitch = 1.2, rate = 1.05) {
     const u = new SpeechSynthesisUtterance(text);
     u.lang = lang;
     u.rate = rate;
-    u.pitch = pitch;
+    u.pitch = Math.max(0, Math.min(2, pitch));
     const v = ss.getVoices().find((x) => x.lang.toLowerCase().startsWith(lang.slice(0, 2)));
     if (v) u.voice = v;
     ss.speak(u);

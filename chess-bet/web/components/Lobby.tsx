@@ -7,6 +7,7 @@ import { useApp } from "@/lib/ctx";
 import { gameUrl, newInvite } from "@/lib/invite";
 import { Step, useEscrow } from "@/lib/tx";
 import Share from "./Share";
+import CartoonSettings from "./CartoonSettings";
 import { useLT } from "@/lib/lobbyTxt";
 
 export const durLabel = (sec: number, min: string, hr: string) => (sec < 3600 ? `${sec / 60} ${min}` : `${sec / 3600} ${hr}`);
@@ -92,6 +93,7 @@ export default function Lobby({ arena = false }: { arena?: boolean } = {}) {
       <section className="card space-y-4">
         <h2 className="text-lg font-bold">{arena ? (lang === "ru" ? "🎭👑 Мульт-арена" : "🎭👑 Cartoon arena") : t("createGame")}</h2>
         {arena && <p className="text-sm opacity-80">{lang === "ru" ? "Игры на токены от 25.5 до 500 USDC с мультяшными фигурами, голосами и реакциями. Играют настоящие люди, не боты." : "Token games from 25.5 to 500 USDC with cartoon pieces, voices and reactions. You play real people, not bots."}</p>}
+        {arena && <CartoonSettings />}
 
         <div>
           <div className="flex items-baseline justify-between mb-1">
