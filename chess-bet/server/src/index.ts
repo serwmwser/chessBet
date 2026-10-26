@@ -74,11 +74,23 @@ const PAUSE_MS = 5 * 60_000;
 type Done = {
   id: number; white: string; black: string; bet: string; winner: string | null;
   reason: string; payout: string; pgn: string; at: number;
+  chat?: { from: string; text: string; at: number }[]; // чат партии сохраняется и после её окончания
 };
 
 const open = new Map<number, OpenGame>();
 const live = new Map<number, Live>();
 let done: Done[] = [];
+const dsocks = new Map<number, Set<WebSocket>>(); // подключённые к завершённым партиям: чат работает и после финала
+function doneSnap(d: Done) {
+  const chess = new Chess(); chess.loadPgn(d.pgn);
+  const h = chess.history({ verbose: true }); const lm = h[h.length - 1];
+  return {
+    t: "state", id: d.id, fen: chess.fen(), history: h.map((x) => x.san), lastMove: lm ? { from: lm.from, to: lm.to } : null,
+    white: d.white, black: d.black, bet: d.bet, duration: 0, turn: chess.turn(), clock: { w: 0, b: 0 },
+    over: true, reason: d.reason, winner: d.winner, drawOffer: null, feeBps, pause: null, pausesLeft: { w: 0, b: 0 },
+    chat: (d.chat ?? []).slice(-50),
+  };
+}
 let scanFrom = 1;
 let feeBps = 600;
 const lc = (a: string) => a.toLowerCase();
@@ -345,8 +357,9 @@ function finalize(g: Live) {
   done.push({
     id: g.id, white: g.white, black: g.black, bet: g.bet, winner: g.winner,
     reason: g.reason ?? "unknown", payout: g.winner ? (pot - fee).toString() : g.bet,
-    pgn: g.chess.pgn(), at: Date.now(),
+    pgn: g.chess.pgn(), at: Date.now(), chat: g.chat.slice(-100),
   });
+  if (g.socks.size) { const set = dsocks.get(g.id) ?? new Set<WebSocket>(); for (const x of g.socks) set.add(x); dsocks.set(g.id, set); } // игроки остаются на связи: чат не пропадает
   live.delete(g.id);
   save();
 }
@@ -634,17 +647,29 @@ wss.on("connection", (ws: WebSocket) => {
       }
       const d = done.find((x) => x.id === id);
       if (d && (c.addr === d.white || c.addr === d.black)) {
-        const chess = new Chess(); chess.loadPgn(d.pgn);
-        const h = chess.history({ verbose: true }); const lm = h[h.length - 1];
-        return send({
-          t: "state", id, fen: chess.fen(), history: h.map((x) => x.san), lastMove: lm ? { from: lm.from, to: lm.to } : null,
-          white: d.white, black: d.black, bet: d.bet, duration: 0, turn: chess.turn(), clock: { w: 0, b: 0 },
-          over: true, reason: d.reason, winner: d.winner, drawOffer: null, feeBps, pause: null, pausesLeft: { w: 0, b: 0 },
-        });
+        c.gid = id;
+        const set = dsocks.get(id) ?? new Set<WebSocket>(); set.add(ws); dsocks.set(id, set);
+        return send(doneSnap(d));
       }
       return err("game_not_found");
     }
 
+    if (m.t === "chat" && c.gid && !live.has(c.gid)) {
+      // чат после окончания партии: игра уже убрана из «живых», но писать друг другу игроки могут
+      const d = done.find((x) => x.id === c.gid);
+      if (!d) return err("no_game");
+      if (c.addr !== d.white && c.addr !== d.black) return err("not_player");
+      const text = String(m.text ?? "").replace(/\s+/g, " ").trim().slice(0, 200);
+      if (!text || /https?:\/\/|www\./i.test(text)) return err("bad_chat");
+      if (now - (c.lc ?? 0) < 1000) return err("rate_limit");
+      c.lc = now;
+      (d.chat ??= []).push({ from: c.addr, text, at: now });
+      if (d.chat.length > 100) d.chat.shift();
+      const out = JSON.stringify(doneSnap(d));
+      for (const x of dsocks.get(d.id) ?? []) if (x.readyState === WebSocket.OPEN) x.send(out);
+      save();
+      return;
+    }
     const g = c.gid ? live.get(c.gid) : undefined;
     if (!g) return err("no_game");
     const me = c.addr;
@@ -714,7 +739,7 @@ wss.on("connection", (ws: WebSocket) => {
     err("unknown_message");
   });
 
-  ws.on("close", () => { if (c.gid) live.get(c.gid)?.socks.delete(ws); });
+  ws.on("close", () => { if (c.gid) { live.get(c.gid)?.socks.delete(ws); dsocks.get(c.gid)?.delete(ws); } });
 });
 
 // ---------- запуск ----------
