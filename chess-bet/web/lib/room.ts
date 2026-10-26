@@ -1,0 +1,84 @@
+"use client";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { WS_URL } from "./config";
+
+// Бесплатная партия с другом по ссылке: без кошелька и ставок. Сервер: /room (server/src/rooms.ts).
+
+export const ROOM_URL = WS_URL.replace(/\/ws$/, "/room");
+
+export type Color = "w" | "b";
+export type Seat = Color | "s"; // s — зритель
+
+export type RoomState = {
+  t: "state";
+  id: string;
+  fen: string;
+  history: string[];
+  lastMove: { from: string; to: string } | null;
+  turn: Color;
+  over: boolean;
+  reason: string | null;
+  winner: Color | null;
+  drawOffer: Color | null;
+  seats: { w: boolean; b: boolean };
+  online: { w: boolean; b: boolean };
+  watchers: number;
+};
+
+const tokKey = (id: string) => "cb_room_" + id;
+const readTok = (id: string) => { try { return localStorage.getItem(tokKey(id)) || undefined; } catch { return undefined; } };
+const saveTok = (id: string, t: string) => { try { localStorage.setItem(tokKey(id), t); } catch { /* хранилище недоступно */ } };
+
+/** Ссылка-приглашение в комнату */
+export const roomLink = (id: string) => `${location.origin}${process.env.NEXT_PUBLIC_BASE_PATH || ""}/?room=${id}`;
+
+/** Подключение к комнате. Без roomId создаёт новую (create: за кого играет создатель, r — случайно). Связь восстанавливается сама. */
+export function useRoom(roomId: string | null, create: Color | "r" = "r") {
+  const [id, setId] = useState<string | null>(roomId);
+  const [st, setSt] = useState<RoomState | null>(null);
+  const [seat, setSeat] = useState<Seat | null>(null);
+  const [online, setOnline] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const ws = useRef<WebSocket | null>(null);
+  const cur = useRef<string | null>(roomId);
+
+  useEffect(() => {
+    let stop = false, tries = 0;
+    let retry: ReturnType<typeof setTimeout> | undefined;
+    const open = () => {
+      const s = new WebSocket(ROOM_URL);
+      ws.current = s;
+      s.onopen = () => {
+        setOnline(true); tries = 0;
+        if (cur.current) s.send(JSON.stringify({ t: "join", id: cur.current, token: readTok(cur.current) }));
+        else s.send(JSON.stringify({ t: "create", color: create }));
+      };
+      s.onmessage = (e) => {
+        let m: any;
+        try { m = JSON.parse(String(e.data)); } catch { return; }
+        if (m.t === "state") { setSt(m as RoomState); setError(null); }
+        else if (m.t === "seat") { cur.current = m.id; setId(m.id); setSeat(m.color); if (m.token) saveTok(m.id, m.token); }
+        else if (m.t === "error") setError(String(m.message));
+      };
+      s.onclose = () => {
+        setOnline(false);
+        if (stop) return;
+        if (++tries > 20) { setError("offline"); return; }
+        retry = setTimeout(open, Math.min(1500 * tries, 8000));
+      };
+    };
+    open();
+    return () => { stop = true; if (retry) clearTimeout(retry); ws.current?.close(); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const send = useCallback((o: object) => { if (ws.current?.readyState === WebSocket.OPEN) ws.current.send(JSON.stringify(o)); }, []);
+  return {
+    id, st, seat, online, error,
+    move: (from: string, to: string, promotion?: string) => send({ t: "move", from, to, promotion }),
+    resign: () => send({ t: "resign" }),
+    offerDraw: () => send({ t: "draw_offer" }),
+    acceptDraw: () => send({ t: "draw_accept" }),
+    declineDraw: () => send({ t: "draw_decline" }),
+  };
+}
