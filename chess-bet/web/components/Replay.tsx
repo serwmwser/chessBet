@@ -51,21 +51,22 @@ export function useReplay(san: string[]) {
 }
 
 export function ReplayBar({ r, auto }: { r: ReturnType<typeof useReplay>; auto?: boolean }) {
-  const { t } = useApp();
+  const { t, lang } = useApp();
+  const ru = lang === "ru";
   const btn = "btn btn-ghost !px-3 !py-2 text-base";
   return (
     <div className="flex flex-wrap items-center justify-center gap-2" dir="ltr">
-      <button className={btn} onClick={r.first} disabled={r.total === 0 || r.cur === 0} aria-label="First move">⏮</button>
-      <button className={btn} onClick={r.prev} disabled={r.total === 0 || r.cur === 0} aria-label="Previous move">◀</button>
+      <button className={btn} onClick={r.first} disabled={r.total === 0 || r.cur === 0} aria-label="First move" title={ru ? "В начало партии" : "To the start"}>⏮</button>
+      <button className={btn} onClick={r.prev} disabled={r.total === 0 || r.cur === 0} aria-label="Previous move" title={ru ? "Ход назад" : "Previous move"}>◀</button>
       <span className="mono text-sm min-w-[84px] text-center opacity-80">
         {r.isLive ? t("live") : `${r.cur} / ${r.total}`}
       </span>
-      <button className={btn} onClick={r.next} disabled={r.isLive} aria-label="Next move">▶</button>
-      <button className={btn} onClick={r.toLive} disabled={r.isLive} aria-label="Last move">⏭</button>
+      <button className={btn} onClick={r.next} disabled={r.isLive} aria-label="Next move" title={ru ? "Ход вперёд" : "Next move"}>▶</button>
+      <button className={btn} onClick={r.toLive} disabled={r.isLive} aria-label="Last move" title={ru ? "В конец партии" : "To the end"}>⏭</button>
       {auto && r.total > 0 && (
         <>
-          <button className={btn} onClick={r.togglePlay} aria-label="Play">{r.playing ? "⏸" : "▶▶"}</button>
-          <button className={btn + " mono"} onClick={r.cycleSpeed} aria-label="Speed">{r.speed}×</button>
+          <button className={btn} onClick={r.togglePlay} aria-label="Play" title={ru ? "Автопросмотр партии" : "Auto-play the game"}>{r.playing ? "⏸" : "▶▶"}</button>
+          <button className={btn + " mono"} onClick={r.cycleSpeed} aria-label="Speed" title={ru ? "Скорость просмотра" : "Playback speed"}>{r.speed}×</button>
         </>
       )}
     </div>

@@ -117,7 +117,12 @@ export default function AnalysisPanel({ san, replay, me }: { san: string[]; repl
   if (san.length === 0) return null;
   return (
     <section className="space-y-3">
-      {state === "idle" && <button className="btn btn-primary w-full" onClick={start}>{ru ? "Повтор и анализ партии" : "Replay and analyse the game"}</button>}
+      {state === "idle" && (
+        <button className="btn btn-primary w-full !py-3 flex-col gap-0.5" onClick={start}>
+          <span className="text-base font-bold">🔍 {ru ? "Анализ игры" : "Game analysis"}</span>
+          <span className="text-xs font-normal opacity-80">{ru ? "Нажмите: найдём ошибки и покажем лучшие ходы" : "Tap to find mistakes and see better moves"}</span>
+        </button>
+      )}
       {state === "run" && (
         <div className="space-y-1">
           <div className="h-2.5 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden"><div className="h-full bg-emerald-500 transition-all" style={{ width: prog + "%" }} /></div>

@@ -5,7 +5,7 @@ import { useActiveAccount, useSendTransaction } from "thirdweb/react";
 import { API_URL, chain, client, usdcContract } from "./config";
 
 /** Адрес контракта GameNFT (NFT любого момента партии). Пусто = NFT выключены, кнопки скрыты. */
-export const NFT_ADDRESS = process.env.NEXT_PUBLIC_NFT || "";
+export const NFT_ADDRESS = process.env.NEXT_PUBLIC_NFT || "0xD2ceB1218D9421eA3A140f88Fd1691FE1ff60BC0";
 export const nftEnabled = NFT_ADDRESS !== "";
 const nftContract = getContract({ client, chain, address: NFT_ADDRESS || "0x0000000000000000000000000000000000000000" });
 
