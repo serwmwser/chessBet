@@ -10,6 +10,7 @@ import Roadmap from "@/components/Roadmap";
 import FriendGame from "@/components/FriendGame";
 import MyFriendRooms from "@/components/MyFriendRooms";
 import PieceShowcase from "@/components/PieceShowcase";
+import AppDownload from "@/components/AppDownload";
 import type { Color } from "@/lib/room";
 import Header from "@/components/Header";
 import Earn from "@/components/Earn";
@@ -124,7 +125,7 @@ export default function Home() {
           </div>
         )}
         {inviteId !== null && <Invite id={inviteId} onClose={() => setInviteId(null)} />}
-        {tab === "lobby" && <div className="space-y-4"><Hero onBot={() => setTab("bot")} onEarn={() => setTab("earn")} /><FriendCard onStart={(c, mins) => { setFriend((f) => ({ room: null, color: c, minutes: mins, n: (f?.n ?? 0) + 1 })); setTab("friend"); }} /><MyFriendRooms onOpen={openRoom} /><RefBanner onEarn={() => setTab("earn")} /><LobbyLinks onArena={() => { setCartMode("arena"); setTab("cartoon"); }} /><Lobby /></div>}
+        {tab === "lobby" && <div className="space-y-4"><Hero onBot={() => setTab("bot")} onEarn={() => setTab("earn")} /><AppDownload /><FriendCard onStart={(c, mins) => { setFriend((f) => ({ room: null, color: c, minutes: mins, n: (f?.n ?? 0) + 1 })); setTab("friend"); }} /><MyFriendRooms onOpen={openRoom} /><RefBanner onEarn={() => setTab("earn")} /><LobbyLinks onArena={() => { setCartMode("arena"); setTab("cartoon"); }} /><Lobby /></div>}
         {tab === "play" && (gid !== null
           ? <OnlineGame id={gid} onExit={() => { setGid(null); setTab("lobby"); }} />
           : openCount ? <WaitingSplash /> : <div className="card text-center space-y-1 py-10"><div className="text-4xl">♞</div><div className="font-medium">{t("noActive")}</div></div>)}
