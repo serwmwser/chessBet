@@ -3,28 +3,31 @@ import { useEffect, useState } from "react";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
-/** Заставка при открытии сайта и приложения: картинка с фигурами и надписью chessbet.lol. Показывается один раз за сессию. */
+/** Заставка при открытии сайта и приложения. Скрывается чисто через CSS за ~2 секунды (не зависит от загрузки скриптов), внизу полоска загрузки. */
 export default function OpenSplash() {
   const [show, setShow] = useState(true);
-  const [fade, setFade] = useState(false);
   useEffect(() => {
     try {
       if (sessionStorage.getItem("cb_open_splash")) { setShow(false); return; }
       sessionStorage.setItem("cb_open_splash", "1");
-    } catch { /* хранилище недоступно: просто покажем заставку */ }
-    const t1 = setTimeout(() => setFade(true), 1700);
-    const t2 = setTimeout(() => setShow(false), 2300);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
+    } catch { /* хранилище недоступно: заставка уйдёт сама по CSS */ }
+    const t = setTimeout(() => setShow(false), 2600);
+    return () => clearTimeout(t);
   }, []);
   if (!show) return null;
   return (
-    <div
-      aria-hidden="true"
-      onClick={() => setShow(false)}
-      style={{ position: "fixed", inset: 0, zIndex: 9999, background: "#04101c", opacity: fade ? 0 : 1, transition: "opacity .6s ease" }}
-    >
+    <div aria-hidden="true" className="cb-os" onClick={() => setShow(false)}>
+      <style>{`
+        .cb-os{position:fixed;inset:0;z-index:9999;background:#04101c;animation:cbosOut .5s ease 1.9s forwards}
+        .cb-os img{width:100%;height:100%;object-fit:cover;object-position:center bottom;display:block}
+        .cb-os i{position:absolute;left:18%;right:18%;bottom:max(28px,env(safe-area-inset-bottom));height:5px;border-radius:5px;background:rgba(255,255,255,.18);overflow:hidden}
+        .cb-os i b{display:block;height:100%;width:100%;background:#ffc400;border-radius:5px;transform-origin:left;animation:cbosBar 1.9s ease-out forwards}
+        @keyframes cbosBar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+        @keyframes cbosOut{to{opacity:0;visibility:hidden;pointer-events:none}}
+      `}</style>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={`${BASE}/splash.jpg`} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center bottom" }} />
+      <img src={`${BASE}/splash.jpg`} alt="" />
+      <i><b /></i>
     </div>
   );
 }
