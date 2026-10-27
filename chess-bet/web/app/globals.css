@@ -8,10 +8,10 @@
 body { @apply bg-slate-50 text-slate-900 antialiased; }
 .dark body {
   @apply text-slate-100;
-  background-color: #060a1c;
+  background-color: #0e2233;
   background-image:
-    radial-gradient(900px 500px at 85% -10%, rgba(124, 58, 237, .35), transparent 60%),
-    radial-gradient(700px 450px at -10% 10%, rgba(59, 80, 220, .28), transparent 60%);
+    radial-gradient(900px 500px at 85% -10%, rgba(34, 216, 240, .30), transparent 60%),
+    radial-gradient(700px 450px at -10% 10%, rgba(88, 204, 2, .18), transparent 60%);
   background-attachment: fixed;
 }
 
@@ -22,21 +22,22 @@ body { @apply bg-slate-50 text-slate-900 antialiased; }
 .dark .card { @apply bg-ink-800/70 border-violet-300/10 backdrop-blur-md; }
 
 .btn { @apply inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition active:scale-[.98] disabled:opacity-50 disabled:pointer-events-none; }
-.btn-primary { @apply text-white bg-gradient-to-r from-brand-600 to-brand-violet shadow-lg shadow-violet-900/40 hover:brightness-110 hover:shadow-glow; }
+.btn-primary { @apply text-white bg-gradient-to-r from-emerald-500 to-[#2fce8c] hover:brightness-110; box-shadow: 0 4px 0 rgba(0,0,0,.2), 0 10px 20px -10px rgba(88,204,2,.7); }
+.btn-primary:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0,0,0,.2); }
 .btn-ghost { @apply bg-black/5 hover:bg-black/10; }
 .dark .btn-ghost { @apply bg-violet-300/10 hover:bg-violet-300/20; }
 .btn-danger { @apply bg-red-500/90 text-white hover:bg-red-500; }
 
 .chip { @apply rounded-full px-3 py-1.5 text-sm font-medium bg-black/5 border border-transparent cursor-pointer select-none transition; }
 .dark .chip { @apply bg-violet-300/10 hover:bg-violet-300/20; }
-.chip-on { @apply bg-gradient-to-r from-brand-600 to-brand-violet text-white shadow-md shadow-violet-900/30; }
-.dark .chip-on { @apply bg-gradient-to-r from-brand-600 to-brand-violet; }
+.chip-on { @apply bg-gradient-to-r from-emerald-500 to-[#2fce8c] text-white shadow-md shadow-emerald-900/30; }
+.dark .chip-on { @apply bg-gradient-to-r from-emerald-500 to-[#2fce8c]; }
 
 .mono { font-variant-numeric: tabular-nums; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
 .skeleton { @apply animate-pulse rounded-2xl bg-black/10; }
 .dark .skeleton { @apply bg-violet-300/10; }
 
-input[type="range"] { accent-color: #8b5cf6; }
+input[type="range"] { accent-color: #58cc02; }
 input, textarea, select { @apply outline-none focus-visible:ring-2 focus-visible:ring-brand-500; }
 
 @media (prefers-reduced-motion: reduce) {
@@ -44,8 +45,8 @@ input, textarea, select { @apply outline-none focus-visible:ring-2 focus-visible
 }
 
 /* Светлая тема: фон и акценты подстраиваются под выбранную доску */
-:root { --pg: #f1f5f9; --glow1: rgba(139,92,246,.14); --glow2: rgba(59,80,220,.10); --edge: rgba(15,23,42,.08); --acc1: #7c3aed; --acc2: #5b3df5; }
-:root[data-board="emerald"] { --pg: #e9f3ed; --glow1: rgba(79,138,107,.30); --glow2: rgba(79,138,107,.14); --edge: rgba(79,138,107,.28); --acc1: #4f8a6b; --acc2: #2f6b50; }
+:root { --pg: #eaf7fb; --glow1: rgba(34,216,240,.22); --glow2: rgba(88,204,2,.12); --edge: rgba(28,176,246,.22); --acc1: #58cc02; --acc2: #2fce8c; }
+:root[data-board="emerald"] { --pg: #e9f6ee; --glow1: rgba(88,204,2,.22); --glow2: rgba(34,216,240,.14); --edge: rgba(88,204,2,.28); --acc1: #58cc02; --acc2: #2fce8c; }
 :root[data-board="classic"] { --pg: #f7eedd; --glow1: rgba(181,136,99,.32); --glow2: rgba(181,136,99,.14); --edge: rgba(181,136,99,.32); --acc1: #a0714a; --acc2: #7a5333; }
 :root[data-board="ocean"]   { --pg: #e7eff8; --glow1: rgba(91,127,166,.32); --glow2: rgba(91,127,166,.14); --edge: rgba(91,127,166,.30); --acc1: #5b7fa6; --acc2: #3f6591; }
 :root[data-board="violet"]  { --pg: #f0eafb; --glow1: rgba(123,99,176,.32); --glow2: rgba(123,99,176,.14); --edge: rgba(123,99,176,.30); --acc1: #7b63b0; --acc2: #5a46a0; }
