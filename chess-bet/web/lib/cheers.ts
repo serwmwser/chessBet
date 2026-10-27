@@ -57,18 +57,52 @@ export function cheerFor(m: Move, lang: "ru" | "en"): string | null {
   return null;
 }
 
+/* Озвучка голосом устройства. На телефонах голоса грузятся не сразу, а браузер разрешает звук только после касания:
+   поэтому кэшируем голоса, «будим» синтез при первом касании и держим ссылку на фразу, чтобы её не съел сборщик мусора. */
+let voices: SpeechSynthesisVoice[] = [];
+let unlocked = false;
+let current: SpeechSynthesisUtterance | null = null;
+
+function loadVoices() {
+  try { const v = window.speechSynthesis?.getVoices(); if (v && v.length) voices = v; } catch { /* нет голосов */ }
+}
+
+if (typeof window !== "undefined" && "speechSynthesis" in window) {
+  loadVoices();
+  try { window.speechSynthesis.addEventListener("voiceschanged", loadVoices); } catch { /* старый браузер */ }
+  const unlock = () => {
+    if (unlocked) return;
+    unlocked = true;
+    try {
+      loadVoices();
+      const u = new SpeechSynthesisUtterance(" ");
+      u.volume = 0;
+      window.speechSynthesis.speak(u);
+    } catch { /* ничего */ }
+    window.removeEventListener("pointerdown", unlock, true);
+    window.removeEventListener("touchstart", unlock, true);
+  };
+  window.addEventListener("pointerdown", unlock, true);
+  window.addEventListener("touchstart", unlock, true);
+}
+
 /** Озвучка голосом устройства; если подходящего голоса нет, остаётся текст на экране. */
 export function speak(text: string, lang: string, pitch = 1.2, rate = 1.05) {
   try {
     const ss = window.speechSynthesis;
     if (!ss) return;
-    ss.cancel();
+    if (!voices.length) loadVoices();
+    if (ss.speaking || ss.pending) ss.cancel();
     const u = new SpeechSynthesisUtterance(text);
     u.lang = lang;
     u.rate = rate;
     u.pitch = Math.max(0, Math.min(2, pitch));
-    const v = ss.getVoices().find((x) => x.lang.toLowerCase().startsWith(lang.slice(0, 2)));
+    const l = lang.toLowerCase();
+    const v = voices.find((x) => x.lang.toLowerCase().replace("_", "-") === l) ?? voices.find((x) => x.lang.toLowerCase().startsWith(l.slice(0, 2)));
     if (v) u.voice = v;
-    ss.speak(u);
+    current = u;
+    u.onend = u.onerror = () => { if (current === u) current = null; };
+    // небольшая пауза после cancel(): на Android без неё фраза иногда теряется
+    setTimeout(() => { try { ss.resume(); ss.speak(u); } catch { /* озвучка необязательна */ } }, 80);
   } catch { /* озвучка необязательна */ }
 }
