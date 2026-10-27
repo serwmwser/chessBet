@@ -14,7 +14,7 @@ export default function LobbyLinks({ onArena }: { onArena: () => void }) {
     >
       <div className="text-base font-extrabold">🎭👑 {ru ? "Мульт-арена на токены" : "Cartoon arena for tokens"}</div>
       <div className="text-xs font-medium opacity-80">
-        {ru ? "Ставки 25.5–500 USDC · мультяшные фигуры, голоса и NFT партий" : "Stakes 25.5–500 USDC · cartoon pieces, voices and game NFTs"}
+        {ru ? "Ставки 25.5–500 USDC · мультяшные фигуры и рыцари, голоса и NFT партий" : "Stakes 25.5–500 USDC · cartoon pieces and knights, voices and game NFTs"}
       </div>
     </button>
   );

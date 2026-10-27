@@ -11,6 +11,7 @@ const RU: Stage[] = [
     "NFT любого хода партии: 1 USDC, роялти 5%, продажа на OpenSea",
     "Бесплатная партия с другом по ссылке, без кошелька и ставок",
     "Реферальная программа «Вечный гамбит»",
+    "Наборы мультяшных фигур: «Рыцари» и яркие доски",
   ] },
   { when: "IV кв. 2026", title: "Запуск NFT и укрепление основы", items: [
     "Страница «Мои NFT» и подсказки по продаже на OpenSea",
@@ -50,6 +51,7 @@ const EN: Stage[] = [
     "NFT of any move of a game: 1 USDC, 5% royalty, sell on OpenSea",
     "Free game with a friend by link, no wallet or stakes",
     "Referral program: Eternal Gambit",
+    "Cartoon piece sets: “Knights” and bright boards",
   ] },
   { when: "Q4 2026", title: "NFT launch and strengthening the base", items: [
     "My NFTs page and tips for selling on OpenSea",

@@ -9,6 +9,7 @@ import LobbyLinks from "@/components/LobbyLinks";
 import Roadmap from "@/components/Roadmap";
 import FriendGame from "@/components/FriendGame";
 import MyFriendRooms from "@/components/MyFriendRooms";
+import PieceShowcase from "@/components/PieceShowcase";
 import type { Color } from "@/lib/room";
 import Header from "@/components/Header";
 import Earn from "@/components/Earn";
@@ -135,6 +136,7 @@ export default function Home() {
               <button type="button" className={"chip flex-1 justify-center " + (cartMode === "bot" ? "chip-on" : "")} onClick={() => setCartMode("bot")}>{ru ? "🤖 С ботом (бесплатно)" : "🤖 Vs bot (free)"}</button>
               <button type="button" className={"chip flex-1 justify-center " + (cartMode === "arena" ? "chip-on" : "")} style={cartMode === "arena" ? { background: "linear-gradient(90deg,#fde68a,#f5b301,#b8860b)", color: "#2b1a00", fontWeight: 700 } : { border: "1px solid #d4a017", color: "#d4a017", fontWeight: 700 }} onClick={() => setCartMode("arena")}>{ru ? "🎭👑 Мульт-арена на токены" : "🎭👑 Cartoon arena (tokens)"}</button>
             </div>
+            <PieceShowcase />
             {cartMode === "bot" ? <BotGame cartoon /> : <Lobby arena />}
           </div>
         )}
