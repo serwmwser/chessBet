@@ -37,6 +37,7 @@ export default function Header() {
           client={client}
           chain={chain}
           wallets={wallets}
+          autoConnect={{ timeout: 5000 }}
           theme={dark ? "dark" : "light"}
           connectButton={{ style: { borderRadius: 14, height: 40, minWidth: 0, padding: "0 14px", fontSize: 14 } }}
           detailsButton={{ style: { borderRadius: 14, height: 40, minWidth: 0, padding: "0 10px", fontSize: 13 } }}
