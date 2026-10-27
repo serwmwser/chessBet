@@ -35,7 +35,7 @@ const saveTok = (id: string, t: string) => { try { localStorage.setItem(tokKey(i
 // Список моих бесплатных партий (в этом браузере): чтобы партия не пропадала при переходе по страницам
 export type MyRoom = { id: string; color: Color; at: number };
 const ROOMS_KEY = "cb_my_rooms";
-const ROOM_TTL = 6 * 3600_000; // как на сервере: комната живёт до 6 часов без ходов
+const ROOM_TTL = 48 * 3600_000; // ROOMSAVE: как на сервере: комната живёт до 48 часов без ходов
 export function listMyRooms(): MyRoom[] {
   try {
     const a = JSON.parse(localStorage.getItem(ROOMS_KEY) || "[]") as MyRoom[];

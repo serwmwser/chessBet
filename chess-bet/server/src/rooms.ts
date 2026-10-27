@@ -1,4 +1,6 @@
 import crypto from "node:crypto";
+import fs from "node:fs";
+import path from "node:path";
 import type http from "node:http";
 import { WebSocketServer, WebSocket } from "ws";
 import { Chess } from "chess.js";
@@ -24,8 +26,8 @@ type Room = {
 };
 
 const MAX_ROOMS = 3000;
-const IDLE_MS = 6 * 3600_000; // комната без действий живёт 6 часов
-const DONE_MS = 3600_000; // оконченная партия остаётся ещё час
+const IDLE_MS = 48 * 3600_000; // комната без действий живёт 48 часов
+const DONE_MS = 6 * 3600_000; // оконченная партия остаётся ещё 6 часов
 const CREATE_PER_HOUR = 20; // новых комнат в час с одного адреса
 const DEFAULT_MIN = 60; // время на партию по умолчанию, минут (каждому игроку)
 const MAX_MIN = 180;
@@ -33,6 +35,38 @@ const MAX_MIN = 180;
 export const roomsWss = new WebSocketServer({ noServer: true, maxPayload: 2048 });
 const rooms = new Map<string, Room>();
 const created = new Map<string, number[]>();
+
+// ROOMSAVE: комнаты сохраняются на диск и переживают перезапуск сервера (обновление, перезагрузка VPS)
+const ROOMS_FILE = process.env.ROOMS_FILE || "./data/rooms.json";
+function saveRooms() {
+  try {
+    const out = [...rooms.values()].map((r) => ({
+      id: r.id, tokens: r.tokens, moves: r.chess.history(), over: r.over, reason: r.reason, winner: r.winner, drawOffer: r.drawOffer,
+      touched: r.touched, limit: r.limit, clock: remaining(r),
+    }));
+    fs.mkdirSync(path.dirname(ROOMS_FILE), { recursive: true });
+    fs.writeFileSync(ROOMS_FILE + ".tmp", JSON.stringify(out));
+    fs.renameSync(ROOMS_FILE + ".tmp", ROOMS_FILE);
+  } catch (e) { console.error("rooms save failed", e); }
+}
+function loadRooms() {
+  try {
+    const arr = JSON.parse(fs.readFileSync(ROOMS_FILE, "utf8")) as any[];
+    const now = Date.now();
+    for (const o of arr) {
+      if (!o || typeof o.id !== "string" || !/^[0-9a-f]{10}$/.test(o.id)) continue;
+      const chess = new Chess();
+      let ok = true;
+      for (const m of Array.isArray(o.moves) ? o.moves : []) { try { chess.move(String(m)); } catch { ok = false; break; } }
+      if (!ok) continue;
+      // время простоя сервера не списываем с часов: отсчёт хода начинается заново
+      rooms.set(o.id, { id: o.id, tokens: o.tokens ?? {}, chess, over: !!o.over, reason: o.reason ?? null, winner: o.winner ?? null, drawOffer: o.drawOffer ?? null,
+        socks: new Map(), touched: Number(o.touched) || now, limit: Number(o.limit) || DEFAULT_MIN * 60_000, clock: { w: Number(o.clock?.w) || 0, b: Number(o.clock?.b) || 0 }, last: now });
+    }
+    console.log("rooms restored:", rooms.size);
+  } catch { /* файла ещё нет */ }
+}
+
 
 const newToken = () => crypto.randomBytes(16).toString("hex");
 const ipOf = (req: http.IncomingMessage) => {
@@ -76,6 +110,10 @@ function checkEnd(r: Room) {
   if (c.isThreefoldRepetition()) return finish(r, null, "repetition");
   if (c.isDraw()) return finish(r, null, "fifty");
 }
+
+loadRooms();
+setInterval(saveRooms, Number(process.env.ROOMS_SAVE_MS) || 5000).unref();
+for (const sig of ["SIGTERM", "SIGINT"] as const) process.on(sig, () => { saveRooms(); process.exit(0); });
 
 // раз в секунду проверяем, не кончилось ли у кого-то время
 setInterval(() => {
