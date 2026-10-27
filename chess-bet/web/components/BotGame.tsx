@@ -6,6 +6,7 @@ import { usePT } from "@/lib/pauseTxt";
 import { cartoonBot, mainBot, Res } from "@/lib/botStore";
 import Board, { Clock, Moves } from "./Board";
 import CartoonBoard from "./cartoon/CartoonBoard";
+import CartoonSettings from "./CartoonSettings";
 import Piece from "./cartoon/Pieces";
 import type { Mood } from "./cartoon/Character";
 import { playNeigh } from "@/lib/neigh";
@@ -184,6 +185,7 @@ export default function BotGame({ cartoon = false }: { cartoon?: boolean }) {
       />
       <Clock ms={s[s.me]} active={myTurn} label={s.me === "w" ? t("white") : t("black")} icon={kingIcon(s.me)} />
       <Captured taken={mat.taken[s.me]} color={botColor} plus={Math.max(0, s.me === "w" ? mat.diff : -mat.diff)} cartoon={cartoon} pawn={botColor === "w" ? pawnW : pawnB} />
+      {cartoon && <CartoonSettings />}
       {cartoon && (
         <div className="flex items-center gap-2">
           <button type="button" className="chip shrink-0" aria-label={ru ? "Голос" : "Voice"} onClick={() => { const v = !voice; setVoice(v); try { localStorage.setItem("cb_voice", v ? "1" : "0"); } catch { /* без сохранения */ } if (!v) window.speechSynthesis?.cancel(); }}>{voice ? "🔊" : "🔇"}</button>
