@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "lol.chessbet.app",
+      "sha256_cert_fingerprints": [
+        "85:D1:04:C4:04:92:FD:AE:FE:32:78:89:8C:57:58:58:F3:A8:FA:4D:41:08:89:A8:58:16:25:C4:FE:2B:BF:DB"
+      ]
+    }
+  }
+]
