@@ -14,6 +14,7 @@ import HowTo from "./HowTo";
 import MyGames from "./MyGames";
 import MyFriendRooms from "./MyFriendRooms";
 import MyNfts from "./MyNfts";
+import UpdateButton from "./UpdateButton";
 import ProfileEditor from "./ProfileEditor";
 import Share from "./Share";
 
@@ -100,6 +101,7 @@ export default function Profile({ onOpenGame, onOpenRoom }: { onOpenGame: (id: n
           <MyGames onOpenGame={onOpenGame} />
           {onOpenRoom && <MyFriendRooms onOpen={onOpenRoom} />}
           <MyNfts />
+          <div className="text-center"><UpdateButton /></div>
           <section className="card space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold">{t("balance")}</h2>
