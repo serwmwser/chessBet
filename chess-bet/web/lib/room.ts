@@ -26,6 +26,10 @@ export type RoomState = {
   limit: number; // время на партию каждому игроку, мс
   clock: { w: number; b: number }; // остаток времени на момент получения
   running: boolean; // часы идут
+  pause: { by: Color; left: number } | null; // пауза: кто взял и сколько осталось до автопоражения, мс
+  pausesLeft: { w: number; b: number };
+  chat: { from: Color; text: string; at: number }[]; // чат видят только двое игроков
+  rematch: Color | null; // кто предложил реванш
 };
 
 const tokKey = (id: string) => "cb_room_" + id;
@@ -61,6 +65,7 @@ export function useRoom(roomId: string | null, create: Color | "r" = "r", minute
   const [online, setOnline] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [at, setAt] = useState(0); // когда получено последнее состояние (для хода часов)
+  const [notice, setNotice] = useState<{ code: string; n: number } | null>(null); // нефатальные ошибки сервера (чат, пауза и т.д.)
   const ws = useRef<WebSocket | null>(null);
   const cur = useRef<string | null>(roomId);
   const lastMsg = useRef(0); // ROOMFIX: когда последний раз что-то приходило с сервера
@@ -83,7 +88,16 @@ export function useRoom(roomId: string | null, create: Color | "r" = "r", minute
         try { m = JSON.parse(String(e.data)); } catch { return; }
         if (m.t === "state") { setSt(m as RoomState); setAt(Date.now()); setError(null); }
         else if (m.t === "seat") { cur.current = m.id; setId(m.id); setSeat(m.color); if (m.token) saveTok(m.id, m.token); if (m.color === "w" || m.color === "b") addMyRoom(m.id, m.color); }
-        else if (m.t === "error") setError(String(m.message));
+        else if (m.t === "rematch_go" && typeof m.id === "string" && typeof m.token === "string") {
+          // оба согласились на реванш: переходим в новую комнату с обменянными цветами
+          saveTok(m.id, m.token); cur.current = m.id; setId(m.id); setSeat(null); setSt(null); setError(null);
+          s.send(JSON.stringify({ t: "join", id: m.id, token: m.token }));
+        }
+        else if (m.t === "error") {
+          const c = String(m.message);
+          if (c === "room_not_found" || c === "busy" || c === "too_many_rooms") setError(c);
+          else setNotice({ code: c, n: Date.now() });
+        }
       };
       s.onclose = () => {
         setOnline(false);
@@ -113,11 +127,15 @@ export function useRoom(roomId: string | null, create: Color | "r" = "r", minute
 
   const send = useCallback((o: object) => { if (ws.current?.readyState === WebSocket.OPEN) ws.current.send(JSON.stringify(o)); }, []);
   return {
-    id, st, seat, online, error, at,
+    id, st, seat, online, error, at, notice,
     move: (from: string, to: string, promotion?: string) => send({ t: "move", from, to, promotion }),
     resign: () => send({ t: "resign" }),
     offerDraw: () => send({ t: "draw_offer" }),
     acceptDraw: () => send({ t: "draw_accept" }),
     declineDraw: () => send({ t: "draw_decline" }),
+    chat: (text: string) => send({ t: "chat", text }),
+    pause: () => send({ t: "pause" }),
+    resume: () => send({ t: "resume" }),
+    rematch: () => send({ t: "rematch" }),
   };
 }
