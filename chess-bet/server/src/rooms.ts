@@ -93,8 +93,21 @@ setInterval(() => {
   for (const [ip, list] of created) { const l = list.filter((t) => now - t < 3600_000); if (l.length) created.set(ip, l); else created.delete(ip); }
 }, 600_000).unref();
 
+// ROOMFIX: «пульс» раз в 25 секунд: мёртвые соединения (телефон уснул, сеть пропала) закрываются, а живые не обрываются прокси
+const alive = new WeakSet<WebSocket>();
+setInterval(() => {
+  for (const c of roomsWss.clients) {
+    if (!alive.has(c)) { c.terminate(); continue; }
+    alive.delete(c);
+    try { c.ping(); } catch { /* соединение уже закрыто */ }
+  }
+}, 25_000).unref();
+
 roomsWss.on("connection", (ws: WebSocket, req: http.IncomingMessage) => {
   const ip = ipOf(req);
+  alive.add(ws);
+  ws.on("pong", () => alive.add(ws));
+  ws.on("error", () => { /* ошибка одного соединения не должна ронять весь сервер */ });
   let room: Room | undefined;
   let who: Who = "s";
   let win = Date.now(), n = 0;
@@ -144,6 +157,7 @@ roomsWss.on("connection", (ws: WebSocket, req: http.IncomingMessage) => {
     }
     if (!room) return err("no_room");
     const r = room;
+    if (m.t === "sync") return send(state(r)); // клиент после пробуждения просит свежее состояние
     if (who === "s") return err("not_player");
     r.touched = now;
 

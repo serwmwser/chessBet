@@ -63,11 +63,13 @@ export function useRoom(roomId: string | null, create: Color | "r" = "r", minute
   const [at, setAt] = useState(0); // когда получено последнее состояние (для хода часов)
   const ws = useRef<WebSocket | null>(null);
   const cur = useRef<string | null>(roomId);
+  const lastMsg = useRef(0); // ROOMFIX: когда последний раз что-то приходило с сервера
 
   useEffect(() => {
     let stop = false, tries = 0;
     let retry: ReturnType<typeof setTimeout> | undefined;
     const open = () => {
+      if (retry) { clearTimeout(retry); retry = undefined; }
       const s = new WebSocket(ROOM_URL);
       ws.current = s;
       s.onopen = () => {
@@ -77,6 +79,7 @@ export function useRoom(roomId: string | null, create: Color | "r" = "r", minute
       };
       s.onmessage = (e) => {
         let m: any;
+        lastMsg.current = Date.now();
         try { m = JSON.parse(String(e.data)); } catch { return; }
         if (m.t === "state") { setSt(m as RoomState); setAt(Date.now()); setError(null); }
         else if (m.t === "seat") { cur.current = m.id; setId(m.id); setSeat(m.color); if (m.token) saveTok(m.id, m.token); if (m.color === "w" || m.color === "b") addMyRoom(m.id, m.color); }
@@ -90,7 +93,21 @@ export function useRoom(roomId: string | null, create: Color | "r" = "r", minute
       };
     };
     open();
-    return () => { stop = true; if (retry) clearTimeout(retry); ws.current?.close(); };
+    // после сна телефона или возврата из другого приложения сразу проверяем связь и переподключаемся
+    const wake = () => {
+      if (stop || document.visibilityState === "hidden") return;
+      const s = ws.current;
+      if (!s || s.readyState === WebSocket.CLOSED || s.readyState === WebSocket.CLOSING) { tries = 0; open(); return; }
+      if (s.readyState === WebSocket.OPEN) {
+        const before = lastMsg.current;
+        s.send(JSON.stringify({ t: "sync" }));
+        setTimeout(() => { if (!stop && lastMsg.current === before && ws.current === s) { try { s.close(); } catch { /* уже закрыто */ } } }, 3000);
+      }
+    };
+    document.addEventListener("visibilitychange", wake);
+    window.addEventListener("online", wake);
+    window.addEventListener("focus", wake);
+    return () => { stop = true; if (retry) clearTimeout(retry); document.removeEventListener("visibilitychange", wake); window.removeEventListener("online", wake); window.removeEventListener("focus", wake); ws.current?.close(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

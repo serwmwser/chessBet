@@ -8,6 +8,10 @@ import { ethers } from "ethers";
 import { createSession, checkSession } from "./session.js";
 import { roomsWss } from "./rooms.js";
 
+// ROOMFIX: одна неожиданная ошибка не должна останавливать весь сервер и обрывать все партии
+process.on("uncaughtException", (e) => console.error("uncaughtException", e));
+process.on("unhandledRejection", (e) => console.error("unhandledRejection", e));
+
 const {
   RPC_URL,
   ESCROW,
