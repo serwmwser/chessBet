@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useApp } from "@/lib/ctx";
+import { inTelegram } from "@/lib/telegram";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
@@ -17,7 +18,7 @@ export default function AppDownload() {
   useEffect(() => {
     try {
       const standalone = window.matchMedia("(display-mode: standalone)").matches || document.referrer.startsWith("android-app://");
-      setHide(standalone);
+      setHide(standalone || inTelegram());
       setAndroid(/android/i.test(navigator.userAgent));
     } catch { /* ничего */ }
     const on = (e: Event) => { e.preventDefault(); setEvt(e as InstallEvt); };
