@@ -7,7 +7,7 @@ import { LANGS, Lang } from "@/lib/i18n";
 import MusicToggle from "./MusicToggle";
 
 export const wallets = [
-  inAppWallet({ auth: { options: ["email", "google", "apple", "passkey"] } }),
+  inAppWallet({ auth: { options: ["email", "google", "apple", "telegram", "passkey"] } }),
   createWallet("io.metamask"),
   createWallet("com.coinbase.wallet"),
   createWallet("com.trustwallet.app"),
