@@ -17,11 +17,14 @@ interface IChessEscrow {
     function usdc() external view returns (address);
 }
 
-/// @title ChessBet Moment NFT
+/// @title ChessBet Moment NFT v2
 /// @notice NFT любого момента сыгранной на токены партии (ChessEscrow): игрок после окончания партии выбирает ход
 ///         (или итоговую позицию с матом) и создаёт NFT-картинку этой позиции. На один ход партии один NFT.
 ///         Игроков, ставку и победителя контракт сам читает из ChessEscrow; оракул (сервер) подписывает только
-///         выбранную позицию (FEN), последний ход и запись ходов. Картинка хранится прямо в контракте (SVG).
+///         выбранную позицию (FEN), последний ход и запись ходов. Игрок сам выбирает мультяшную фигуру (0-29),
+///         настроение (0-3) и фон (0-7): половина картинки это позиция выбранного хода, половина это фигура.
+///         Данные (позиция, игроки, результат, выбор игрока) хранятся в контракте, а картинку по ним рисует
+///         сервер проекта по адресу imageUrl + номер токена + .svg.
 ///         За создание игрок платит mintFee (1 USDC) на баланс проекта. Роялти ERC-2981 (по умолчанию 5%).
 contract GameNFT is ERC721, ERC2981, Ownable {
     using SafeERC20 for IERC20;
@@ -31,24 +34,32 @@ contract GameNFT is ERC721, ERC2981, Ownable {
     uint256 public constant MAX_MINT_FEE = 10_000_000; // потолок платы за создание: 10 USDC
     uint256 private constant MAX_FEN = 100;
     uint256 private constant MAX_PGN = 2000;
+    uint8 public constant FIGURES = 30;
+    uint8 public constant MOODS = 4;
+    uint8 public constant BGS = 8;
 
     IChessEscrow public immutable escrow;
     IERC20 public immutable usdc; // тот же USDC, что в ChessEscrow
     address public oracle;
     uint256 public mintFee = 1_000_000; // 1 USDC
     address public feeRecipient;
-    string public siteUrl = "https://serwmwser.github.io/chessBet/?game=";
+    string public siteUrl = "https://chessbet.lol/?game=";
+    string public imageUrl = "https://api.chessbet.lol/nft/img/";
     uint256 public totalSupply;
 
     /// @dev выбранный момент партии; from/to: клетки последнего хода 0..63 (0 = a8, 63 = h1), 255 = нет
     struct Snap { uint64 gameId; uint16 ply; uint16 total; uint8 from; uint8 to; string san; string fen; string pgn; }
+    /// @dev выбор игрока: фигура 0..29, настроение 0..3 (улыбка, спокойный, злость, грусть), фон 0..7
+    struct Art { uint8 figure; uint8 mood; uint8 bg; }
     mapping(uint256 => Snap) private snaps;
+    mapping(uint256 => Art) public arts;
     mapping(uint256 => bool) public taken; // ключ: gameId * 100000 + ply
 
-    event Minted(uint256 indexed tokenId, uint256 indexed gameId, uint16 ply, address indexed owner);
+    event Minted(uint256 indexed tokenId, uint256 indexed gameId, uint16 ply, address indexed owner, uint8 figure, uint8 mood, uint8 bg);
     event OracleChanged(address oracle);
     event RoyaltyChanged(address receiver, uint96 bps);
     event SiteUrlChanged(string url);
+    event ImageUrlChanged(string url);
     event MintFeeChanged(uint256 fee, address recipient);
 
     constructor(address escrow_, address oracle_, address royaltyReceiver, uint96 royaltyBps, address owner_)
@@ -68,7 +79,8 @@ contract GameNFT is ERC721, ERC2981, Ownable {
     /// @notice Создать NFT выбранного момента завершённой партии (любой ход или итоговая позиция).
     ///         Вызвать может только один из двух игроков; подпись выдаёт сервер (оракул).
     ///         Плата mintFee списывается с игрока на баланс проекта (нужен approve USDC на этот контракт).
-    function mint(Snap calldata s, bytes calldata sig) external returns (uint256 tokenId) {
+    function mint(Snap calldata s, Art calldata a, bytes calldata sig) external returns (uint256 tokenId) {
+        require(a.figure < FIGURES && a.mood < MOODS && a.bg < BGS, "art");
         require(s.ply >= 1 && s.ply <= s.total && s.total <= 1000, "ply");
         require(bytes(s.fen).length > 0 && bytes(s.fen).length <= MAX_FEN, "fen");
         require(bytes(s.pgn).length <= MAX_PGN && bytes(s.san).length <= 16, "size");
@@ -86,9 +98,10 @@ contract GameNFT is ERC721, ERC2981, Ownable {
         Snap storage d = snaps[tokenId];
         d.gameId = s.gameId; d.ply = s.ply; d.total = s.total; d.from = s.from; d.to = s.to;
         d.san = s.san; d.fen = s.fen; d.pgn = s.pgn;
+        arts[tokenId] = a;
         if (mintFee > 0) usdc.safeTransferFrom(msg.sender, feeRecipient, mintFee);
         _mint(msg.sender, tokenId);
-        emit Minted(tokenId, s.gameId, s.ply, msg.sender);
+        emit Minted(tokenId, s.gameId, s.ply, msg.sender, a.figure, a.mood, a.bg);
     }
 
     /// @notice Победитель партии из ChessEscrow (address(0) = ничья)
@@ -130,8 +143,7 @@ contract GameNFT is ERC721, ERC2981, Ownable {
             ' on Polygon: ', _short(g.p1), ' (White) vs ', _short(g.p2), ' (Black), bet ', _usdc(g.bet), ' USDC each. ', _result(g), '.",'
         );
         string memory mid = string.concat(
-            '"external_url":"', siteUrl, Strings.toString(s.gameId), '","image":"data:image/svg+xml;base64,',
-            Base64.encode(bytes(_svg(s, g))), '",'
+            '"external_url":"', siteUrl, Strings.toString(s.gameId), '","image":"', imageUrl, Strings.toString(tokenId), '.svg",'
         );
         string memory tail = string.concat(
             '"attributes":[{"trait_type":"Game","display_type":"number","value":', Strings.toString(s.gameId), '},',
@@ -143,9 +155,18 @@ contract GameNFT is ERC721, ERC2981, Ownable {
             '{"trait_type":"Bet (USDC)","display_type":"number","value":', _usdc(g.bet), '},',
             '{"trait_type":"White","value":"', Strings.toHexString(g.p1), '"},',
             '{"trait_type":"Black","value":"', Strings.toHexString(g.p2), '"},',
-            '{"trait_type":"Position","value":"', s.fen, '"}]}'
+            '{"trait_type":"Position","value":"', s.fen, '"},'
         );
-        return string.concat("data:application/json;base64,", Base64.encode(bytes(string.concat(head, mid, tail))));
+        return string.concat("data:application/json;base64,", Base64.encode(bytes(string.concat(head, mid, tail, _artAttrs(tokenId)))));
+    }
+
+    function _artAttrs(uint256 tokenId) private view returns (string memory) {
+        Art memory a = arts[tokenId];
+        return string.concat(
+            '{"trait_type":"Piece","value":"', figureName(a.figure), '"},',
+            '{"trait_type":"Mood","value":"', moodName(a.mood), '"},',
+            '{"trait_type":"Background","value":"', bgName(a.bg), '"}]}'
+        );
     }
 
     /// @notice Описание коллекции для OpenSea (в том числе роялти)
@@ -158,62 +179,49 @@ contract GameNFT is ERC721, ERC2981, Ownable {
         return string.concat("data:application/json;base64,", Base64.encode(bytes(json)));
     }
 
-    function _svg(Snap storage s, G memory g) private view returns (string memory) {
-        bytes memory o = abi.encodePacked(
-            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 480">',
-            '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset=".55" stop-color="#6d3df0"/><stop offset="1" stop-color="#9333ea"/></linearGradient></defs>',
-            '<rect width="400" height="480" rx="28" fill="url(#g)"/>',
-            '<text x="200" y="36" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="24" fill="#ffd54a">CHESS BET #', Strings.toString(s.gameId), '</text>',
-            '<text x="200" y="58" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="14" fill="#ffffff">', _moveText(s), s.ply == s.total ? " (final)" : "", '</text>',
-            '<rect x="34" y="70" width="332" height="332" rx="8" fill="#0d0a2a"/>',
-            '<rect x="40" y="76" width="320" height="320" fill="#f0d9b5"/>'
-        );
-        for (uint256 i = 0; i < 64; i++) {
-            if ((i / 8 + i % 8) % 2 == 1) o = abi.encodePacked(o, _sq(i, "#b58863"));
-        }
-        if (s.from < 64) o = abi.encodePacked(o, _sq(s.from, "#f7d046"), _sq(s.to < 64 ? s.to : s.from, "#f7d046"));
-        o = abi.encodePacked(o, '<g font-size="34" text-anchor="middle" stroke-width="3" paint-order="stroke" stroke-linejoin="round" font-family="Arial,sans-serif">', _pieces(s.fen), '</g>');
-        o = abi.encodePacked(
-            o,
-            '<text x="200" y="430" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="17" fill="#ffffff">',
-            _result(g), ' | ', _usdc(g.bet), ' USDC</text>',
-            '<text x="200" y="454" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#e5dcff">', _short(g.p1), ' vs ', _short(g.p2), '</text>',
-            '</svg>'
-        );
-        return string(o);
+    function figureName(uint8 i) public pure returns (string memory) {
+        string[30] memory n;
+        n[0] = "King (White, clay)";
+        n[1] = "Queen (White, clay)";
+        n[2] = "Rook (White, clay)";
+        n[3] = "Bishop (White, clay)";
+        n[4] = "Knight (White, clay)";
+        n[5] = "Ninja (White, clay)";
+        n[6] = "Police (White, clay)";
+        n[7] = "Lady (White, clay)";
+        n[8] = "Bandit (White, clay)";
+        n[9] = "King (Black, clay)";
+        n[10] = "Queen (Black, clay)";
+        n[11] = "Rook (Black, clay)";
+        n[12] = "Bishop (Black, clay)";
+        n[13] = "Knight (Black, clay)";
+        n[14] = "Ninja (Black, clay)";
+        n[15] = "Police (Black, clay)";
+        n[16] = "Lady (Black, clay)";
+        n[17] = "Bandit (Black, clay)";
+        n[18] = "King (White, knights)";
+        n[19] = "Queen (White, knights)";
+        n[20] = "Rook (White, knights)";
+        n[21] = "Bishop (White, knights)";
+        n[22] = "Knight (White, knights)";
+        n[23] = "Pawn (White, knights)";
+        n[24] = "King (Black, knights)";
+        n[25] = "Queen (Black, knights)";
+        n[26] = "Rook (Black, knights)";
+        n[27] = "Bishop (Black, knights)";
+        n[28] = "Knight (Black, knights)";
+        n[29] = "Pawn (Black, knights)";
+        return n[i];
     }
 
-    function _sq(uint256 i, string memory fill) private pure returns (bytes memory) {
-        return abi.encodePacked('<rect x="', Strings.toString(40 + (i % 8) * 40), '" y="', Strings.toString(76 + (i / 8) * 40), '" width="40" height="40" fill="', fill, '"/>');
+    function moodName(uint8 i) public pure returns (string memory) {
+        string[4] memory n = ["Smile", "Calm", "Anger", "Sad"];
+        return n[i];
     }
 
-    function _pieces(string memory fen) private pure returns (bytes memory o) {
-        bytes memory f = bytes(fen);
-        uint256 r = 0; uint256 c = 0;
-        for (uint256 i = 0; i < f.length; i++) {
-            bytes1 ch = f[i];
-            if (ch == 0x20) break;
-            if (ch == 0x2f) { r++; c = 0; continue; }
-            if (ch >= 0x31 && ch <= 0x38) { c += uint8(ch) - 48; continue; }
-            string memory glyph = _glyph(ch);
-            if (bytes(glyph).length != 0 && r < 8 && c < 8) {
-                o = abi.encodePacked(o, '<text x="', Strings.toString(60 + c * 40), '" y="', Strings.toString(76 + r * 40 + 31),
-                    (ch >= 0x41 && ch <= 0x5a) ? '" fill="#ffffff" stroke="#1a1030">' : '" fill="#1a1030" stroke="#ffffff">', glyph, hex"efb88e", '</text>');
-            }
-            c++;
-        }
-    }
-
-    function _glyph(bytes1 ch) private pure returns (string memory) {
-        uint8 u = uint8(ch);
-        if (u >= 0x61) u -= 32; // в верхний регистр
-        if (u == 0x4b) return unicode"♚";
-        if (u == 0x51) return unicode"♛";
-        if (u == 0x52) return unicode"♜";
-        if (u == 0x42) return unicode"♝";
-        if (u == 0x4e) return unicode"♞";
-        if (u == 0x50) return unicode"♟";
-        return "";
+    function bgName(uint8 i) public pure returns (string memory) {
+        string[8] memory n = ["Orange", "Sky", "Lime", "Pink", "Yellow", "Violet", "Red", "Teal"];
+        return n[i];
     }
 
     function _short(address a) private pure returns (string memory) {
@@ -245,6 +253,7 @@ contract GameNFT is ERC721, ERC2981, Ownable {
         emit MintFeeChanged(fee, recipient);
     }
     function setSiteUrl(string calldata url) external onlyOwner { siteUrl = url; emit SiteUrlChanged(url); }
+    function setImageUrl(string calldata url) external onlyOwner { imageUrl = url; emit ImageUrlChanged(url); }
 
     function supportsInterface(bytes4 i) public view override(ERC721, ERC2981) returns (bool) { return super.supportsInterface(i); }
 }

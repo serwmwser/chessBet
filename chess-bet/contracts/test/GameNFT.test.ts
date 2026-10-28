@@ -11,6 +11,7 @@ const PGN3 = "1. e4 e5 2. Bc4";
 const SNAP_T = "tuple(uint64 gameId,uint16 ply,uint16 total,uint8 from,uint8 to,string san,string fen,string pgn)";
 
 type Snap = { gameId: number; ply: number; total: number; from: number; to: number; san: string; fen: string; pgn: string };
+const ART = { figure: 1, mood: 0, bg: 0 }; // ферзь (белый, глина), улыбка, оранжевый фон
 const FINAL: Snap = { gameId: 1, ply: 7, total: 7, from: 31, to: 13, san: "Qxf7#", fen: FEN7, pgn: PGN7 };
 const MID: Snap = { gameId: 1, ply: 3, total: 7, from: 61, to: 34, san: "Bc4", fen: FEN3, pgn: PGN3 };
 
@@ -48,7 +49,7 @@ describe("GameNFT (моменты партий)", () => {
     const { esc, nft, oracle, a, b } = await setup();
     const id = await played(esc, a, b, oracle, a.address);
     expect(id).to.equal(1);
-    await expect(nft.connect(a).mint(FINAL, await sig(nft, oracle, FINAL))).to.emit(nft, "Minted").withArgs(1, 1, 7, a.address);
+    await expect(nft.connect(a).mint(FINAL, ART, await sig(nft, oracle, FINAL))).to.emit(nft, "Minted").withArgs(1, 1, 7, a.address, 1, 0, 0);
     expect(await nft.ownerOf(1)).to.equal(a.address);
     expect(await nft.winnerOf(1)).to.equal(a.address);
     const meta = decode(await nft.tokenURI(1));
@@ -56,11 +57,11 @@ describe("GameNFT (моменты партий)", () => {
     expect(attr(meta, "Result")).to.equal("White won");
     expect(attr(meta, "Final position")).to.equal("Yes");
     expect(attr(meta, "Bet (USDC)")).to.equal(5);
-    const svg = Buffer.from(meta.image.split(",")[1], "base64").toString();
-    expect(svg).to.contain("CHESS BET #1");
-    expect(svg).to.contain("Move 7/7 Qxf7# (final)");
-    expect(svg).to.contain('fill="#f7d046"'); // подсветка последнего хода
-    expect((svg.match(/♟|♜|♞|♝|♛|♚/g) || []).length).to.equal(31);
+    expect(meta.image).to.equal("https://api.chessbet.lol/nft/img/1.svg");
+    expect(attr(meta, "Piece")).to.equal("Queen (White, clay)");
+    expect(attr(meta, "Mood")).to.equal("Smile");
+    expect(attr(meta, "Background")).to.equal("Orange");
+    expect(attr(meta, "Position")).to.equal(FEN7);
     const m = await nft.momentOf(1);
     expect(m.pgn).to.equal(PGN7);
   });
@@ -68,14 +69,14 @@ describe("GameNFT (моменты партий)", () => {
   it("можно выбрать любой ход, и проигравший тоже; на один ход один NFT", async () => {
     const { esc, nft, oracle, a, b } = await setup();
     await played(esc, a, b, oracle, a.address);
-    await nft.connect(b).mint(MID, await sig(nft, oracle, MID)); // проигравший создаёт NFT позиции на 3-м ходу
+    await nft.connect(b).mint(MID, ART, await sig(nft, oracle, MID)); // проигравший создаёт NFT позиции на 3-м ходу
     expect(await nft.ownerOf(1)).to.equal(b.address);
     const meta = decode(await nft.tokenURI(1));
     expect(attr(meta, "Final position")).to.equal("No");
     expect(attr(meta, "Move")).to.equal(3);
-    await nft.connect(a).mint(FINAL, await sig(nft, oracle, FINAL)); // а победитель итоговую
+    await nft.connect(a).mint(FINAL, ART, await sig(nft, oracle, FINAL)); // а победитель итоговую
     expect(await nft.totalSupply()).to.equal(2n);
-    await expect(nft.connect(a).mint(MID, await sig(nft, oracle, MID))).to.be.revertedWith("taken"); // этот ход уже взят
+    await expect(nft.connect(a).mint(MID, ART, await sig(nft, oracle, MID))).to.be.revertedWith("taken"); // этот ход уже взят
   });
 
   it("создание платное: 1 USDC уходит на баланс проекта, без разрешения не создаётся", async () => {
@@ -83,28 +84,28 @@ describe("GameNFT (моменты партий)", () => {
     await played(esc, a, b, oracle, a.address);
     expect(await nft.mintFee()).to.equal(U(1));
     await usdc.connect(a).approve(await nft.getAddress(), 0);
-    await expect(nft.connect(a).mint(FINAL, await sig(nft, oracle, FINAL))).to.be.reverted; // нет разрешения на списание
+    await expect(nft.connect(a).mint(FINAL, ART, await sig(nft, oracle, FINAL))).to.be.reverted; // нет разрешения на списание
     await usdc.connect(a).approve(await nft.getAddress(), U(1));
     const f0 = await usdc.balanceOf(fee.address), a0 = await usdc.balanceOf(a.address);
-    await nft.connect(a).mint(FINAL, await sig(nft, oracle, FINAL));
+    await nft.connect(a).mint(FINAL, ART, await sig(nft, oracle, FINAL));
     expect((await usdc.balanceOf(fee.address)) - f0).to.equal(U(1));
     expect(a0 - (await usdc.balanceOf(a.address))).to.equal(U(1));
     await expect(nft.connect(a).setMintFee(0, a.address)).to.be.reverted;
     await expect(nft.connect(owner).setMintFee(U(10) + 1n, a.address)).to.be.revertedWith("fee");
     await nft.connect(owner).setMintFee(0, fee.address);
     await usdc.connect(b).approve(await nft.getAddress(), 0);
-    await nft.connect(b).mint(MID, await sig(nft, oracle, MID)); // при нулевой плате разрешение не нужно
+    await nft.connect(b).mint(MID, ART, await sig(nft, oracle, MID)); // при нулевой плате разрешение не нужно
   });
 
   it("ничья и победа чёрных показываются верно", async () => {
     const { esc, nft, oracle, a, b } = await setup();
     await played(esc, a, b, oracle, b.address, 25.5);
-    await nft.connect(b).mint(FINAL, await sig(nft, oracle, FINAL));
+    await nft.connect(b).mint(FINAL, ART, await sig(nft, oracle, FINAL));
     expect(attr(decode(await nft.tokenURI(1)), "Result")).to.equal("Black won");
     expect(attr(decode(await nft.tokenURI(1)), "Bet (USDC)")).to.equal(25.5);
     await played(esc, a, b, oracle, ZERO);
     const s2 = { ...FINAL, gameId: 2 };
-    await nft.connect(a).mint(s2, await sig(nft, oracle, s2));
+    await nft.connect(a).mint(s2, ART, await sig(nft, oracle, s2));
     expect(attr(decode(await nft.tokenURI(2)), "Result")).to.equal("Draw");
   });
 
@@ -112,25 +113,25 @@ describe("GameNFT (моменты партий)", () => {
     const { esc, nft, oracle, a, b, c } = await setup();
     await played(esc, a, b, oracle, a.address);
     const s = await sig(nft, oracle, FINAL);
-    await expect(nft.connect(c).mint(FINAL, s)).to.be.revertedWith("not player");
-    await expect(nft.connect(a).mint({ ...FINAL, fen: FEN3 }, s)).to.be.revertedWith("bad sig"); // подмена позиции
-    await expect(nft.connect(a).mint({ ...FINAL, ply: 6 }, s)).to.be.revertedWith("bad sig"); // подмена номера хода
-    await expect(nft.connect(a).mint(FINAL, await sig(nft, a, FINAL))).to.be.revertedWith("bad sig"); // подпись не оракула
+    await expect(nft.connect(c).mint(FINAL, ART, s)).to.be.revertedWith("not player");
+    await expect(nft.connect(a).mint({ ...FINAL, fen: FEN3 }, ART, s)).to.be.revertedWith("bad sig"); // подмена позиции
+    await expect(nft.connect(a).mint({ ...FINAL, ply: 6 }, ART, s)).to.be.revertedWith("bad sig"); // подмена номера хода
+    await expect(nft.connect(a).mint(FINAL, ART, await sig(nft, a, FINAL))).to.be.revertedWith("bad sig"); // подпись не оракула
     const bad0 = { ...FINAL, ply: 0 };
-    await expect(nft.connect(a).mint(bad0, await sig(nft, oracle, bad0))).to.be.revertedWith("ply");
+    await expect(nft.connect(a).mint(bad0, ART, await sig(nft, oracle, bad0))).to.be.revertedWith("ply");
     const bad9 = { ...FINAL, ply: 9 };
-    await expect(nft.connect(a).mint(bad9, await sig(nft, oracle, bad9))).to.be.revertedWith("ply");
+    await expect(nft.connect(a).mint(bad9, ART, await sig(nft, oracle, bad9))).to.be.revertedWith("ply");
     await esc.connect(a).createGame(U(1), 900, ZERO); // партия 2 не завершена
     const g2 = { ...FINAL, gameId: 2 };
-    await expect(nft.connect(a).mint(g2, await sig(nft, oracle, g2))).to.be.revertedWith("not finished");
+    await expect(nft.connect(a).mint(g2, ART, await sig(nft, oracle, g2))).to.be.revertedWith("not finished");
     const g99 = { ...FINAL, gameId: 99 };
-    await expect(nft.connect(a).mint(g99, await sig(nft, oracle, g99))).to.be.revertedWith("not finished");
+    await expect(nft.connect(a).mint(g99, ART, await sig(nft, oracle, g99))).to.be.revertedWith("not finished");
   });
 
   it("роялти 5% идёт получателю, права владельца ограничены", async () => {
     const { esc, nft, oracle, fee, owner, a, b } = await setup();
     await played(esc, a, b, oracle, a.address);
-    await nft.connect(a).mint(FINAL, await sig(nft, oracle, FINAL));
+    await nft.connect(a).mint(FINAL, ART, await sig(nft, oracle, FINAL));
     const [rcv, amt] = await nft.royaltyInfo(1, 10_000n);
     expect(rcv).to.equal(fee.address);
     expect(amt).to.equal(500n);
@@ -141,5 +142,25 @@ describe("GameNFT (моменты партий)", () => {
     expect((await nft.royaltyInfo(1, 10_000n))[1]).to.equal(700n);
     expect(await nft.supportsInterface("0x2a55205a")).to.equal(true); // ERC-2981
     expect(await nft.supportsInterface("0x80ac58cd")).to.equal(true); // ERC-721
+  });
+
+  it("выбор фигуры, настроения и фона проверяется и попадает в метаданные", async () => {
+    const { esc, nft, oracle, owner, a, b } = await setup();
+    await played(esc, a, b, oracle, a.address);
+    const sg = await sig(nft, oracle, FINAL);
+    await expect(nft.connect(a).mint(FINAL, { figure: 30, mood: 0, bg: 0 }, sg)).to.be.revertedWith("art");
+    await expect(nft.connect(a).mint(FINAL, { figure: 0, mood: 4, bg: 0 }, sg)).to.be.revertedWith("art");
+    await expect(nft.connect(a).mint(FINAL, { figure: 0, mood: 0, bg: 8 }, sg)).to.be.revertedWith("art");
+    await nft.connect(a).mint(FINAL, { figure: 29, mood: 2, bg: 7 }, sg); // чёрная пешка рыцарей, злость, бирюзовый фон
+    const meta = decode(await nft.tokenURI(1));
+    expect(attr(meta, "Piece")).to.equal("Pawn (Black, knights)");
+    expect(attr(meta, "Mood")).to.equal("Anger");
+    expect(attr(meta, "Background")).to.equal("Teal");
+    const art = await nft.arts(1);
+    expect([Number(art.figure), Number(art.mood), Number(art.bg)]).to.deep.equal([29, 2, 7]);
+    for (let i = 0; i < 30; i++) expect(await nft.figureName(i)).to.not.equal("");
+    await nft.connect(owner).setImageUrl("https://x.example/i/");
+    expect(decode(await nft.tokenURI(1)).image).to.equal("https://x.example/i/1.svg");
+    await expect(nft.connect(a).setImageUrl("x")).to.be.reverted;
   });
 });
