@@ -5,7 +5,7 @@ import { DoneGame, fetchHistory, fetchSaved, SavedGame } from "@/lib/api";
 import { shortAddr, usdc } from "@/lib/config";
 import { useApp } from "@/lib/ctx";
 import { FIGURES, MOODS, NFT_BGS } from "@/lib/nftArt";
-import { takenPlies } from "@/lib/nft";
+import { NftStep, nftEnabled, openSeaCollection, openSeaUrl, readMintFee, takenPlies, useNft } from "@/lib/nft";
 import NftCard from "./NftCard";
 import { ReplayBar, useReplay } from "./Replay";
 
@@ -13,7 +13,7 @@ const EMPTY: string[] = [];
 
 /** Студия NFT: игрок выбирает свою партию и ход, мультяшную фигуру, настроение и фон; половина картинки это позиция выбранного хода, половина это фигура. */
 export default function NftStudio() {
-  const { lang } = useApp();
+  const { lang, toast } = useApp();
   const ru = lang === "ru";
   const me = useActiveAccount()?.address;
   const [games, setGames] = useState<DoneGame[] | null>(null);
@@ -23,6 +23,12 @@ export default function NftStudio() {
   const [figure, setFigure] = useState("clay-w-q");
   const [mood, setMood] = useState("cheer");
   const [bg, setBg] = useState("orange");
+  const { mint } = useNft();
+  const [step, setStep] = useState<NftStep>("idle");
+  const [fee, setFee] = useState(1);
+  const [done, setDone] = useState<{ token: number | null; ply: number } | null>(null);
+  useEffect(() => { readMintFee().then((x) => setFee(Number(x) / 1e6)).catch(() => { /* остаётся 1 USDC */ }); }, []);
+  useEffect(() => { setDone(null); }, [gid]);
 
   useEffect(() => {
     if (!me) { setGames(null); return; }
@@ -56,6 +62,32 @@ export default function NftStudio() {
   const mine = (x: DoneGame) => (x.white.toLowerCase() === me.toLowerCase() || x.black.toLowerCase() === me.toLowerCase());
   const result = !g ? "" : g.winner ? (g.winner === g.white ? "White won" : "Black won") : "Draw";
   const sel = "w-full rounded-xl px-3 py-2 bg-black/5 dark:bg-violet-300/10";
+  const busy = step !== "idle";
+  const stepText = step === "sign" ? (ru ? "Готовим NFT…" : "Preparing the NFT…")
+    : step === "approve" ? (ru ? "Подтвердите в кошельке разрешение на " + fee + " USDC" : "Approve " + fee + " USDC in your wallet")
+    : step === "confirm" ? (ru ? "Подтвердите создание NFT в кошельке" : "Confirm the NFT in your wallet") : "";
+  const errText = (e: unknown) => {
+    const m = ((e as Error)?.message || "error").toString();
+    if (m.includes("not_finished") || m.includes("not finished")) return ru ? "Результат партии ещё записывается в блокчейн. Повторите через минуту." : "The result is still being recorded on the blockchain. Try again in a minute.";
+    if (m.includes("taken")) return ru ? "Этот ход уже превращён в NFT. Выберите другой." : "This move is already an NFT. Pick another one.";
+    if (m.includes("not player")) return ru ? "Создать NFT могут только игроки этой партии." : "Only the players of this game can create an NFT.";
+    return m.slice(0, 140);
+  };
+  const create = async () => {
+    if (!g || ply < 1) return;
+    const art = {
+      figure: Math.max(0, FIGURES.findIndex((x) => x.id === figure)),
+      mood: Math.max(0, MOODS.findIndex((x) => x.id === mood)),
+      bg: Math.max(0, NFT_BGS.findIndex((x) => x.id === bg)),
+    };
+    try {
+      const token = await mint(g.id, ply, setStep, art);
+      setDone({ token, ply });
+      setTaken((t) => new Set([...Array.from(t), ply]));
+      toast(ru ? "NFT создан" : "NFT created", "ok");
+    } catch (e) { toast(errText(e), "err"); }
+    finally { setStep("idle"); }
+  };
 
   return (
     <div className="space-y-4">
@@ -124,8 +156,22 @@ export default function NftStudio() {
               line2={`${shortAddr(g.white)} vs ${shortAddr(g.black)}`}
               animate
             />
-            <button type="button" className="btn btn-primary w-full" disabled>{ru ? "Создать NFT (скоро)" : "Mint NFT (soon)"}</button>
-            <div className="text-xs opacity-60 text-center">{ru ? "Создание NFT подключим после утверждения вида." : "Minting will be enabled once the look is approved."}</div>
+            {done ? (
+              <div className="space-y-2">
+                <p className="text-sm font-semibold text-emerald-500">✅ {ru ? "NFT создан" : "NFT created"}{done.token ? " #" + done.token : ""} ({ru ? "ход" : "move"} {done.ply})</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <a className="btn btn-primary text-center" href={done.token ? openSeaUrl(done.token) : openSeaCollection()} target="_blank" rel="noreferrer">{ru ? "Продать на OpenSea" : "Sell on OpenSea"}</a>
+                  <button type="button" className="btn btn-ghost" onClick={() => setDone(null)}>{ru ? "Создать ещё" : "Create another"}</button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <button type="button" className="btn btn-primary w-full" disabled={!nftEnabled || busy || ply < 1 || taken.has(ply)} onClick={create}>
+                  {busy ? stepText : (ru ? "Создать NFT за " : "Create NFT for ") + fee + " USDC"}
+                </button>
+                <div className="text-xs opacity-60 text-center">{ru ? "Картинка создаётся по вашему выбору и остаётся вашей: её можно продать на OpenSea. Один ход партии можно превратить в NFT только один раз." : "The picture is made from your choice and is yours to sell on OpenSea. Each move of a game can become an NFT only once."}</div>
+              </>
+            )}
           </section>
         </>
       )}
