@@ -30,6 +30,7 @@ type Room = {
   pausesLeft: { w: number; b: number };
   rematch: Color | null; // кто предложил реванш
   next: string | null; // номер комнаты реванша, когда оба согласились
+  hold: number | null; // ожидание: соперник сделал ход, а тот, чей ход, не в комнате; его часы стоят (время начала ожидания)
 };
 
 const MAX_ROOMS = 3000;
@@ -40,6 +41,7 @@ const DEFAULT_MIN = 60; // время на партию по умолчанию,
 const MAX_MIN = 180;
 const PAUSES = 2; // пауз на игрока, как в партии на токены
 const PAUSE_MS = 5 * 60_000; // длина паузы: не вернулся за 5 минут, значит поражение
+const HOLD_MAX_MS = 72 * 3600_000; // игрок не заходил в комнату 72 часа после хода соперника: после первого хода отмена, позже поражение
 
 export const roomsWss = new WebSocketServer({ noServer: true, maxPayload: 4096 });
 const rooms = new Map<string, Room>();
@@ -55,7 +57,7 @@ function saveRooms() {
       id: r.id, tokens: r.tokens, moves: r.chess.history(), over: r.over, reason: r.reason, winner: r.winner, drawOffer: r.drawOffer,
       touched: r.touched, limit: r.limit, clock: remaining(r),
       chat: r.chat.slice(-100), pauseBy: r.pause?.by ?? null, pauseLeft: r.pause ? Math.max(0, r.pause.until - now) : 0,
-      pausesLeft: r.pausesLeft, rematch: r.rematch, next: r.next,
+      pausesLeft: r.pausesLeft, rematch: r.rematch, next: r.next, hold: r.hold,
     }));
     fs.mkdirSync(path.dirname(ROOMS_FILE), { recursive: true });
     fs.writeFileSync(ROOMS_FILE + ".tmp", JSON.stringify(out));
@@ -82,6 +84,7 @@ function loadRooms() {
         pausesLeft: { w: Number(o.pausesLeft?.w ?? PAUSES), b: Number(o.pausesLeft?.b ?? PAUSES) },
         rematch: o.rematch === "w" || o.rematch === "b" ? o.rematch : null,
         next: typeof o.next === "string" ? o.next : null,
+        hold: Number(o.hold) > 0 ? Number(o.hold) : null,
       });
     }
     console.log("rooms restored:", rooms.size);
@@ -95,7 +98,7 @@ const ipOf = (req: http.IncomingMessage) => {
 };
 
 /** Часы идут после первого хода белых, только у того, чей ход, и не на паузе */
-const running = (r: Room) => !r.over && !r.pause && r.chess.history().length > 0;
+const running = (r: Room) => !r.over && !r.pause && !r.hold && r.chess.history().length > 0;
 function remaining(r: Room, now = Date.now()) {
   const used = running(r) ? now - r.last : 0;
   const t = r.chess.turn();
@@ -112,7 +115,7 @@ function state(r: Room, withChat = true) {
     seats: { w: !!r.tokens.w, b: !!r.tokens.b }, online: { w: on("w"), b: on("b") },
     watchers: [...r.socks.values()].filter((x) => x === "s").length,
     limit: r.limit, clock: remaining(r), running: running(r),
-    pause: r.pause ? { by: r.pause.by, left: Math.max(0, r.pause.until - now) } : null, pausesLeft: r.pausesLeft,
+    pause: r.pause ? { by: r.pause.by, left: Math.max(0, r.pause.until - now) } : null, pausesLeft: r.pausesLeft, hold: r.hold ?? null,
     chat: withChat ? r.chat.slice(-50) : [], rematch: r.rematch,
   };
 }
@@ -124,7 +127,7 @@ function broadcast(r: Room) {
 }
 function finish(r: Room, winner: Color | null, reason: string) {
   if (running(r)) { const t = r.chess.turn(); r.clock[t] = Math.max(0, r.clock[t] - (Date.now() - r.last)); } // замораживаем часы
-  r.over = true; r.winner = winner; r.reason = reason; r.drawOffer = null; r.pause = null;
+  r.over = true; r.winner = winner; r.reason = reason; r.drawOffer = null; r.pause = null; r.hold = null;
 }
 /** Конец партии по правилам шахмат (мат, пат, нехватка материала, повтор, 50 ходов) */
 function checkEnd(r: Room) {
@@ -149,6 +152,11 @@ setInterval(() => {
       if (now >= r.pause.until) { finish(r, r.pause.by === "w" ? "b" : "w", "pause_timeout"); broadcast(r); }
       continue;
     }
+    if (r.hold) {
+      // игрок не заходил после хода соперника: часы стоят; не зашёл за 72 часа → после первого хода отмена, позже поражение
+      if (now - r.hold > HOLD_MAX_MS) { if (r.chess.history().length <= 1) finish(r, null, "abort"); else { const t = r.chess.turn(); finish(r, t === "w" ? "b" : "w", "timeout"); } broadcast(r); }
+      continue;
+    }
     if (!running(r)) continue;
     const t = r.chess.turn();
     if (remaining(r, now)[t] <= 0) { finish(r, t === "w" ? "b" : "w", "timeout"); broadcast(r); }
@@ -157,7 +165,7 @@ setInterval(() => {
 
 setInterval(() => {
   const now = Date.now();
-  for (const [id, r] of rooms) if (now - r.touched > (r.over ? DONE_MS : IDLE_MS)) rooms.delete(id);
+  for (const [id, r] of rooms) if (now - r.touched > (r.over ? DONE_MS : r.hold ? HOLD_MAX_MS + 3600_000 : IDLE_MS)) rooms.delete(id);
   for (const [ip, list] of created) { const l = list.filter((t) => now - t < 3600_000); if (l.length) created.set(ip, l); else created.delete(ip); }
 }, 600_000).unref();
 
@@ -174,7 +182,7 @@ setInterval(() => {
 function newRoom(color: Color, mins: number, now: number): Room {
   const ms = mins * 60_000;
   return { id: crypto.randomBytes(5).toString("hex"), tokens: {}, chess: new Chess(), over: false, reason: null, winner: null, drawOffer: null, socks: new Map(), touched: now,
-    limit: ms, clock: { w: ms, b: ms }, last: now, chat: [], pause: null, pausesLeft: { w: PAUSES, b: PAUSES }, rematch: null, next: null };
+    limit: ms, clock: { w: ms, b: ms }, last: now, chat: [], pause: null, pausesLeft: { w: PAUSES, b: PAUSES }, rematch: null, next: null, hold: null };
 }
 
 roomsWss.on("connection", (ws: WebSocket, req: http.IncomingMessage) => {
@@ -199,6 +207,8 @@ roomsWss.on("connection", (ws: WebSocket, req: http.IncomingMessage) => {
       const tok = nx?.tokens[w === "w" ? "b" : "w"]; // цвета в реванше меняются местами
       if (nx && tok) send({ t: "rematch_go", id: nx.id, token: tok });
     }
+    // игрок, чей ход, вернулся в комнату: его часы начинают идти с этого момента
+    if (r.hold && !r.over && w === r.chess.turn()) { r.hold = null; r.last = Date.now(); }
     broadcast(r);
   };
 
@@ -304,6 +314,7 @@ roomsWss.on("connection", (ws: WebSocket, req: http.IncomingMessage) => {
       r.last = now;
       r.drawOffer = null;
       checkEnd(r);
+      if (!r.over) { const nx: Color = r.chess.turn(); r.hold = [...r.socks.values()].includes(nx) ? null : now; } // следующего игрока нет в комнате: его часы стоят, пока не зайдёт
       return broadcast(r);
     }
     if (m.t === "draw_offer") { r.drawOffer = me; return broadcast(r); }
