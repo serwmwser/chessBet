@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Chess } from "chess.js";
 import { useApp } from "@/lib/ctx";
 import { Color, removeMyRoom, roomLink, useRoom } from "@/lib/room";
+import { inTelegram, tgRoomLink } from "@/lib/telegram";
 import { usePT } from "@/lib/pauseTxt";
 import { analyze } from "@/lib/material";
 import { playCastle, playCheck, playLose, playPromo, playVoice, playWin } from "@/lib/sfx";
@@ -155,7 +156,7 @@ export default function FriendGame({ roomId, color = "r", minutes = 60, onExit, 
   const reasonText = st.reason === "pause_timeout" ? pt.lostPause : st.reason && REASON[st.reason] ? REASON[st.reason][ru ? 0 : 1] : "";
   const oppOffered = player && st.drawOffer !== null && st.drawOffer !== seat;
   const iOffered = player && st.drawOffer === seat;
-  const link = roomLink(st.id);
+  const link = inTelegram() ? tgRoomLink(st.id) : roomLink(st.id);
   const rem = (c: Color) => Math.max(0, st.clock[c] - (st.running && st.turn === c ? now - room.at : 0)); // остаток времени с учётом хода часов
   const topC: Color = seat === "b" ? "w" : "b";
   const botC: Color = seat === "b" ? "b" : "w";
