@@ -7,6 +7,7 @@ import { Chess } from "chess.js";
 import { ethers } from "ethers";
 import { createSession, checkSession } from "./session.js";
 import { roomsWss } from "./rooms.js";
+import { imgFromMeta, renderNft } from "./nftImg.js";
 
 // ROOMFIX: одна неожиданная ошибка не должна останавливать весь сервер и обрывать все партии
 process.on("uncaughtException", (e) => console.error("uncaughtException", e));
@@ -441,6 +442,28 @@ async function drip(addr: string): Promise<string | null> {
   try { await job; return null; } catch (e) { console.error("faucet:", (e as Error).message); return "failed"; }
 }
 
+// картинка NFT: данные токена читаются из контракта GameNFT, по ним рисуется SVG (результат кэшируется)
+const nftRead = NFT ? new ethers.Contract(NFT, ["function tokenURI(uint256) view returns (string)", "function arts(uint256) view returns (uint8 figure, uint8 mood, uint8 bg)"], provider) : null;
+const nftImgCache = new Map<number, string>();
+async function nftImage(tid: number): Promise<string | null> {
+  if (!nftRead) return null;
+  let uri: string;
+  let art: { figure: bigint; mood: bigint; bg: bigint };
+  try { [uri, art] = await Promise.all([nftRead.tokenURI(tid), nftRead.arts(tid)]); }
+  catch (e) { if ((e as { code?: string }).code === "CALL_EXCEPTION") return null; throw e; }
+  const meta = JSON.parse(Buffer.from(uri.split(",")[1], "base64").toString());
+  const data = imgFromMeta(meta, { figure: Number(art.figure), mood: Number(art.mood), bg: Number(art.bg) });
+  // клетки последнего хода берём из записи партии (в контракте их нет в метаданных)
+  const d = done.find((x) => x.id === data.gameId);
+  if (d) {
+    const c = new Chess();
+    try { c.loadPgn(d.pgn); } catch { /* пустая запись */ }
+    const m = c.history({ verbose: true })[data.ply - 1];
+    if (m) { data.from = m.from; data.to = m.to; }
+  }
+  return renderNft(data);
+}
+
 function stats(addr: string) {
   const mine = done.filter((d) => d.white === addr || d.black === addr).sort((a, b) => b.at - a.at);
   let wins = 0, losses = 0, draws = 0, net = 0;
@@ -567,6 +590,23 @@ const server = http.createServer((req, res) => {
     try { c.loadPgn(d.pgn); } catch { /* пустая запись */ }
     const { pgn: _pgn, ...info } = d;
     return out({ ...info, san: c.history() });
+  }
+  // картинка NFT: /nft/img/номер_токена.svg
+  if (parts[0] === "nft" && parts[1] === "img" && parts[2] && /^[0-9]+\.svg$/.test(parts[2])) {
+    if (!NFT) { res.writeHead(503).end(JSON.stringify({ error: "nft_off" })); return; }
+    const tid = Number(parts[2].slice(0, -4));
+    const send = (svg: string) => { res.setHeader("Content-Type", "image/svg+xml; charset=utf-8"); res.setHeader("Cache-Control", "public, max-age=86400"); res.end(svg); };
+    const hit = nftImgCache.get(tid);
+    if (hit) { send(hit); return; }
+    nftImage(tid)
+      .then((svg) => {
+        if (!svg) { res.writeHead(404).end(JSON.stringify({ error: "no_token" })); return; }
+        nftImgCache.set(tid, svg);
+        if (nftImgCache.size > 2000) nftImgCache.delete(nftImgCache.keys().next().value as number);
+        send(svg);
+      })
+      .catch(() => { res.writeHead(502).end(JSON.stringify({ error: "chain_error" })); });
+    return;
   }
   // подпись для NFT выбранного момента партии: /nft/номер_партии/номер_хода (без хода = итоговая позиция).
   // Игроков, ставку и победителя контракт GameNFT берёт из эскроу сам; сервер подтверждает только позицию, ход и запись ходов.
