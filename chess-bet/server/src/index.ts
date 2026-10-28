@@ -73,6 +73,8 @@ type Live = {
   chat: { from: string; text: string; at: number }[];
   // пауза: у каждого игрока 2 паузы по 5 минут; пока пауза идёт, основные часы заморожены
   pause: { by: string; color: "w" | "b"; until: number } | null; pausesLeft: { w: number; b: number };
+  // ожидание игрока: соперник сделал ход, а тот, чей ход, не подключён к партии; его часы не идут (время начала ожидания)
+  hold?: number | null;
 };
 const PAUSES = 2;
 const PAUSE_MS = 5 * 60_000;
@@ -85,6 +87,7 @@ type Done = {
 const open = new Map<number, OpenGame>();
 const live = new Map<number, Live>();
 let done: Done[] = [];
+const wsAddr = new WeakMap<WebSocket, string>(); // чей это сокет (адрес игрока)
 const dsocks = new Map<number, Set<WebSocket>>(); // подключённые к завершённым партиям: чат работает и после финала
 function doneSnap(d: Done) {
   const chess = new Chess(); chess.loadPgn(d.pgn);
@@ -128,7 +131,7 @@ function save() {
       id: g.id, white: g.white, black: g.black, bet: g.bet, duration: g.duration,
       startedAt: g.startedAt, pgn: g.chess.pgn(), clock: g.clock, drawOffer: g.drawOffer, over: g.over,
       reason: g.reason, winner: g.winner, reported: g.reported, chat: g.chat,
-      pause: g.pause ? { by: g.pause.by, color: g.pause.color, left: Math.max(0, g.pause.until - Date.now()) } : null, pausesLeft: g.pausesLeft,
+      pause: g.pause ? { by: g.pause.by, color: g.pause.color, left: Math.max(0, g.pause.until - Date.now()) } : null, pausesLeft: g.pausesLeft, hold: g.hold ?? null,
     }));
     fs.mkdirSync(path.dirname(STATE_FILE), { recursive: true });
     fs.writeFileSync(STATE_FILE + ".tmp", JSON.stringify({ live: liveOut, done: done.slice(-5000), scanFrom }));
@@ -244,17 +247,19 @@ function startLive(id: number, white: string, black: string, bet: string, durati
   live.set(id, {
     id, white, black, bet, duration, startedAt, chess: new Chess(), clock: { w: ms, b: ms }, last: Date.now(),
     drawOffer: null, over: false, reason: null, winner: null, reported: false, socks: new Set(),
-    pause: null, pausesLeft: { w: PAUSES, b: PAUSES }, chat: [],
+    pause: null, pausesLeft: { w: PAUSES, b: PAUSES }, chat: [], hold: null,
   });
   open.delete(id);
   save();
 }
 
 // ---------- игровая логика ----------
+/** Игрок сейчас подключён к партии (хотя бы одно открытое соединение) */
+const isOnline = (g: Live, addr: string) => [...g.socks].some((x) => x.readyState === WebSocket.OPEN && wsAddr.get(x) === addr);
 // Часы стоят, пока белые не сделали первый ход (первый ход время не расходует)
 function remaining(g: Live) {
   const c = { ...g.clock };
-  if (!g.over && !g.pause && g.chess.history().length > 0) { const t = g.chess.turn(); c[t] = Math.max(0, c[t] - (Date.now() - g.last)); }
+  if (!g.over && !g.pause && !g.hold && g.chess.history().length > 0) { const t = g.chess.turn(); c[t] = Math.max(0, c[t] - (Date.now() - g.last)); }
   return c;
 }
 
@@ -291,7 +296,7 @@ function snap(g: Live) {
     turn: g.chess.turn(), clock: remaining(g), over: g.over, reason: g.reason,
     winner: g.winner, drawOffer: g.drawOffer, feeBps,
     pause: g.pause ? { by: g.pause.by, color: g.pause.color, left: Math.max(0, g.pause.until - Date.now()) } : null,
-    pausesLeft: g.pausesLeft, chat: g.chat.slice(-50),
+    pausesLeft: g.pausesLeft, chat: g.chat.slice(-50), hold: g.hold ?? null,
   };
 }
 function broadcast(g: Live) {
@@ -303,7 +308,7 @@ function finish(g: Live, winner: string | null, reason: string) {
   g.over = true; g.winner = winner; g.reason = reason; g.drawOffer = null;
   // фиксируем остаток часов на момент окончания (на паузе часы заморожены), затем снимаем паузу
   g.clock = remaining({ ...g, over: false } as Live);
-  g.pause = null;
+  g.pause = null; g.hold = null;
   broadcast(g);
   save();
   void report(g);
@@ -377,6 +382,11 @@ setInterval(() => {
     if (g.pause) {
       // не вернулся из паузы за 5 минут — поражение
       if (Date.now() >= g.pause.until) finish(g, g.pause.by === g.white ? g.black : g.white, "pause_timeout");
+      continue;
+    }
+    if (g.hold) {
+      // игрок не заходил в партию после хода соперника: его часы стоят; не зашёл за 72 часа → после первого хода отмена (ставки возвращаются), позже поражение
+      if (Date.now() - g.hold > FIRST_MOVE_MS) { if (g.chess.history().length <= 1) finish(g, null, "abort"); else flag(g, g.chess.turn()); }
       continue;
     }
     if (g.chess.history().length === 0) {
@@ -686,7 +696,12 @@ wss.on("connection", (ws: WebSocket) => {
       if (g) {
         if (c.addr !== g.white && c.addr !== g.black) return err("not_player");
         if (c.gid && c.gid !== id) live.get(c.gid)?.socks.delete(ws);
-        c.gid = id; g.socks.add(ws);
+        c.gid = id; g.socks.add(ws); wsAddr.set(ws, c.addr);
+        if (g.hold && !g.over && (g.chess.turn() === "w" ? g.white : g.black) === c.addr) {
+          g.hold = null; g.last = Date.now(); // часы этого игрока начинают идти с момента, когда он зашёл
+          save(); broadcast(g);
+          return;
+        }
         return send(snap(g));
       }
       const d = done.find((x) => x.id === id);
@@ -768,6 +783,7 @@ wss.on("connection", (ws: WebSocket) => {
       } catch { return err("illegal_move"); }
       if (!firstMove) g.clock[turn] -= t - g.last;
       g.last = t;
+      { const next = g.chess.turn() === "w" ? g.white : g.black; g.hold = isOnline(g, next) ? null : Date.now(); }
       g.drawOffer = null;
       if (g.chess.isCheckmate()) finish(g, me, "checkmate");
       else if (g.chess.isStalemate()) finish(g, null, "stalemate");
