@@ -2,7 +2,7 @@ const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 export const TG_BOT = "chess_betlolbot";
 export const TG_APP = process.env.NEXT_PUBLIC_TG_APP || `${TG_BOT}/game`;
-export const TG_BOT_URL = `https://t.me/${TG_BOT}`;
+export const TG_BOT_URL = `https://t.me/${TG_BOT}/game`;
 
 export function inTelegram(): boolean {
   try {
