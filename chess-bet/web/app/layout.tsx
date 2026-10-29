@@ -11,7 +11,7 @@ const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 const SITE = "https://chessbet.lol";
 const TITLE = "Chess Bet: Play Chess Online for USDC | Skill-Based Chess Stakes";
-const DESC = "Play online chess against real players for USDC on Polygon. Winner takes 94% of the pot, paid by a smart contract. Free practice vs bot, cartoon pieces, chess NFTs, Telegram Mini App.";
+const DESC = "Play online chess against real players for USDC on Polygon. Winner takes 90% of the pot, paid by a smart contract. Free practice vs bot, cartoon pieces, chess NFTs, Telegram Mini App.";
 
 const JSON_LD = JSON.stringify({
   "@context": "https://schema.org",
@@ -20,11 +20,11 @@ const JSON_LD = JSON.stringify({
     { "@type": "WebApplication", "@id": SITE + "/#app", name: "Chess Bet", url: SITE, applicationCategory: "GameApplication", genre: "Chess", operatingSystem: "Any (web browser, Android, Telegram Mini App)", description: DESC, offers: { "@type": "Offer", price: "0", priceCurrency: "USD", description: "Free to open and practise; stakes are optional" } },
     { "@type": "FAQPage", mainEntity: [
       { "@type": "Question", name: "Which currency and network does Chess Bet use?", acceptedAnswer: { "@type": "Answer", text: "USDC on the Polygon network, plus a small amount of POL for network fees." } },
-      { "@type": "Question", name: "What is the fee?", acceptedAnswer: { "@type": "Answer", text: "The fee is 6% of the pot, so the winner receives 94%. Draws and cancelled games are refunded in full." } },
+      { "@type": "Question", name: "What is the fee?", acceptedAnswer: { "@type": "Answer", text: "The fee is 10% of the pot, so the winner receives 90%. Draws and cancelled games are refunded in full." } },
       { "@type": "Question", name: "Who holds the stakes?", acceptedAnswer: { "@type": "Answer", text: "A smart contract holds the stakes, and the winner claims the prize from it." } },
       { "@type": "Question", name: "What is a chess NFT on Chess Bet?", acceptedAnswer: { "@type": "Answer", text: "In the NFT Studio you pick a move from your own finished game and combine it with a cartoon chess piece, a mood and a background. The result is an ERC-721 NFT on Polygon that shows the board position of that move. Each move of a game can become an NFT only once." } },
       { "@type": "Question", name: "Can I sell a chess NFT on OpenSea?", acceptedAnswer: { "@type": "Answer", text: "Yes. The NFTs are standard ERC-721 tokens on Polygon with 5% creator royalties (ERC-2981), so they can be listed and traded on OpenSea." } },
-      { "@type": "Question", name: "How do I play chess for crypto?", acceptedAnswer: { "@type": "Answer", text: "Sign in or connect a wallet, get USDC and a little POL on Polygon, create a game with a stake or join one in the lobby, and play. The winner claims 94% of the pot from the smart contract." } },
+      { "@type": "Question", name: "How do I play chess for crypto?", acceptedAnswer: { "@type": "Answer", text: "Sign in or connect a wallet, get USDC and a little POL on Polygon, create a game with a stake or join one in the lobby, and play. The winner claims 90% of the pot from the smart contract." } },
       { "@type": "Question", name: "Can I practise for free?", acceptedAnswer: { "@type": "Answer", text: "Yes. You can play chess against a bot or a friend for free without any stake." } },
     ] },
   ],

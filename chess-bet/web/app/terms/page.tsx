@@ -14,7 +14,7 @@ const RU: Sec[] = [
     "Результат зависит от вашего мастерства, но выигрыш не гарантирован: вы можете проиграть всю ставку. Ставьте только то, что готовы потерять.",
   ]],
   ["3. Ставки и комиссия", [
-    "Из банка партии с победителем удерживается комиссия 6%, победитель получает остальное. При ничьей, отмене или невозможности записать результат ставки возвращаются полностью.",
+    "Из банка партии с победителем удерживается комиссия 10%, победитель получает остальное. При ничьей, отмене или невозможности записать результат ставки возвращаются полностью.",
     "Выигрыш вы забираете сами кнопкой «Забрать выигрыш» (нужна транзакция и небольшой запас POL на комиссию сети). Максимальная ставка ограничена контрактом.",
     "Транзакции в блокчейне необратимы. Проверяйте суммы и адреса в кошельке до подтверждения.",
   ]],
@@ -61,7 +61,7 @@ const EN: Sec[] = [
     "The result depends on your skill, but winning is not guaranteed: you can lose your whole stake. Only stake what you can afford to lose.",
   ]],
   ["3. Stakes and fee", [
-    "A 6% fee is taken from the pot of a game with a winner, and the winner receives the rest. On a draw, a cancellation or if the result cannot be recorded, stakes are refunded in full.",
+    "A 10% fee is taken from the pot of a game with a winner, and the winner receives the rest. On a draw, a cancellation or if the result cannot be recorded, stakes are refunded in full.",
     "You claim winnings yourself with the Claim button (it needs a transaction and a small reserve of POL for the network fee). The maximum stake is limited by the contract.",
     "Blockchain transactions are irreversible. Check amounts and addresses in your wallet before confirming.",
   ]],

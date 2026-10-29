@@ -5,7 +5,7 @@ export default function SeoAbout() {
       <h2 id="about-h" className="text-lg font-bold">About Chess Bet: play chess online for USDC</h2>
       <p className="opacity-80">
         Chess Bet is a web app and Telegram Mini App where you play chess against real opponents for USDC stakes on the Polygon network, or practise against a chess bot for free.
-        Both players put in the same stake, a smart contract holds the money, and the winner collects 94% of the pot with one button. A draw or a cancelled game returns every stake in full.
+        Both players put in the same stake, a smart contract holds the money, and the winner collects 90% of the pot with one button. A draw or a cancelled game returns every stake in full.
       </p>
       <h3 className="font-bold">A skill-based chess platform</h3>
       <p className="opacity-80">
@@ -28,7 +28,7 @@ export default function SeoAbout() {
       <h3 className="font-bold">FAQ</h3>
       <dl className="space-y-2 opacity-80">
         <div><dt className="font-semibold">Which currency and network?</dt><dd>USDC on the Polygon network. You also need a small amount of POL for network fees.</dd></div>
-        <div><dt className="font-semibold">What is the fee?</dt><dd>The app fee is 6% of the pot, so the winner receives 94%. There is no fee on draws or cancelled games.</dd></div>
+        <div><dt className="font-semibold">What is the fee?</dt><dd>The app fee is 10% of the pot, so the winner receives 90%. There is no fee on draws or cancelled games.</dd></div>
         <div><dt className="font-semibold">Who holds the stakes?</dt><dd>A smart contract holds the stakes, not the app. Winnings are claimed by the winner.</dd></div>
         <div><dt className="font-semibold">Is it for adults only?</dt><dd>Yes, 18+. Results depend on your skill but winning is not guaranteed. Play responsibly and check the rules in your country.</dd></div>
       </dl>

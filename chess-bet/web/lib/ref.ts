@@ -11,7 +11,7 @@ export const TIERS = [
 
 export const tierOf = (friends: number) => (friends >= 101 ? TIERS[2] : friends >= 21 ? TIERS[1] : TIERS[0]);
 
-/** Доля реферера с одной партии ОДНОГО приглашённого игрока: % × половина комиссии 6%. */
+/** Доля реферера с одной партии ОДНОГО приглашённого игрока: % × половина комиссии 10%. */
 export const perGame = (betUsdc: number, pct: number) => betUsdc * 0.06 * (pct / 100);
 
 /** Сохраняет ?ref=0x… из ссылки (первый пригласивший остаётся навсегда). */

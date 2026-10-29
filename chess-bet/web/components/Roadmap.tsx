@@ -5,7 +5,7 @@ type Stage = { when: string; title: string; items: string[]; done?: boolean };
 
 const RU: Stage[] = [
   { when: "Уже готово", title: "Основа", done: true, items: [
-    "Шахматы онлайн со ставками в USDC в сети Polygon. Деньги хранит смарт-контракт, комиссия 6%",
+    "Шахматы онлайн со ставками в USDC в сети Polygon. Деньги хранит смарт-контракт, комиссия 10%",
     "Игра с ботом и мульт-арена со ставками 25.5–500 USDC",
     "Повтор и анализ партий, паузы, установка на телефон",
     "NFT любого хода партии: 1 USDC, роялти 5%, продажа на OpenSea",
@@ -45,7 +45,7 @@ const RU: Stage[] = [
 
 const EN: Stage[] = [
   { when: "Done", title: "Foundation", done: true, items: [
-    "Online chess with USDC stakes on Polygon. Funds are held by a smart contract, 6% fee",
+    "Online chess with USDC stakes on Polygon. Funds are held by a smart contract, 10% fee",
     "Bot games and the cartoon arena with 25.5–500 USDC stakes",
     "Game replay and analysis, pauses, install on your phone",
     "NFT of any move of a game: 1 USDC, 5% royalty, sell on OpenSea",
