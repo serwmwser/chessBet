@@ -5,7 +5,7 @@ import { useActiveAccount, useSendTransaction } from "thirdweb/react";
 import { API_URL, chain, client, usdcContract } from "./config";
 
 /** Адрес контракта GameNFT (NFT любого момента партии). Пусто = NFT выключены, кнопки скрыты. */
-export const NFT_ADDRESS = process.env.NEXT_PUBLIC_NFT || "0xD2ceB1218D9421eA3A140f88Fd1691FE1ff60BC0";
+export const NFT_ADDRESS = process.env.NEXT_PUBLIC_NFT || "0xD929546324c0d675C16C8005F2df59D79AEFf87B";
 export const nftEnabled = NFT_ADDRESS !== "";
 const nftContract = getContract({ client, chain, address: NFT_ADDRESS || "0x0000000000000000000000000000000000000000" });
 
@@ -16,7 +16,7 @@ export type SnapSigned = {
   san: string; fen: string; pgn: string; sig: string; nft: string;
 };
 
-const MINTED = toEventSelector("event Minted(uint256 indexed tokenId, uint256 indexed gameId, uint16 ply, address indexed owner)");
+const MINTED = toEventSelector("event Minted(uint256 indexed tokenId, uint256 indexed gameId, uint16 ply, address indexed owner, uint8 figure, uint8 mood, uint8 bg)");
 
 /** Адрес страницы NFT на OpenSea (сеть Polygon) */
 export const openSeaUrl = (tokenId: number | string) => `https://opensea.io/assets/matic/${NFT_ADDRESS}/${tokenId}`;
@@ -91,12 +91,15 @@ export async function listMyNfts(owner: string): Promise<MyNft[]> {
   }));
 }
 
+/** Оформление NFT: номера фигуры (0–29), настроения (0–3) и фона (0–7) */
+export type NftArt = { figure: number; mood: number; bg: number };
+
 export function useNft() {
   const account = useActiveAccount();
   const { mutateAsync: send } = useSendTransaction();
 
   /** Создать NFT выбранного хода: подпись сервера, разрешение на 1 USDC (если нужно) и создание. Возвращает номер токена. */
-  async function mint(gameId: number, ply: number, onStep?: (s: NftStep) => void): Promise<number | null> {
+  async function mint(gameId: number, ply: number, onStep?: (s: NftStep) => void, art: NftArt = { figure: 0, mood: 0, bg: 0 }): Promise<number | null> {
     if (!account) throw new Error("no wallet");
     if (!nftEnabled) throw new Error("nft_off");
     onStep?.("sign");
@@ -121,8 +124,8 @@ export function useNft() {
     onStep?.("confirm");
     const r = await send(prepareContractCall({
       contract: nftContract,
-      method: "function mint((uint64 gameId, uint16 ply, uint16 total, uint8 from, uint8 to, string san, string fen, string pgn) s, bytes sig) returns (uint256)",
-      params: [{ gameId: BigInt(s.gameId), ply: s.ply, total: s.total, from: s.from, to: s.to, san: s.san, fen: s.fen, pgn: s.pgn }, s.sig as `0x${string}`],
+      method: "function mint((uint64 gameId, uint16 ply, uint16 total, uint8 from, uint8 to, string san, string fen, string pgn) s, (uint8 figure, uint8 mood, uint8 bg) a, bytes sig) returns (uint256)",
+      params: [{ gameId: BigInt(s.gameId), ply: s.ply, total: s.total, from: s.from, to: s.to, san: s.san, fen: s.fen, pgn: s.pgn }, art, s.sig as `0x${string}`],
     }));
     const rc = await waitForReceipt(r);
     const log = rc.logs.find((l) => l.address.toLowerCase() === NFT_ADDRESS.toLowerCase() && l.topics[0] === MINTED);
