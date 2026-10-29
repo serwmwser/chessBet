@@ -194,6 +194,7 @@ export default function FriendGame({ roomId, color = "r", minutes = 60, onExit, 
         <PausePage mode="pvp" until={pauseUntil} byMe={st.pause.by === seat} color={st.pause.by} left={st.pausesLeft?.[st.pause.by] ?? 0} onResume={room.resume} />
       )}
       <div className="text-center text-xs font-bold text-emerald-500">🤝 {ru ? "Партия с другом: бесплатно, без ставок" : "Game with a friend: free, no stakes"} · ⏱ {limText}</div>
+      {st.hold && !st.over && player && st.turn !== seat && <div className="rounded-xl px-3 py-2 text-center text-xs font-semibold bg-amber-400/15 text-amber-500">⏳ {ru ? "Соперник ещё не зашёл в партию после вашего хода. Его время не идёт и начнётся, когда он зайдёт." : "Your opponent has not opened the game since your move. Their clock is stopped and will start when they join."}</div>}
       {intro && player && full && !st.over && st.history.length === 0 && <StartSplash white={seat === "w"} onDone={() => setIntro(false)} />}
 
       {player && !full && !st.over && (

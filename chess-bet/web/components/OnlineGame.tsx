@@ -33,6 +33,7 @@ type State = {
   over: boolean; reason: string | null; winner: string | null; drawOffer: string | null; feeBps: number;
   pause?: { by: string; color: "w" | "b"; left: number } | null; pausesLeft?: { w: number; b: number };
   chat?: { from: string; text: string; at: number }[];
+  hold?: number | null; // соперник не в партии после вашего хода: его часы стоят
 };
 type Phase = "connect" | "sign" | "load" | "fail";
 
@@ -200,7 +201,8 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
   // часы стоят до первого хода белых; первый ход время не расходует
   const started = st.history.length > 0;
   const paused = !st.over && !!st.pause; // на паузе основные часы заморожены
-  const elapsed = st.over || !started || paused ? 0 : Date.now() - recv.current;
+  const waiting = !st.over && !!st.hold; // ждём игрока, чей ход: его часы стоят, пока он не зайдёт
+  const elapsed = st.over || !started || paused || waiting ? 0 : Date.now() - recv.current;
   const rem = (c: "w" | "b") => st.clock[c] - (!st.over && st.turn === c ? elapsed : 0);
   const myTurn = !st.over && !paused && st.turn === myColor;
   const pausesLeft = st.pausesLeft?.[myColor] ?? 0;
@@ -251,9 +253,10 @@ export default function OnlineGame({ id, onExit }: { id: number; onExit: () => v
         <PausePage mode="pvp" until={pauseUntil} byMe={st.pause.by === me} color={st.pause.color} left={st.pausesLeft?.[st.pause.color] ?? 0} onResume={() => send({ t: "resume" })} />
       )}
       {cartoon && <div className="text-center text-xs font-bold text-amber-400">{ru ? "🎭👑 Мульт-арена" : "🎭👑 Cartoon arena"}</div>}
+      {waiting && st.turn !== myColor && <div className="rounded-xl px-3 py-2 text-center text-xs font-semibold bg-amber-400/15 text-amber-500">⏳ {ru ? "Соперник ещё не зашёл в партию после вашего хода. Его время не идёт и начнётся, когда он зайдёт." : "Your opponent has not opened the game since your move. Their clock is stopped and will start when they join."}</div>}
       {intro && !st.over && st.history.length === 0 && <StartSplash white={iAmWhite} onDone={() => setIntro(false)} />}
       {/* таймер каждого игрока: общее время на партию, идёт только на своём ходу */}
-      <Clock ms={rem(iAmWhite ? "b" : "w")} active={started && !st.over && !paused && st.turn !== myColor} label={`${oppProf?.name || shortAddr(opp)} · ${iAmWhite ? t("black") : t("white")}`} who={{ name: oppProf?.name || opp, avatar: oppProf?.avatar }} icon={kingIcon(iAmWhite ? "b" : "w")} />
+      <Clock ms={rem(iAmWhite ? "b" : "w")} active={started && !st.over && !paused && !waiting && st.turn !== myColor} label={`${oppProf?.name || shortAddr(opp)} · ${iAmWhite ? t("black") : t("white")}`} who={{ name: oppProf?.name || opp, avatar: oppProf?.avatar }} icon={kingIcon(iAmWhite ? "b" : "w")} />
       <Captured taken={mat.taken[iAmWhite ? "b" : "w"]} color={myColor} plus={0} cartoon={cartoon} pawn={pawnOf(myColor)} />
       <div className="relative">
       <BoardX

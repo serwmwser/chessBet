@@ -26,6 +26,7 @@ export type RoomState = {
   limit: number; // время на партию каждому игроку, мс
   clock: { w: number; b: number }; // остаток времени на момент получения
   running: boolean; // часы идут
+  hold?: number | null; // соперник не в комнате после вашего хода: его часы стоят
   pause: { by: Color; left: number } | null; // пауза: кто взял и сколько осталось до автопоражения, мс
   pausesLeft: { w: number; b: number };
   chat: { from: Color; text: string; at: number }[]; // чат видят только двое игроков
