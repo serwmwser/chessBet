@@ -7,6 +7,10 @@ export default function SeoAbout() {
         Chess Bet is a web app and Telegram Mini App where you play chess against real opponents for USDC stakes on the Polygon network, or practise against a chess bot for free.
         Both players put in the same stake, a smart contract holds the money, and the winner collects 94% of the pot with one button. A draw or a cancelled game returns every stake in full.
       </p>
+      <h3 className="font-bold">A skill-based chess platform</h3>
+      <p className="opacity-80">
+        Chess Bet is a competitive, skill-based chess platform. Players compete with intellect, strategy and tactics. There are no dice, no cards and no hidden information: every result comes from the moves the players choose. Rules for games with money differ from country to country, and you are responsible for following the rules where you live.
+      </p>
       <h3 className="font-bold">How it works</h3>
       <ol className="list-decimal ps-5 space-y-1 opacity-80">
         <li>Sign in with email, Google, Apple, Telegram, a passkey or your own crypto wallet.</li>
