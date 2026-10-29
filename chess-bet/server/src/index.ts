@@ -8,6 +8,9 @@ import { ethers } from "ethers";
 import { createSession, checkSession } from "./session.js";
 import { roomsWss } from "./rooms.js";
 import { imgFromMeta, renderNft } from "./nftImg.js";
+import { startTg, tgChallenge, tgConfirm, tgNotify, tgStatus } from "./tg.js";
+
+const SITE_URL = process.env.SITE_URL || "https://chessbet.lol";
 
 // ROOMFIX: одна неожиданная ошибка не должна останавливать весь сервер и обрывать все партии
 process.on("uncaughtException", (e) => console.error("uncaughtException", e));
@@ -251,6 +254,7 @@ function startLive(id: number, white: string, black: string, bet: string, durati
   });
   open.delete(id);
   save();
+  if (Date.now() - startedAt < 10 * 60_000) void tgNotify(white, `🤝 Соперник принял вашу игру #${id}. Вы играете белыми, ваш ход!`, `🤝 An opponent joined your game #${id}. You play White, your move!`, `g${id}:start`, `${SITE_URL}/?game=${id}`);
 }
 
 // ---------- игровая логика ----------
@@ -498,6 +502,25 @@ const server = http.createServer((req, res) => {
   const url = new URL(req.url ?? "/", "http://x");
   const parts = url.pathname.split("/").filter(Boolean);
   const out = (o: unknown) => res.end(JSON.stringify(o));
+  if (parts[0] === "tg") {
+    if (req.method === "GET" && parts[1] === "status") return out(tgStatus(url.searchParams.get("addr") ?? ""));
+    if (req.method === "GET" && parts[1] === "challenge") {
+      try { const a = url.searchParams.get("action") === "unlink" ? "unlink" : "link"; return out({ ok: true, ...tgChallenge(url.searchParams.get("addr") ?? "", a) }); }
+      catch (e) { return out({ ok: false, error: (e as Error).message }); }
+    }
+    if (req.method === "POST" && parts[1] === "confirm") {
+      let body = "";
+      req.on("data", (c) => { body += c; if (body.length > 4_000) req.destroy(); });
+      req.on("end", () => {
+        try {
+          const m = JSON.parse(body);
+          out(tgConfirm(String(m.addr ?? ""), m.action === "unlink" ? "unlink" : "link", String(m.nonce ?? ""), String(m.sig ?? "")));
+        } catch (e) { out({ ok: false, error: (e as Error).message }); }
+      });
+      return;
+    }
+    return out({ ok: false, error: "not_found" });
+  }
   if (req.method === "POST" && parts[0] === "faucet") {
     let body = "";
     req.on("data", (c) => { body += c; if (body.length > 2_000) req.destroy(); });
@@ -790,7 +813,14 @@ wss.on("connection", (ws: WebSocket) => {
       else if (g.chess.isInsufficientMaterial()) finish(g, null, "insufficient");
       else if (g.chess.isThreefoldRepetition()) finish(g, null, "repetition");
       else if (g.chess.isDraw()) finish(g, null, "draw_rule");
-      else { broadcast(g); save(); }
+      else {
+        broadcast(g); save();
+        if (g.hold) { // следующего игрока нет в партии: пишем ему в Telegram
+          const next = g.chess.turn() === "w" ? g.white : g.black;
+          const bet = (Number(g.bet) / 1e6).toString();
+          void tgNotify(next, `♟ Ваш ход в партии #${g.id} (ставка ${bet} USDC). Ваше время пойдёт, когда вы зайдёте в партию.`, `♟ Your move in game #${g.id} (stake ${bet} USDC). Your clock starts when you join the game.`, `g${g.id}:p${g.chess.history().length}`, `${SITE_URL}/?game=${g.id}`);
+        }
+      }
       return;
     }
     if (m.t === "draw_offer") { g.drawOffer = me; broadcast(g); return; }
@@ -823,6 +853,7 @@ async function main() {
   });
   ev("GameCancelled", (id: bigint) => { open.delete(Number(id)); });
   setInterval(() => void sync().catch((e) => console.error("sync:", e.message)), Math.max(1000, Number(SYNC_MS) || 60_000));
+  startTg();
   server.listen(Number(PORT), () => console.log(`server :${PORT}, oracle ${wallet.address}, fee ${feeBps} bps`));
 }
 main().catch((e) => { console.error(e); process.exit(1); });
