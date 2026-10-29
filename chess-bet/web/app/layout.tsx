@@ -8,10 +8,28 @@ import TelegramInit from "@/components/TelegramInit";
 const inter = Inter({ subsets: ["latin", "cyrillic"], variable: "--font-inter" });
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
+const SITE = "https://chessbet.lol";
+const TITLE = "Chess Bet: Play Chess Online for USDC | Skill-Based Chess Stakes";
+const DESC = "Play online chess against real players for USDC on Polygon. Winner takes 94% of the pot, paid by a smart contract. Free practice vs bot, cartoon pieces, chess NFTs, Telegram Mini App.";
+
 export const metadata: Metadata = {
-  title: "Chess Bet — chess for USDC",
-  description: "Play chess against other players for USDC on Polygon, or practise against a bot for free.",
+  metadataBase: new URL(SITE),
+  title: { default: TITLE, template: "%s | Chess Bet" },
+  description: DESC,
   applicationName: "Chess Bet",
+  keywords: ["chess online", "play chess for money", "chess betting", "chess USDC", "crypto chess", "chess stakes", "play chess vs bot", "chess NFT", "Polygon chess game", "web3 chess", "chess Telegram mini app", "chess tournaments", "online chess with friends", "free chess practice"],
+  alternates: { canonical: "/" },
+  authors: [{ name: "Chess Bet" }],
+  creator: "Chess Bet",
+  category: "games",
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
+  openGraph: {
+    type: "website", url: SITE, siteName: "Chess Bet", locale: "en_US",
+    title: TITLE, description: DESC,
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Chess Bet: play chess for USDC" }],
+  },
+  twitter: { card: "summary_large_image", title: TITLE, description: DESC, images: ["/og.png"] },
+  formatDetection: { telephone: false },
 };
 export const viewport: Viewport = { themeColor: "#0e2233", width: "device-width", initialScale: 1 };
 
