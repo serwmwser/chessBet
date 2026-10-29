@@ -117,6 +117,25 @@ export default function NftStudio() {
       {g && (
         <>
           <section className="card space-y-3">
+            <div className="text-sm font-semibold">{ru ? "Предпросмотр" : "Preview"}</div>
+            <div className="max-w-[260px] mx-auto sm:max-w-sm">
+            <NftCard
+              fen={replay.fen}
+              from={replay.last?.from}
+              to={replay.last?.to}
+              figureId={figure}
+              mood={mood}
+              bgId={bg}
+              title={`CHESS BET #${g.id}`}
+              sub={ply >= 1 ? `Move ${ply}/${replay.total} · ${g.san[ply - 1]}${ply === replay.total ? " (final)" : ""}` : ""}
+              line1={`${result} | ${usdc(g.bet)} USDC`}
+              line2={`${shortAddr(g.white)} vs ${shortAddr(g.black)}`}
+              animate
+            />
+            </div>
+          </section>
+
+          <section className="card space-y-3">
             <div className="text-sm font-semibold">{ru ? "2. Выберите ход" : "2. Pick a move"}</div>
             <ReplayBar r={replay} />
             <input type="range" min={1} max={Math.max(1, replay.total)} value={Math.max(1, ply)} onChange={(e) => replay.goto(Number(e.target.value))} className="w-full" aria-label="move" />
@@ -142,20 +161,6 @@ export default function NftStudio() {
           </section>
 
           <section className="card space-y-3">
-            <div className="text-sm font-semibold">{ru ? "Предпросмотр" : "Preview"}</div>
-            <NftCard
-              fen={replay.fen}
-              from={replay.last?.from}
-              to={replay.last?.to}
-              figureId={figure}
-              mood={mood}
-              bgId={bg}
-              title={`CHESS BET #${g.id}`}
-              sub={ply >= 1 ? `Move ${ply}/${replay.total} · ${g.san[ply - 1]}${ply === replay.total ? " (final)" : ""}` : ""}
-              line1={`${result} | ${usdc(g.bet)} USDC`}
-              line2={`${shortAddr(g.white)} vs ${shortAddr(g.black)}`}
-              animate
-            />
             {done ? (
               <div className="space-y-2">
                 <p className="text-sm font-semibold text-emerald-500">✅ {ru ? "NFT создан" : "NFT created"}{done.token ? " #" + done.token : ""} ({ru ? "ход" : "move"} {done.ply})</p>
