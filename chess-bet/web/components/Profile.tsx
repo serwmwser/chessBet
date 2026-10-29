@@ -17,6 +17,7 @@ import MyNfts from "./MyNfts";
 import UpdateButton from "./UpdateButton";
 import ProfileEditor from "./ProfileEditor";
 import Share from "./Share";
+import TgNotify from "./TgNotify";
 
 export default function Profile({ onOpenGame, onOpenRoom }: { onOpenGame: (id: number) => void; onOpenRoom?: (id: string) => void }) {
   const { t, board, setBoard, toast } = useApp();
@@ -81,6 +82,7 @@ export default function Profile({ onOpenGame, onOpenRoom }: { onOpenGame: (id: n
             </section>
           )}
 
+          <TgNotify />
           <HowTo />
           <BuyCrypto />
 
