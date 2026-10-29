@@ -9,6 +9,7 @@ import { createSession, checkSession } from "./session.js";
 import { roomsWss } from "./rooms.js";
 import { imgFromMeta, renderNft } from "./nftImg.js";
 import { startTg, tgChallenge, tgConfirm, tgNotify, tgStatus } from "./tg.js";
+import { handleSocial } from "./social.js";
 
 const SITE_URL = process.env.SITE_URL || "https://chessbet.lol";
 
@@ -495,13 +496,14 @@ const server = http.createServer((req, res) => {
   if (origin && originOk(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   }
   if (req.method === "OPTIONS") { res.writeHead(204).end(); return; }
   res.setHeader("Content-Type", "application/json");
   const url = new URL(req.url ?? "/", "http://x");
   const parts = url.pathname.split("/").filter(Boolean);
   const out = (o: unknown) => res.end(JSON.stringify(o));
+  if (parts[0] === "api") { handleSocial(req, res, url).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (parts[0] === "tg") {
     if (req.method === "GET" && parts[1] === "status") return out(tgStatus(url.searchParams.get("addr") ?? ""));
     if (req.method === "GET" && parts[1] === "challenge") {
