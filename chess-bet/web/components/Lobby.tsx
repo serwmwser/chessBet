@@ -136,7 +136,7 @@ export default function Lobby({ arena = false }: { arena?: boolean } = {}) {
         {!agreed && (
           <label className="flex items-start gap-2 text-sm">
             <input type="checkbox" className="mt-1 accent-emerald-500" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
-            <span>{t("ageNote")} · <a className="underline" href={TERMS_URL} target="_blank" rel="noreferrer">Terms</a></span>
+            <span>{t("ageNote")} · <a className="underline" href={TERMS_URL} target="_blank" rel="noreferrer">Terms</a> · <a className="underline" href={(process.env.NEXT_PUBLIC_BASE_PATH || "") + "/age/"} target="_blank" rel="noreferrer">18+</a></span>
           </label>
         )}
 
