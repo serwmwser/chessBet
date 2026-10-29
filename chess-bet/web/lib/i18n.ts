@@ -17,8 +17,8 @@ export type ExtraKey = (typeof EXTRA_KEYS)[number];
 export type Key = (typeof KEYS)[number] | ExtraKey;
 
 export const LANGS = {
-  ru: "Русский", en: "English", es: "Español", de: "Deutsch", fr: "Français",
-  pt: "Português", tr: "Türkçe", zh: "中文", ar: "العربية",
+  en: "English", de: "Deutsch", fr: "Français", es: "Español", pt: "Português",
+  zh: "中文", ar: "العربية", tr: "Türkçe", ru: "Русский",
 } as const;
 export type Lang = keyof typeof LANGS;
 
