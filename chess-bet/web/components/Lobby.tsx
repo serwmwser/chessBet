@@ -88,8 +88,10 @@ export default function Lobby({ arena = false }: { arena?: boolean } = {}) {
 
   const list = (games ?? []).filter((g) => (!fMax || Number(g.bet) <= fMax) && (!fDur || g.duration === fDur) && (!arena || Number(g.bet) >= ARENA_MIN));
 
+  const ru = lang === "ru";
+  const steps = ru ? ["Войдите и подключите кошелёк, согласитесь с условиями (18+).","Нажмите «Присоединиться» у нужной игры: ставка у вас и у соперника одинаковая.","Кошелёк попросит две подписи: сначала разрешить списание USDC, затем подтвердить ставку. Только после этого USDC уходят в смарт-контракт.","Победитель забирает 94% банка кнопкой «Забрать». При ничьей или отмене ставка возвращается полностью."] : ["Sign in, connect a wallet and accept the terms (18+).","Press Join on the game you like: both players put in the same stake.","Your wallet asks for two signatures: first allow USDC spending, then confirm the stake. Only then the USDC goes into the smart contract.","The winner claims 94% of the pot with the Claim button. A draw or a cancel returns the stake in full."];
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 lobby-gold">
       <section className="card space-y-4">
         <h2 className="text-lg font-bold">{arena ? (lang === "ru" ? "🎭👑 Мульт-арена" : "🎭👑 Cartoon arena") : t("createGame")}</h2>
         {arena && <p className="text-sm opacity-80">{lang === "ru" ? "Игры на токены от 25.5 до 500 USDC с мультяшными фигурами, голосами и реакциями. Играют настоящие люди, не боты." : "Token games from 25.5 to 500 USDC with cartoon pieces, voices and reactions. You play real people, not bots."}</p>}
@@ -158,6 +160,14 @@ export default function Lobby({ arena = false }: { arena?: boolean } = {}) {
       )}
 
       <section className="space-y-3">
+        {!arena && (
+          <div className="card lobby-info space-y-2">
+            <div className="font-extrabold" style={{ color: "#d4a017" }}>🏆 {ru ? "Лобби: игры на ставки" : "Lobby: games for stakes"}</div>
+            <p className="text-sm">{ru ? "Здесь открытые игры других игроков. Выберите игру по ставке и времени и нажмите «Присоединиться», чтобы сыграть. Можно и создать свою игру выше и ждать соперника." : "Open games from other players are listed here. Pick a game by stake and time and press Join to play. You can also create your own game above and wait for an opponent."}</p>
+            <div className="text-sm font-bold" style={{ color: "#d4a017" }}>{ru ? "Как сделать ставку" : "How to place a stake"}</div>
+            <ol className="list-decimal ps-5 space-y-1 text-sm">{steps.map((x) => <li key={x}>{x}</li>)}</ol>
+          </div>
+        )}
         <div className="flex flex-wrap items-center gap-2">
           <h2 className="text-lg font-bold me-auto">{t("lobby")}</h2>
           <select aria-label={t("bet")} value={fMax} onChange={(e) => setFMax(+e.target.value)} className="rounded-xl bg-black/5 dark:bg-white/10 px-2 py-1.5 text-sm">
