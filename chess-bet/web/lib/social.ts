@@ -1,32 +1,37 @@
 "use client";
-// Запросы сайта к соцсети на сервере: вход по подписи кошелька, профили, подписки, посты, лента, лайки.
+// Запросы сайта к соцсети на сервере. Вход общий с сайтом: одна подпись кошелька даёт токен на 14 дней (lib/session.ts).
 import { useCallback, useEffect, useState } from "react";
 import { useActiveAccount } from "thirdweb/react";
 import { API_URL } from "./config";
+import { dropToken, ensureToken, getToken } from "./session";
 
 export type SUser = {
   name: string; bio: string; country: string; link: string; avatar: string; banner: string; joined: number;
   following: number; followers: number; posts: number; me: boolean; follows: boolean; addr?: string;
 };
-export type SPost = { id: number; text: string; media: string[]; created: number; user: { name: string; avatar: string }; likes: number; liked: boolean };
+export type SPost = { id: number; edited: number; text: string; media: string[]; created: number; user: { name: string; avatar: string }; likes: number; liked: boolean };
 
-const KEY = "chessbet.social.token";
-type Saved = { addr: string; token: string };
-const readSaved = (): Saved | null => {
-  try { const s = JSON.parse(localStorage.getItem(KEY) || "null") as Saved | null; return s && s.token ? s : null; } catch { return null; }
-};
-const writeSaved = (s: Saved | null) => { try { if (s) localStorage.setItem(KEY, JSON.stringify(s)); else localStorage.removeItem(KEY); } catch { /* без хранилища */ } };
-/** Токен действует для того кошелька, под которым вошли */
+/** Признак «не входить автоматически»: ставится, если игрок отказался от подписи или нажал «Выйти» (до закрытия вкладки) */
+export const AUTO_OFF = "cb_autologin_off";
+export const SESSION_EVENT = "cb-session";
+
+/** Токен для запросов: «адрес|токен». Так компонентам не нужно знать, как устроен вход */
+const pack = (addr: string, t: string) => `${addr.toLowerCase()}|${t}`;
 export const tokenFor = (addr?: string): string => {
-  const s = readSaved();
-  return s && addr && s.addr === addr.toLowerCase() && Number(s.token.split(".")[1]) > Date.now() ? s.token : "";
+  if (!addr) return "";
+  const t = getToken(addr);
+  return t ? pack(addr, t) : "";
 };
 
 async function call<T>(path: string, opt: { post?: unknown; token?: string } = {}): Promise<T> {
+  const [wallet, tok] = (opt.token || "").split("|");
   const r = await fetch(`${API_URL}${path}`, {
     method: opt.post !== undefined ? "POST" : "GET",
     cache: "no-store",
-    headers: { ...(opt.post !== undefined ? { "content-type": "application/json" } : {}), ...(opt.token ? { authorization: `Bearer ${opt.token}` } : {}) },
+    headers: {
+      ...(opt.post !== undefined ? { "content-type": "application/json" } : {}),
+      ...(tok ? { authorization: `Bearer ${tok}`, "x-wallet": wallet } : {}),
+    },
     body: opt.post !== undefined ? JSON.stringify(opt.post) : undefined,
   });
   const j = (await r.json()) as { ok: boolean; error?: string } & T;
@@ -34,21 +39,9 @@ async function call<T>(path: string, opt: { post?: unknown; token?: string } = {
   return j;
 }
 
-type Signer = { address: string; signMessage: (a: { message: string }) => Promise<string> };
-
-/** Вход: кошелёк подписывает бесплатное сообщение, сервер выдаёт токен на 14 дней */
-export async function login(account: Signer): Promise<{ token: string; user: SUser }> {
-  const addr = account.address.toLowerCase();
-  const c = await call<{ nonce: string; message: string }>("/api/auth/challenge", { post: { addr } });
-  const sig = await account.signMessage({ message: c.message });
-  const r = await call<{ token: string; user: SUser }>("/api/auth/login", { post: { addr, nonce: c.nonce, sig } });
-  writeSaved({ addr, token: r.token });
-  return r;
-}
-export const logout = () => writeSaved(null);
-
 export const getUser = (name: string, token = "") => call<{ user: SUser }>(`/api/user?name=${encodeURIComponent(name)}`, { token }).then((r) => r.user);
 export const getMe = (token: string) => call<{ user: SUser }>("/api/user", { token }).then((r) => r.user);
+export const getPost = (id: number | string, token = "") => call<{ post: SPost }>(`/api/post?id=${encodeURIComponent(String(id))}`, { token }).then((r) => r.post);
 export const getPosts = (name: string, before = 0, token = "") =>
   call<{ posts: SPost[] }>(`/api/posts?name=${encodeURIComponent(name)}${before ? `&before=${before}` : ""}`, { token }).then((r) => r.posts);
 export const getAll = (before = 0, token = "") => call<{ posts: SPost[] }>(`/api/posts${before ? `?before=${before}` : ""}`, { token }).then((r) => r.posts);
@@ -59,6 +52,7 @@ export const saveProfile = (token: string, p: Partial<Pick<SUser, "name" | "bio"
   call<{ user: SUser }>("/api/profile", { token, post: p }).then((r) => r.user);
 export const follow = (token: string, name: string, on: boolean) => call<{ user: SUser }>("/api/follow", { token, post: { name, on } }).then((r) => r.user);
 export const publish = (token: string, text: string, media: string[] = []) => call<{ post: SPost }>("/api/post", { token, post: { text, media } }).then((r) => r.post);
+export const editPost = (token: string, id: number, text: string) => call<{ post: SPost }>("/api/post/edit", { token, post: { id, text } }).then((r) => r.post);
 export const like = (token: string, id: number, on: boolean) => call<{ likes: number; liked: boolean }>("/api/like", { token, post: { id, on } });
 export const removePost = (token: string, id: number) => call<unknown>("/api/delete", { token, post: { id } });
 
@@ -79,7 +73,7 @@ export function errText(e: unknown, ru: boolean): string {
   return t[m] ? t[m][ru ? 0 : 1] : m.slice(0, 120);
 }
 
-/** Хук: текущий кошелёк, токен входа и кнопка «Войти» */
+/** Хук: текущий кошелёк, токен входа, «Войти» и «Выйти». Вход один на весь сайт (одна подпись на 14 дней) */
 export function useSocial() {
   const account = useActiveAccount();
   const addr = account?.address;
@@ -87,20 +81,38 @@ export function useSocial() {
   const [me, setMe] = useState<SUser | null>(null);
   const [busy, setBusy] = useState(false);
 
-  useEffect(() => {
+  const refresh = useCallback(() => {
     const t = tokenFor(addr);
     setToken(t);
     if (!t) { setMe(null); return; }
-    getMe(t).then(setMe).catch(() => { logout(); setToken(""); setMe(null); });
+    getMe(t).then(setMe).catch(() => { setMe(null); });
   }, [addr]);
+  useEffect(() => {
+    refresh();
+    window.addEventListener(SESSION_EVENT, refresh);
+    return () => window.removeEventListener(SESSION_EVENT, refresh);
+  }, [refresh]);
 
   const signIn = useCallback(async () => {
     if (!account) throw new Error("auth");
     setBusy(true);
-    try { const r = await login(account); setToken(r.token); setMe(r.user); return r.token; }
-    finally { setBusy(false); }
+    try {
+      try { sessionStorage.removeItem(AUTO_OFF); } catch { /* без хранилища */ }
+      const t = await ensureToken(account); // одна подпись на 14 дней
+      if (!t) throw new Error("auth");
+      const full = pack(account.address, t);
+      setToken(full);
+      setMe(await getMe(full));
+      window.dispatchEvent(new Event(SESSION_EVENT));
+      return full;
+    } finally { setBusy(false); }
   }, [account]);
-  const signOut = useCallback(() => { logout(); setToken(""); setMe(null); }, []);
+  const signOut = useCallback(() => {
+    if (addr) dropToken(addr);
+    try { sessionStorage.setItem(AUTO_OFF, "1"); } catch { /* без хранилища */ }
+    setToken(""); setMe(null);
+    window.dispatchEvent(new Event(SESSION_EVENT));
+  }, [addr]);
 
   return { addr, token, me, setMe, busy, signIn, signOut, signedIn: !!token };
 }
