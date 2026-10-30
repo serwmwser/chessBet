@@ -1,11 +1,17 @@
-"use client";
-/* Аватар игрока: загруженная картинка или круг с первой буквой. */
-export default function Avatar({ src, name, size = 40 }: { src?: string; name?: string; size?: number }) {
-  const st = { width: size, height: size, fontSize: size * 0.45 };
-  if (src) return <img src={src} alt="" style={st} className="rounded-full object-cover shrink-0" />; // eslint-disable-line @next/next/no-img-element
-  return (
-    <span style={st} className="rounded-full shrink-0 inline-flex items-center justify-center font-bold text-white bg-gradient-to-br from-brand-500 to-brand-violet">
-      {(name || "?").slice(0, 1).toUpperCase()}
-    </span>
+import { API_URL } from "@/lib/config";
+
+/** Адрес картинки, загруженной на наш сервер (путь вида /media/...) */
+export const mediaUrl = (p: string) => (p.startsWith("/media/") ? `${API_URL}${p}` : "");
+
+/** Круглый аватар: картинка или золотой кружок с первой буквой ника */
+export default function Avatar({ name, src, size = 44 }: { name: string; src?: string; size?: number }) {
+  const u = src ? mediaUrl(src) : "";
+  return u ? (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={u} alt={name} width={size} height={size} loading="lazy" className="rounded-full object-cover shrink-0" style={{ width: size, height: size }} />
+  ) : (
+    <div className="rounded-full shrink-0 flex items-center justify-center font-extrabold" style={{ width: size, height: size, fontSize: size * 0.45, background: "linear-gradient(135deg,#f5d36b,#c8962e)", color: "#2a1d00" }}>
+      {(name[0] || "?").toUpperCase()}
+    </div>
   );
 }
