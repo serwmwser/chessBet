@@ -8,6 +8,7 @@ import { PIECE_SETS, usePieceSet } from "@/lib/pieces";
 import { PTHEMES, usePTheme } from "@/lib/ptheme";
 import { gameUrl } from "@/lib/invite";
 import Avatar from "./Avatar";
+import { ROUTES } from "@/lib/urls";
 import GameReplay from "./GameReplay";
 import BuyCrypto from "./BuyCrypto";
 import HowTo from "./HowTo";
@@ -65,6 +66,13 @@ export default function Profile({ onOpenGame, onOpenRoom }: { onOpenGame: (id: n
         <div className="card text-center opacity-80">{t("signIn")}</div>
       ) : (
         <>
+          <section className="card flex items-center gap-3" style={{ border: "1px solid #c8962e" }}>
+            <div className="min-w-0 me-auto">
+              <div className="font-bold">{uiLang === "ru" ? "Моя страница в соцсети" : "My social profile"}</div>
+              <div className="text-xs opacity-70">{uiLang === "ru" ? "Посты, фото, подписчики и NFT" : "Posts, photos, followers and NFTs"}</div>
+            </div>
+            <a href={ROUTES.profile} className="btn btn-primary !py-2 shrink-0">{uiLang === "ru" ? "Открыть мой профиль" : "Open my profile"}</a>
+          </section>
           {editing ? (
             <ProfileEditor initial={prof} onSaved={(p) => { setProf(p); setEditing(false); }} onClose={() => setEditing(false)} />
           ) : (
