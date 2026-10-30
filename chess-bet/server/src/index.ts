@@ -9,7 +9,8 @@ import { createSession, checkSession } from "./session.js";
 import { roomsWss } from "./rooms.js";
 import { imgFromMeta, renderNft } from "./nftImg.js";
 import { startTg, tgChallenge, tgConfirm, tgNotify, tgStatus } from "./tg.js";
-import { handleSocial } from "./social.js";
+import { handleSocial, viewerOf } from "./social.js";
+import { handleMedia } from "./media.js";
 
 const SITE_URL = process.env.SITE_URL || "https://chessbet.lol";
 
@@ -503,6 +504,7 @@ const server = http.createServer((req, res) => {
   const url = new URL(req.url ?? "/", "http://x");
   const parts = url.pathname.split("/").filter(Boolean);
   const out = (o: unknown) => res.end(JSON.stringify(o));
+  if (parts[0] === "media" || url.pathname === "/api/upload") { handleMedia(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (parts[0] === "api") { handleSocial(req, res, url).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (parts[0] === "tg") {
     if (req.method === "GET" && parts[1] === "status") return out(tgStatus(url.searchParams.get("addr") ?? ""));

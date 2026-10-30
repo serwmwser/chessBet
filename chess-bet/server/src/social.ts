@@ -41,7 +41,7 @@ const makeToken = (addr: string) => {
   const exp = Date.now() + TOKEN_DAYS * 86400000;
   return `${addr}.${exp}.${sign(`${addr}.${exp}`)}`;
 };
-function viewerOf(req: http.IncomingMessage): string {
+export function viewerOf(req: http.IncomingMessage): string {
   const h = String(req.headers.authorization || "");
   const t = h.startsWith("Bearer ") ? h.slice(7) : "";
   const [addr, exp, mac] = t.split(".");
