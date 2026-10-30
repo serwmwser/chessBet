@@ -11,6 +11,7 @@ import { imgFromMeta, renderNft } from "./nftImg.js";
 import { startTg, tgChallenge, tgConfirm, tgNotify, tgStatus } from "./tg.js";
 import { handleSocial, viewerOf, setLegacy, socialPublic, socialNameOwner } from "./social.js";
 import { handleMedia } from "./media.js";
+import { handleDm, setDmNotify } from "./dm.js";
 
 const SITE_URL = process.env.SITE_URL || "https://chessbet.lol";
 
@@ -212,6 +213,7 @@ const publicProfile = (a: string) => {
   const p = profiles.get(a), sp = socialPublic(a); // ник и аватар берём из профиля соцсети
   return p || sp ? { name: sp?.name ?? p?.name ?? "", bio: p?.bio ?? "", link: p?.link ?? "", avatar: sp?.avatar || p?.avatar || "" } : null;
 };
+setDmNotify((to, from) => { void tgNotify(to, `✉️ Новое сообщение от @${from}`, `✉️ New message from @${from}`, `dm:${from}:${Math.floor(Date.now() / 600000)}`, `${SITE_URL}/messages/?with=${encodeURIComponent(from)}`); }); // не чаще раза в 10 минут от одного отправителя
 setLegacy((a) => profiles.get(a) ?? null, (n) => nameOwner.get(n.toLowerCase()) ?? ""); // старые профили: перенос в соцсеть и занятые ники
 
 // ---------- синхронизация с контрактом ----------
@@ -510,6 +512,7 @@ const server = http.createServer((req, res) => {
   const url = new URL(req.url ?? "/", "http://x");
   const parts = url.pathname.split("/").filter(Boolean);
   const out = (o: unknown) => res.end(JSON.stringify(o));
+  if (url.pathname.startsWith("/api/dm/")) { handleDm(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (parts[0] === "media" || url.pathname === "/api/upload") { handleMedia(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (parts[0] === "api") { handleSocial(req, res, url).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (parts[0] === "tg") {
