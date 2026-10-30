@@ -17,6 +17,7 @@ import SiteFooter from "@/components/SiteFooter";
 import NftStudio from "@/components/NftStudio";
 import type { Color } from "@/lib/room";
 import Header from "@/components/Header";
+import SiteNav from "@/components/SiteNav";
 import Earn from "@/components/Earn";
 import FaucetBar from "@/components/FaucetBar";
 import Hero from "@/components/Hero";
@@ -116,6 +117,7 @@ export default function Home() {
   return (
     <>
       <Header />
+      <SiteNav />
       <main className="mx-auto max-w-3xl px-3 pt-4 pb-32">
         <FaucetBar />
         {openCount > 0 && gid === null && (

@@ -6,11 +6,9 @@ import { ROUTES } from "@/lib/urls";
 type Item = { href: string; ru: string; en: string; icon: string };
 const ITEMS: Item[] = [
   { href: ROUTES.home, ru: "Играть", en: "Play", icon: "♞" },
-  { href: ROUTES.chess, ru: "Шахматы", en: "Chess", icon: "♜" },
   { href: ROUTES.nft, ru: "NFT", en: "NFT", icon: "🎨" },
-  { href: ROUTES.crypto, ru: "Крипта", en: "Crypto", icon: "🪙" },
-  { href: ROUTES.leaderboard, ru: "Рейтинг", en: "Leaderboard", icon: "🏆" },
-  { href: ROUTES.faq, ru: "Вопросы", en: "FAQ", icon: "❓" },
+  { href: ROUTES.profile, ru: "Профиль", en: "Profile", icon: "👤" },
+  // Позже, когда страницы будут готовы: ROUTES.chess, ROUTES.crypto, ROUTES.leaderboard, ROUTES.faq
 ];
 
 const norm = (p: string) => (p.endsWith("/") ? p : p + "/");

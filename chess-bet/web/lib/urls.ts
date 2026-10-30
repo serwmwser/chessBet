@@ -5,6 +5,7 @@ export const SITE_URL = "https://chessbet.lol";
 
 export const ROUTES = {
   home: `${BASE}/`,
+  profile: `${BASE}/u/`,
   nft: `${BASE}/nft/`,
   chess: `${BASE}/chess/`,
   crypto: `${BASE}/crypto/`,
