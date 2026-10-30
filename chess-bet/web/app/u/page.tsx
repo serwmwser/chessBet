@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import Avatar, { mediaUrl } from "@/components/Avatar";
@@ -58,6 +58,8 @@ function Profile() {
     try { const t = s.token || (await s.signIn()); setU(await follow(t, u.name, !u.follows)); } catch (e) { toast(errText(e, ru), "err"); }
   };
   const startEdit = () => { if (!u) return; setF({ name: u.name, bio: u.bio, country: u.country, link: u.link, avatar: u.avatar, banner: u.banner }); setEdit(true); };
+  const autoEdit = useRef(false); // ссылка /u/?edit=1 из кабинета сразу открывает редактор
+  useEffect(() => { if (u?.me && sp.get("edit") === "1" && !autoEdit.current) { autoEdit.current = true; startEdit(); } }, [u]); // eslint-disable-line react-hooks/exhaustive-deps
   const upImg = async (k: "avatar" | "banner", file?: File) => {
     if (!file) return;
     try { const p = await uploadImage(s.token, file); setF((x) => ({ ...x, [k]: p })); }
@@ -113,6 +115,7 @@ function Profile() {
                 <>
                   <button type="button" className="btn btn-ghost !py-2" onClick={startEdit}>{ru ? "Редактировать" : "Edit profile"}</button>
                   <button type="button" className="btn btn-primary !py-2" onClick={() => setComposer((v) => !v)}>Post</button>
+                  <button type="button" className="btn btn-ghost !py-2" onClick={s.signOut}>{ru ? "Выйти" : "Sign out"}</button>
                 </>
               ) : (
                 <button type="button" className={u.follows ? "btn btn-ghost !py-2" : "btn btn-primary !py-2"} onClick={doFollow}>
