@@ -36,7 +36,7 @@ export const VIP_BETS = [
 ];
 export const DURATIONS = [900, 1800, 2700, 3600, 10800, 86400];
 export const BOT_TIMES = [5, 15, 30, 45]; // минуты
-export const DEFAULT_FEE_BPS = 600;
+export const DEFAULT_FEE_BPS = 1000;
 
 export const usdc = (n: number | bigint | string) => (Number(n) / 1e6).toFixed(2);
 export const shortAddr = (a: string) => `${a.slice(0, 6)}…${a.slice(-4)}`;

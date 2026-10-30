@@ -105,7 +105,7 @@ function doneSnap(d: Done) {
   };
 }
 let scanFrom = 1;
-let feeBps = 600;
+let feeBps = 1000;
 const lc = (a: string) => a.toLowerCase();
 
 // ---------- сохранение состояния ----------
