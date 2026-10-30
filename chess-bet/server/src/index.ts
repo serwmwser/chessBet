@@ -9,7 +9,7 @@ import { createSession, checkSession } from "./session.js";
 import { roomsWss } from "./rooms.js";
 import { imgFromMeta, renderNft } from "./nftImg.js";
 import { startTg, tgChallenge, tgConfirm, tgNotify, tgStatus } from "./tg.js";
-import { handleSocial, viewerOf } from "./social.js";
+import { handleSocial, viewerOf, setLegacy, socialPublic, socialNameOwner } from "./social.js";
 import { handleMedia } from "./media.js";
 
 const SITE_URL = process.env.SITE_URL || "https://chessbet.lol";
@@ -198,6 +198,8 @@ function saveProfile(m: any): string | null {
   if (p.name) {
     const owner = nameOwner.get(p.name.toLowerCase());
     if (owner && owner !== addr) return "name_taken";
+    const so = socialNameOwner(p.name);
+    if (so && so !== addr) return "name_taken";
   }
   const old = profiles.get(addr);
   if (old?.name) nameOwner.delete(old.name.toLowerCase());
@@ -206,7 +208,11 @@ function saveProfile(m: any): string | null {
   saveProfiles();
   return null;
 }
-const publicProfile = (a: string) => { const p = profiles.get(a); return p ? { name: p.name, bio: p.bio, link: p.link, avatar: p.avatar } : null; };
+const publicProfile = (a: string) => {
+  const p = profiles.get(a), sp = socialPublic(a); // ник и аватар берём из профиля соцсети
+  return p || sp ? { name: sp?.name ?? p?.name ?? "", bio: p?.bio ?? "", link: p?.link ?? "", avatar: sp?.avatar || p?.avatar || "" } : null;
+};
+setLegacy((a) => profiles.get(a) ?? null, (n) => nameOwner.get(n.toLowerCase()) ?? ""); // старые профили: перенос в соцсеть и занятые ники
 
 // ---------- синхронизация с контрактом ----------
 async function sync() {
@@ -497,7 +503,7 @@ const server = http.createServer((req, res) => {
   if (origin && originOk(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Wallet");
   }
   if (req.method === "OPTIONS") { res.writeHead(204).end(); return; }
   res.setHeader("Content-Type", "application/json");
@@ -591,7 +597,7 @@ const server = http.createServer((req, res) => {
     // короткие данные (логин + аватар) для списка адресов: /profiles?a=0x..,0x..
     const list = (url.searchParams.get("a") ?? "").split(",").map(lc).filter((x) => ethers.isAddress(x)).slice(0, 20);
     const o: Record<string, { name: string; avatar: string }> = {};
-    for (const a of list) { const p = profiles.get(a); if (p) o[a] = { name: p.name, avatar: p.avatar }; }
+    for (const a of list) { const sp = socialPublic(a), p = profiles.get(a); if (sp || p) o[a] = { name: sp?.name ?? p?.name ?? "", avatar: sp?.avatar || p?.avatar || "" }; }
     return out(o);
   }
   if (parts[0] === "health") return out({ ok: true });
