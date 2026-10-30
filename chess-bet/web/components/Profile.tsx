@@ -9,6 +9,7 @@ import { PTHEMES, usePTheme } from "@/lib/ptheme";
 import { gameUrl } from "@/lib/invite";
 import Avatar from "./Avatar";
 import { ROUTES } from "@/lib/urls";
+import { useSocial } from "@/lib/social";
 import GameReplay from "./GameReplay";
 import BuyCrypto from "./BuyCrypto";
 import HowTo from "./HowTo";
@@ -23,6 +24,8 @@ import TgNotify from "./TgNotify";
 export default function Profile({ onOpenGame, onOpenRoom }: { onOpenGame: (id: number) => void; onOpenRoom?: (id: string) => void }) {
   const { t, board, setBoard, toast } = useApp();
   const uiLang = useApp().lang;
+  const social = useSocial();
+  const sm = social.me; // единый профиль: тот же, что на странице /u/
   const [pset, setPset] = usePieceSet();
   const [pth, setPth] = usePTheme();
   const account = useActiveAccount();
@@ -66,29 +69,27 @@ export default function Profile({ onOpenGame, onOpenRoom }: { onOpenGame: (id: n
         <div className="card text-center opacity-80">{t("signIn")}</div>
       ) : (
         <>
-          <section className="card flex items-center gap-3" style={{ border: "1px solid #c8962e" }}>
-            <div className="min-w-0 me-auto">
-              <div className="font-bold">{uiLang === "ru" ? "Моя страница в соцсети" : "My social profile"}</div>
-              <div className="text-xs opacity-70">{uiLang === "ru" ? "Посты, фото, подписчики и NFT" : "Posts, photos, followers and NFTs"}</div>
-            </div>
-            <a href={ROUTES.profile} className="btn btn-primary !py-2 shrink-0">{uiLang === "ru" ? "Открыть мой профиль" : "Open my profile"}</a>
-          </section>
-          {editing ? (
-            <ProfileEditor initial={prof} onSaved={(p) => { setProf(p); setEditing(false); }} onClose={() => setEditing(false)} />
-          ) : (
-            <section className="card space-y-2" style={pth.style}>
-              <div className="flex items-center gap-3">
-                <Avatar src={prof?.avatar} name={prof?.name || me.slice(2)} size={64} />
-                <div className="min-w-0 me-auto">
-                  <div className="text-lg font-bold truncate">{prof?.name || t("player")}</div>
-                  <div className="mono text-xs opacity-60" dir="ltr">{shortAddr(me)}</div>
-                </div>
-                <button className="chip chip-on" onClick={() => setEditing(true)}>{t("editProfile")}</button>
+          <section className="card space-y-2" style={pth.style}>
+            <div className="flex items-center gap-3">
+              <Avatar src={sm?.avatar} name={sm?.name || me.slice(2)} size={64} />
+              <div className="min-w-0 me-auto">
+                <div className="text-lg font-bold truncate">{sm ? `@${sm.name}` : t("player")}</div>
+                <div className="mono text-xs opacity-60" dir="ltr">{shortAddr(me)}</div>
               </div>
-              {prof?.bio && <p className="text-sm opacity-80 break-words">{prof.bio}</p>}
-              {prof?.link && <a className="text-sm text-emerald-600 dark:text-emerald-400 underline break-all" dir="ltr" href={prof.link} target="_blank" rel="noopener noreferrer nofollow">{prof.link.replace(/^https?:\/\//, "")}</a>}
-            </section>
-          )}
+              {sm ? (
+                <a className="chip chip-on" href={`${ROUTES.profile}?edit=1`}>{t("editProfile")}</a>
+              ) : (
+                <button className="chip chip-on" disabled={social.busy} onClick={() => social.signIn().catch(() => toast(uiLang === "ru" ? "Не удалось войти" : "Sign-in failed", "err"))}>{uiLang === "ru" ? "Войти" : "Sign in"}</button>
+              )}
+            </div>
+            {sm?.bio && <p className="text-sm opacity-80 break-words">{sm.bio}</p>}
+            {sm?.link && <a className="text-sm text-emerald-600 dark:text-emerald-400 underline break-all" dir="ltr" href={sm.link} target="_blank" rel="noopener noreferrer nofollow ugc">{sm.link.replace(/^https?:\/\//, "")}</a>}
+            {sm && <p className="text-sm opacity-70"><b>{sm.following}</b> {uiLang === "ru" ? "Подписки" : "Following"} · <b>{sm.followers}</b> {uiLang === "ru" ? "Подписчики" : "Followers"} · <b>{sm.posts}</b> {uiLang === "ru" ? "Постов" : "Posts"}</p>}
+            <div className="flex flex-wrap gap-2 pt-1">
+              <a href={ROUTES.profile} className="btn btn-primary !py-2">{uiLang === "ru" ? "Открыть мой профиль" : "Open my profile"}</a>
+              <a href={ROUTES.feed} className="btn btn-ghost !py-2">{uiLang === "ru" ? "Лента" : "Feed"}</a>
+            </div>
+          </section>
 
           <TgNotify />
           <HowTo />
