@@ -5,6 +5,7 @@ import crypto from "node:crypto";
 import type http from "node:http";
 import Database from "better-sqlite3";
 import { ethers } from "ethers";
+import { checkSession } from "./session.js";
 
 const DB_FILE = process.env.SOCIAL_DB || "./data/social.db";
 const KEY_FILE = process.env.SOCIAL_KEY_FILE || "./data/social.key";
@@ -25,6 +26,8 @@ CREATE INDEX IF NOT EXISTS follows_b ON follows(b);
 CREATE TABLE IF NOT EXISTS likes(post INTEGER NOT NULL, addr TEXT NOT NULL, PRIMARY KEY(post, addr));
 `);
 
+try { db.exec("ALTER TABLE posts ADD COLUMN edited INTEGER NOT NULL DEFAULT 0"); } catch { /* колонка уже есть */ }
+
 // Секрет для токенов входа: создаётся один раз и хранится в data/
 let SECRET = "";
 try { SECRET = fs.readFileSync(KEY_FILE, "utf8").trim(); } catch { /* ещё нет */ }
@@ -42,6 +45,15 @@ const makeToken = (addr: string) => {
   return `${addr}.${exp}.${sign(`${addr}.${exp}`)}`;
 };
 export function viewerOf(req: http.IncomingMessage): string {
+  const w = String(req.headers["x-wallet"] || "").toLowerCase(); // общий токен сайта: одна подпись на 14 дней
+  if (w) {
+    const h0 = String(req.headers.authorization || "");
+    if (!/^0x[0-9a-f]{40}$/.test(w) || !checkSession(w, h0.startsWith("Bearer ") ? h0.slice(7) : "")) return "";
+    const row = db.prepare("SELECT banned,name FROM users WHERE addr=?").get(w) as { banned: number; name: string } | undefined;
+    if (row?.banned) return "";
+    if (!row) ensureUser(w); else if (AUTO_RE.test(row.name)) seedFromLegacy(w);
+    return w;
+  }
   const h = String(req.headers.authorization || "");
   const t = h.startsWith("Bearer ") ? h.slice(7) : "";
   const [addr, exp, mac] = t.split(".");
@@ -79,12 +91,52 @@ type U = { addr: string; name: string; bio: string; country: string; link: strin
 const userByName = (n: string) => db.prepare("SELECT * FROM users WHERE name=? AND banned=0").get(n) as U | undefined;
 const userByAddr = (a: string) => db.prepare("SELECT * FROM users WHERE addr=? AND banned=0").get(a) as U | undefined;
 
+const AUTO_RE = /^u[0-9a-f]{8}$/;
+export type Legacy = { name?: string; bio?: string; link?: string; avatar?: string };
+let legacyGet: (addr: string) => Legacy | null = () => null;
+let legacyOwner: (name: string) => string = () => "";
+/** index.ts подключает старые профили игроков: данные для первого входа и занятые ники */
+export function setLegacy(get: (addr: string) => Legacy | null, owner: (name: string) => string) { legacyGet = get; legacyOwner = owner; }
+/** Ник и аватар для партий: единый профиль соцсети */
+export function socialPublic(addr: string): { name: string; avatar: string } | null {
+  const u = userByAddr(String(addr).toLowerCase());
+  return u ? { name: u.name, avatar: u.avatar } : null;
+}
+export const socialNameOwner = (name: string): string => userByName(String(name).toLowerCase())?.addr ?? "";
+
+const MEDIA_DIR = process.env.MEDIA_DIR || "./data/media";
+/** Старый аватар (data:image/...;base64) -> файл на сервере, возвращает путь /media/... */
+function saveDataImage(d: string): string {
+  const m = /^data:image\/(jpeg|png|webp);base64,([A-Za-z0-9+/=]+)$/.exec(d || "");
+  if (!m) return "";
+  const buf = Buffer.from(m[2], "base64");
+  if (buf.length < 100 || buf.length > 400_000) return "";
+  const name = crypto.createHash("sha256").update(buf).digest("hex").slice(0, 20) + "." + (m[1] === "jpeg" ? "jpg" : m[1]);
+  fs.mkdirSync(MEDIA_DIR, { recursive: true });
+  const f = path.join(MEDIA_DIR, name);
+  if (!fs.existsSync(f)) { fs.writeFileSync(f + ".tmp", buf); fs.renameSync(f + ".tmp", f); }
+  return "/media/" + name;
+}
+/** Переносит ник, «о себе», ссылку и аватар из старого профиля кабинета (один раз, пока ник автоматический) */
+function seedFromLegacy(addr: string) {
+  const l = legacyGet(addr);
+  const u = userByAddr(addr);
+  if (!l || !u || !AUTO_RE.test(u.name)) return;
+  const name = clean(l.name, 20).toLowerCase();
+  const nameOk = NAME_RE.test(name) && !RESERVED.has(name) && !userByName(name);
+  const link = /^https:\/\/[^\s]+$/i.test(clean(l.link, 120)) ? clean(l.link, 120) : "";
+  let avatar = u.avatar;
+  try { avatar = u.avatar || saveDataImage(String(l.avatar || "")); } catch { /* без аватара */ }
+  db.prepare("UPDATE users SET name=?, bio=?, link=?, avatar=? WHERE addr=?").run(nameOk ? name : u.name, clean(l.bio, 160) || u.bio, link || u.link, avatar, addr);
+}
+
 function ensureUser(addr: string): U {
   const ex = userByAddr(addr);
   if (ex) return ex;
   let name = "u" + addr.slice(2, 10);
   for (let i = 0; userByName(name) && i < 5; i++) name = "u" + crypto.randomBytes(4).toString("hex");
   db.prepare("INSERT INTO users(addr,name,created) VALUES(?,?,?)").run(addr, name, Date.now());
+  seedFromLegacy(addr);
   return userByAddr(addr)!;
 }
 
@@ -101,15 +153,15 @@ function profile(u: U, viewer: string) {
   };
 }
 
-type PRow = { id: number; text: string; media: string; created: number; name: string; avatar: string; likes: number; liked: number };
-const POST_SELECT = `SELECT p.id,p.text,p.media,p.created,u.name,u.avatar,
+type PRow = { id: number; edited: number; text: string; media: string; created: number; name: string; avatar: string; likes: number; liked: number };
+const POST_SELECT = `SELECT p.id,p.edited,p.text,p.media,p.created,u.name,u.avatar,
   (SELECT COUNT(*) FROM likes l WHERE l.post=p.id) likes,
   EXISTS(SELECT 1 FROM likes l WHERE l.post=p.id AND l.addr=@v) liked
   FROM posts p JOIN users u ON u.addr=p.addr`;
 const shape = (r: PRow) => {
   let media: string[] = [];
   try { media = JSON.parse(r.media); } catch { /* пусто */ }
-  return { id: r.id, text: r.text, media, created: r.created, user: { name: r.name, avatar: r.avatar }, likes: r.likes, liked: !!r.liked };
+  return { id: r.id, edited: r.edited, text: r.text, media, created: r.created, user: { name: r.name, avatar: r.avatar }, likes: r.likes, liked: !!r.liked };
 };
 
 function readBody(req: http.IncomingMessage): Promise<Record<string, unknown>> {
@@ -153,6 +205,10 @@ export async function handleSocial(req: http.IncomingMessage, res: http.ServerRe
         if (!viewer) return bad("auth", 401);
         const rows = db.prepare(`${POST_SELECT} WHERE p.deleted=0 AND u.banned=0 AND p.id<@b AND (p.addr=@v OR p.addr IN (SELECT b FROM follows WHERE a=@v)) ORDER BY p.id DESC LIMIT ${PAGE}`).all({ v: viewer, b: before }) as PRow[];
         return out(200, { ok: true, posts: rows.map(shape) });
+      }
+      if (p === "/api/post") { // один пост (страница поста по ссылке)
+        const r = db.prepare(`${POST_SELECT} WHERE p.id=@id AND p.deleted=0 AND u.banned=0`).get({ v: viewer, id: Number(q.get("id")) || 0 }) as PRow | undefined;
+        return r ? out(200, { ok: true, post: shape(r) }) : bad("not_found", 404);
       }
       if (p === "/api/people") { // поиск людей по нику
         const s = clean(q.get("q"), 20).toLowerCase().replace(/[^a-z0-9_]/g, "");
@@ -198,6 +254,8 @@ export async function handleSocial(req: http.IncomingMessage, res: http.ServerRe
       if (!NAME_RE.test(name) || RESERVED.has(name)) return bad("bad_name");
       const taken = userByName(name);
       if (taken && taken.addr !== viewer) return bad("name_taken", 409);
+      const lo = legacyOwner(name);
+      if (lo && lo !== viewer) return bad("name_taken", 409);
       let link = clean(m.link ?? u.link, 120);
       if (link && !/^https:\/\/[^\s]+$/i.test(link)) return bad("bad_link");
       const pick = (k: string, cur: string, max: number) => (m[k] !== undefined ? clean(m[k], max) : cur);
@@ -224,6 +282,16 @@ export async function handleSocial(req: http.IncomingMessage, res: http.ServerRe
       const r = db.prepare("INSERT INTO posts(addr,text,media,created) VALUES(?,?,?,?)").run(viewer, text, JSON.stringify(media), Date.now());
       const row = db.prepare(`${POST_SELECT} WHERE p.id=@id`).get({ v: viewer, id: r.lastInsertRowid }) as PRow;
       return out(200, { ok: true, post: shape(row) });
+    }
+    if (p === "/api/post/edit") {
+      const id = Number(m.id), text = clean(m.text, POST_MAX);
+      const row = db.prepare("SELECT media FROM posts WHERE id=? AND addr=? AND deleted=0").get(id, viewer) as { media: string } | undefined;
+      if (!row) return bad("not_found", 404);
+      if (!text && row.media === "[]") return bad("empty");
+      if (limited("edit:" + viewer, 30, 60000)) return bad("slow_down", 429);
+      db.prepare("UPDATE posts SET text=?, edited=? WHERE id=?").run(text, Date.now(), id);
+      const r = db.prepare(`${POST_SELECT} WHERE p.id=@id`).get({ v: viewer, id }) as PRow;
+      return out(200, { ok: true, post: shape(r) });
     }
     if (p === "/api/like") {
       const id = Number(m.id);

@@ -4,7 +4,7 @@ import crypto from "node:crypto";
 import { ethers } from "ethers";
 
 const FILE = process.env.SESSIONS_FILE ?? "./data/sessions.json";
-const TTL = 24 * 60 * 60_000;
+const TTL = 14 * 24 * 60 * 60_000;
 const MAX = 20_000;
 
 // ключ: sha256(токен) -> { адрес, срок }
