@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Player Profile | Chess Bet",
-  description: "Chess Bet player profile: posts, photos, followers and NFTs of a chess and crypto fan.",
+  title: "Rook Club Profile | Chess Bet",
+  description: "Rook Club by Chess Bet: a community for chess, crypto and NFT fans. Profiles with posts, photos, followers and NFTs.",
   alternates: { canonical: "/u/" },
   robots: { index: false, follow: true },
 };

@@ -196,7 +196,7 @@ function Profile() {
 export default function ProfilePage() {
   const { lang } = useApp();
   return (
-    <PageShell title={lang === "ru" ? "Профиль" : "Profile"}>
+    <PageShell title={lang === "ru" ? "Профиль" : "Profile"} intro={lang === "ru" ? "Rook Club — клуб любителей шахмат, крипты и NFT: посты, фото, подписчики." : "Rook Club: a community for chess, crypto and NFT fans. Posts, photos and followers."}>
       <Suspense fallback={<section className="card text-center opacity-70">…</section>}>
         <Profile />
       </Suspense>
