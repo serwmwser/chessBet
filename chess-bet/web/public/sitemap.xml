@@ -2,15 +2,33 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://chessbet.lol/</loc>
-    <lastmod>2026-10-29</lastmod>
+    <lastmod>2026-11-01</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://chessbet.lol/terms/</loc>
-    <lastmod>2026-10-29</lastmod>
+    <loc>https://chessbet.lol/chess/</loc>
+    <lastmod>2026-11-01</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.4</priority>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://chessbet.lol/crypto/</loc>
+    <lastmod>2026-11-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://chessbet.lol/faq/</loc>
+    <lastmod>2026-11-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://chessbet.lol/nft/</loc>
+    <lastmod>2026-10-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://chessbet.lol/roadmap/</loc>
@@ -19,15 +37,15 @@
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://chessbet.lol/age/</loc>
+    <loc>https://chessbet.lol/terms/</loc>
     <lastmod>2026-10-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://chessbet.lol/nft/</loc>
-    <lastmod>2026-10-30</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://chessbet.lol/age/</loc>
+    <lastmod>2026-10-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
   </url>
 </urlset>

@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /preview/
+Disallow: /messages/
 
 Sitemap: https://chessbet.lol/sitemap.xml

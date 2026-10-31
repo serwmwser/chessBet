@@ -1,0 +1,27 @@
+# Chess Bet
+
+> Chess Bet is an online chess game. You can play against a bot or a friend for free, or play other players for USDC stakes on the Polygon network. A smart contract holds the stakes and the winner receives 90% of the pot. For adults only (18+). Stakes carry the risk of losing and the service may be unavailable in some countries.
+
+## Main pages
+
+- [Play chess online free](https://chessbet.lol/chess/): practise against a bot or a friend by private link, no stakes needed.
+- [Crypto chess game](https://chessbet.lol/crypto/): how USDC stakes on Polygon work, who holds the money, fees and risks.
+- [FAQ](https://chessbet.lol/faq/): answers about stakes, fees, payouts, age, fair play, chess NFTs and the community.
+- [Chess NFTs](https://chessbet.lol/nft/): turn a move from your own finished game into an ERC-721 NFT on Polygon.
+- [Terms of use](https://chessbet.lol/terms/): age limit, stakes, fees, refunds, responsible play.
+- [Age 18+ and responsible play](https://chessbet.lol/age/)
+- [Roadmap](https://chessbet.lol/roadmap/)
+
+## Key facts
+
+- Currency and network: USDC on Polygon. A small amount of POL pays network fees.
+- Fee: 10% of the pot, so the winner receives 90%. Draws, cancelled games and games whose result cannot be recorded are refunded in full.
+- Stakes are held by a smart contract (ChessEscrow, 0xaf8714656261dc770A41857706FF4b2f495e92e9), verified on Polygonscan. The winner claims the prize with a Claim button.
+- Free modes: games against a bot and private games with a friend need no stake.
+- Also available as a Telegram Mini App: https://t.me/chess_betlolbot/game
+- Rook Club is the Chess Bet community: public profiles, posts with photos, a feed, comments, private and voice messages.
+- Private messages are stored on the server and are not end-to-end encrypted. Chess Bet never asks for a secret recovery phrase or private key.
+
+## Languages
+
+The site is available in English first, with Russian and several other languages in the interface.

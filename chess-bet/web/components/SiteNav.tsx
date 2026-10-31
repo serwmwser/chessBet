@@ -10,10 +10,13 @@ import { useUnread } from "@/lib/dm";
 type Item = { href: string; ru: string; en: string; icon: string };
 const ITEMS: Item[] = [
   { href: ROUTES.home, ru: "Играть", en: "Play", icon: "♞" },
+  { href: ROUTES.chess, ru: "Шахматы", en: "Chess", icon: "♟" },
+  { href: ROUTES.crypto, ru: "Крипто", en: "Crypto", icon: "🪙" },
   { href: ROUTES.nft, ru: "NFT", en: "NFT", icon: "🎨" },
   { href: ROUTES.feed, ru: "Лента", en: "Feed", icon: "📰" },
   { href: ROUTES.profile, ru: "Профиль", en: "Profile", icon: "👤" },
-  // Позже, когда страницы будут готовы: ROUTES.chess, ROUTES.crypto, ROUTES.leaderboard, ROUTES.faq
+  { href: ROUTES.faq, ru: "FAQ", en: "FAQ", icon: "❓" },
+  // Позже: ROUTES.leaderboard
 ];
 
 const norm = (p: string) => (p.endsWith("/") ? p : p + "/");

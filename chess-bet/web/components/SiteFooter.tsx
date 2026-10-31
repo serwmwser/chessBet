@@ -19,6 +19,10 @@ export default function SiteFooter() {
     ["18+", ru ? "только для взрослых" : "adults only"],
   ];
   const links: [string, string, boolean][] = [
+    [ru ? "Шахматы онлайн бесплатно" : "Play chess online free", `${BASE}/chess/`, false],
+    [ru ? "Крипто шахматы на USDC" : "Crypto chess for USDC", `${BASE}/crypto/`, false],
+    [ru ? "Вопросы и ответы" : "FAQ", `${BASE}/faq/`, false],
+    [ru ? "Лента Rook Club" : "Rook Club feed", `${BASE}/feed/`, false],
     [ru ? "Условия использования" : "Terms of use", `${BASE}/terms/`, false],
     [ru ? "Возраст 18+ и ответственная игра" : "Age 18+ and responsible play", `${BASE}/age/`, false],
     [ru ? "Дорожная карта" : "Roadmap", `${BASE}/roadmap/`, false],
