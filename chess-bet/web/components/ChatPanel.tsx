@@ -6,6 +6,7 @@ import { useApp } from "@/lib/ctx";
 import { dmList, type DmChat } from "@/lib/dm";
 import { errText } from "@/lib/social";
 import { parseVoice } from "@/lib/voice";
+import { takeShareDraft } from "@/lib/shareNets";
 
 const NICK = /^[a-z0-9_]{3,20}$/i;
 
@@ -19,6 +20,7 @@ export default function ChatPanel({ token, addr, busy, signIn, peer, initial }: 
   const [open, setOpen] = useState((initial || "").replace(/^@/, "").toLowerCase());
   const [chats, setChats] = useState<DmChat[] | null>(null);
   const [nick, setNick] = useState("");
+  const [draft, setDraft] = useState(() => takeShareDraft()); // ссылка, которой делятся через «В Rook Club»
   const listMode = !peer;
 
   const refresh = useCallback(() => {
@@ -49,11 +51,19 @@ export default function ChatPanel({ token, addr, busy, signIn, peer, initial }: 
     );
   }
 
-  if (peer) return <DmThread name={peer} token={token} />;
-  if (open) return <DmThread name={open} token={token} onBack={() => { setOpen(""); refresh(); }} onChanged={refresh} />;
+  if (peer) return <DmThread name={peer} token={token} draft={draft} />;
+  if (open) return <DmThread name={open} token={token} draft={draft} onBack={() => { setOpen(""); setDraft(""); refresh(); }} onChanged={refresh} />;
 
   return (
     <div className="space-y-3">
+      {draft && (
+        <section className="card text-sm space-y-1" style={{ borderColor: "#f5b301" }}>
+          <b>{ru ? "Кому отправить ссылку?" : "Who should get the link?"}</b>
+          <p className="opacity-70 break-all">{draft}</p>
+          <p className="opacity-70">{ru ? "Выберите переписку ниже или введите ник. Текст появится в поле сообщения, останется нажать «Отправить»." : "Pick a conversation below or enter a nickname. The text will appear in the message box, then press Send."}</p>
+          <button type="button" className="underline opacity-70" onClick={() => setDraft("")}>{ru ? "Отмена" : "Cancel"}</button>
+        </section>
+      )}
       <section className="card flex gap-2">
         <input value={nick} onChange={(e) => setNick(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") start(); }}
           placeholder={ru ? "Ник игрока, например @magnus" : "Player nickname, e.g. @magnus"} aria-label={ru ? "Ник игрока" : "Player nickname"}

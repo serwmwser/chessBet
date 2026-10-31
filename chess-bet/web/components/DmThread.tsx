@@ -16,14 +16,14 @@ const merge = (a: DmMsg[], b: DmMsg[]) => {
 };
 
 /** Окно переписки с одним игроком: сообщения обновляются каждые 5 секунд, пока вкладка открыта */
-export default function DmThread({ name, token, onBack, onChanged }: { name: string; token: string; onBack?: () => void; onChanged?: () => void }) {
+export default function DmThread({ name, token, onBack, onChanged, draft }: { name: string; token: string; onBack?: () => void; onChanged?: () => void; draft?: string }) {
   const { lang, toast } = useApp();
   const ru = lang === "ru";
   const [info, setInfo] = useState<Pick<Thread, "peer" | "blockedByMe" | "canSend"> | null>(null);
   const [msgs, setMsgs] = useState<DmMsg[]>([]);
   const [more, setMore] = useState(false);
   const [missing, setMissing] = useState(false);
-  const [text, setText] = useState("");
+  const [text, setText] = useState((draft || "").slice(0, MAX));
   const [busy, setBusy] = useState(false);
   const last = useRef(0);
   const box = useRef<HTMLDivElement>(null);
