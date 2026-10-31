@@ -2,6 +2,7 @@
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import PageShell from "@/components/PageShell";
+import { ROUTES as R } from "@/lib/urls";
 import Avatar, { mediaUrl } from "@/components/Avatar";
 import PostCard from "@/components/PostCard";
 import ShareMenu from "@/components/ShareMenu";
@@ -120,9 +121,12 @@ function Profile() {
                   <button type="button" className="btn btn-ghost !py-2" onClick={s.signOut}>{ru ? "Выйти" : "Sign out"}</button>
                 </>
               ) : (
-                <button type="button" className={u.follows ? "btn btn-ghost !py-2" : "btn btn-primary !py-2"} onClick={doFollow}>
-                  {u.follows ? (ru ? "Вы читаете" : "Following") : ru ? "Читать" : "Follow"}
-                </button>
+                <>
+                  <button type="button" className={u.follows ? "btn btn-ghost !py-2" : "btn btn-primary !py-2"} onClick={doFollow}>
+                    {u.follows ? (ru ? "Вы читаете" : "Following") : ru ? "Читать" : "Follow"}
+                  </button>
+                  <a href={`${R.messages}?with=${encodeURIComponent(u.name)}`} className="btn btn-primary !py-2">✉ {ru ? "Написать" : "Message"}</a>
+                </>
               )}
             </div>
           </div>

@@ -7,6 +7,7 @@ export const ROUTES = {
   home: `${BASE}/`,
   profile: `${BASE}/u/`,
   feed: `${BASE}/feed/`,
+  messages: `${BASE}/messages/`,
   nft: `${BASE}/nft/`,
   chess: `${BASE}/chess/`,
   crypto: `${BASE}/crypto/`,
