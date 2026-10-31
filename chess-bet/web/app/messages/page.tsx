@@ -8,6 +8,7 @@ import DmThread from "@/components/DmThread";
 import { useApp } from "@/lib/ctx";
 import { BASE } from "@/lib/urls";
 import { dmList, type DmChat } from "@/lib/dm";
+import { parseVoice } from "@/lib/voice";
 import { errText, useSocial } from "@/lib/social";
 
 const HERE = `${BASE}/messages/`;
@@ -81,7 +82,7 @@ function Inbox() {
                       {new Date(c.last.created).toLocaleDateString(ru ? "ru-RU" : "en-US", { day: "numeric", month: "short" })}
                     </span>
                   </div>
-                  <p className={`truncate text-sm ${c.unread ? "font-semibold" : "opacity-70"}`}>{c.last.mine ? (ru ? "Вы: " : "You: ") : ""}{c.last.text}</p>
+                  <p className={`truncate text-sm ${c.unread ? "font-semibold" : "opacity-70"}`}>{c.last.mine ? (ru ? "Вы: " : "You: ") : ""}{parseVoice(c.last.text) ? (ru ? "🎤 Голосовое сообщение" : "🎤 Voice message") : c.last.text}</p>
                 </div>
                 {c.unread > 0 && (
                   <span className="shrink-0 min-w-[1.4rem] h-[1.4rem] px-1 rounded-full text-[11px] font-bold flex items-center justify-center" style={{ background: "#f5b301", color: "#2b1a00" }}>

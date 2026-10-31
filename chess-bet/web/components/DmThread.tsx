@@ -5,6 +5,9 @@ import { useApp } from "@/lib/ctx";
 import { profileUrl } from "@/lib/urls";
 import { dmBlock, dmDelete, dmErr, dmReport, dmSend, dmThread, type DmMsg, type DmThread as Thread } from "@/lib/dm";
 import Avatar from "./Avatar";
+import VoiceBubble from "./VoiceBubble";
+import VoiceRecorder from "./VoiceRecorder";
+import { parseVoice } from "@/lib/voice";
 
 const MAX = 1000;
 const merge = (a: DmMsg[], b: DmMsg[]) => {
@@ -67,6 +70,14 @@ export default function DmThread({ name, token, onBack, onChanged }: { name: str
     } catch (e) { toast(dmErr(e, ru), "err"); }
     finally { setBusy(false); }
   };
+  const sendVoice = async (v: string) => {
+    try {
+      const m = await dmSend(token, name, v);
+      stick.current = true;
+      setMsgs((a) => { const x = merge(a, [m]); last.current = x[x.length - 1].id; return x; });
+      onChanged?.();
+    } catch (e) { toast(dmErr(e, ru), "err"); }
+  };
   const del = async (id: number) => {
     if (!window.confirm(ru ? "Удалить сообщение у обоих?" : "Delete this message for both?")) return;
     try { await dmDelete(token, id); setMsgs((a) => a.filter((m) => m.id !== id)); } catch (e) { toast(dmErr(e, ru), "err"); }
@@ -110,7 +121,7 @@ export default function DmThread({ name, token, onBack, onChanged }: { name: str
           <div key={m.id} className={`flex ${m.mine ? "justify-end" : "justify-start"}`}>
             <div className="max-w-[85%] rounded-2xl px-3 py-2 text-sm break-words whitespace-pre-wrap"
               style={m.mine ? { background: "linear-gradient(90deg,#fde68a,#f5b301)", color: "#2b1a00" } : { background: "rgba(127,127,127,.16)" }}>
-              {m.text}
+              {(() => { const v = parseVoice(m.text); return v ? <VoiceBubble path={v.path} sec={v.sec} /> : m.text; })()}
               <div className="mt-1 flex items-center gap-2 text-[10px] opacity-60">
                 <span>{time(m.created)}{m.mine && m.read ? " ✓✓" : ""}</span>
                 {m.mine ? <button type="button" onClick={() => del(m.id)} className="underline">{ru ? "удалить" : "delete"}</button>
@@ -127,6 +138,7 @@ export default function DmThread({ name, token, onBack, onChanged }: { name: str
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
             placeholder={ru ? "Сообщение…" : "Message…"} aria-label={ru ? "Текст сообщения" : "Message text"}
             className="flex-1 rounded-xl border px-3 py-2 bg-transparent outline-none resize-none text-sm" />
+          <VoiceRecorder token={token} onVoice={sendVoice} />
           <div className="flex flex-col items-end gap-1">
             <span className="text-[10px] opacity-50">{MAX - text.length}</span>
             <button type="button" className="btn btn-primary !py-2" disabled={busy || !text.trim()} onClick={send}>{busy ? "…" : ru ? "Отправить" : "Send"}</button>
