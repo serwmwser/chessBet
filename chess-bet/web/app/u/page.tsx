@@ -64,13 +64,14 @@ function Profile() {
   useEffect(() => { if (u?.me && sp.get("edit") === "1" && !autoEdit.current) { autoEdit.current = true; startEdit(); } }, [u]); // eslint-disable-line react-hooks/exhaustive-deps
   const upImg = async (k: "avatar" | "banner", file?: File) => {
     if (!file) return;
-    try { const p = await uploadImage(s.token, file); setF((x) => ({ ...x, [k]: p })); }
+    try { const t = s.token || (await s.signIn()); const p = await uploadImage(t, file); setF((x) => ({ ...x, [k]: p })); }
     catch (e) { toast((e as Error).message === "bad_image" ? (ru ? "Нужна картинка JPG, PNG или WebP" : "Use a JPG, PNG or WebP image") : errText(e, ru), "err"); }
   };
   const save = async () => {
     setBusy(true);
     try {
-      const nu = await saveProfile(s.token, { ...f, name: f.name.trim().toLowerCase() });
+      const t = s.token || (await s.signIn());
+      const nu = await saveProfile(t, { ...f, name: f.name.trim().toLowerCase() });
       s.setMe(nu); setU(nu); setEdit(false);
       toast(ru ? "Профиль сохранён" : "Profile saved", "ok");
       if (nu.name !== target) router.replace(profileUrl(nu.name));

@@ -29,10 +29,11 @@ async function shrink(file: File): Promise<Blob> {
 
 /** Сжимает и загружает фото на сервер, возвращает путь вида /media/... (нужен вход) */
 export async function uploadImage(token: string, file: File): Promise<string> {
-  if (!OK_TYPES.includes(file.type)) throw new Error("bad_image");
+  if (file.type && !file.type.startsWith("image/")) throw new Error("bad_image");
   if (file.size > 20_000_000) throw new Error("too_big");
-  const blob = await shrink(file);
-  const r = await fetch(`${API_URL}/api/upload`, { method: "POST", headers: { authorization: `Bearer ${token}`, "content-type": "application/octet-stream" }, body: blob });
+  const blob = await shrink(file).catch((e) => { throw new Error((e as Error)?.message === "too_big" ? "too_big" : "bad_image"); });
+  const [wallet, tok] = token.split("|");
+  const r = await fetch(`${API_URL}/api/upload`, { method: "POST", headers: { "content-type": "application/octet-stream", ...(tok ? { authorization: `Bearer ${tok}`, "x-wallet": wallet } : {}) }, body: blob });
   const j = (await r.json()) as { ok: boolean; path?: string; error?: string };
   if (!j.ok || !j.path) throw new Error(j.error || "error");
   return j.path;
