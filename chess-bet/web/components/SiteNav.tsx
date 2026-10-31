@@ -12,7 +12,6 @@ const ITEMS: Item[] = [
   { href: ROUTES.home, ru: "Играть", en: "Play", icon: "♞" },
   { href: ROUTES.nft, ru: "NFT", en: "NFT", icon: "🎨" },
   { href: ROUTES.feed, ru: "Лента", en: "Feed", icon: "📰" },
-  { href: ROUTES.messages, ru: "Сообщения", en: "Messages", icon: "✉️" },
   { href: ROUTES.profile, ru: "Профиль", en: "Profile", icon: "👤" },
   // Позже, когда страницы будут готовы: ROUTES.chess, ROUTES.crypto, ROUTES.leaderboard, ROUTES.faq
 ];
@@ -49,7 +48,7 @@ export default function SiteNav() {
                   : { borderColor: "rgba(212,160,23,.45)", color: "#d4a017" }}
               >
                 <span aria-hidden="true">{it.icon}</span>{ru ? it.ru : it.en}
-                {it.href === ROUTES.messages && unread > 0 && (
+                {it.href === ROUTES.profile && unread > 0 && (
                   <span className="ms-0.5 min-w-[1.2rem] h-[1.2rem] px-1 rounded-full text-[11px] font-bold inline-flex items-center justify-center" style={{ background: "#e0245e", color: "#fff" }}>{unread > 99 ? "99+" : unread}</span>
                 )}
               </a>
