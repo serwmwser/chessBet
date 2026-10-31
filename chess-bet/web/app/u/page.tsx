@@ -4,10 +4,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import Avatar, { mediaUrl } from "@/components/Avatar";
 import PostCard from "@/components/PostCard";
+import ShareMenu from "@/components/ShareMenu";
 import PostComposer, { uploadImage } from "@/components/PostComposer";
 import { useApp } from "@/lib/ctx";
 import { shortAddr } from "@/lib/config";
-import { profileUrl } from "@/lib/urls";
+import { absoluteUrl, profileUrl } from "@/lib/urls";
 import { errText, follow, getFeed, getPosts, getUser, saveProfile, useSocial, type SPost, type SUser } from "@/lib/social";
 
 type Tab = "posts" | "media" | "feed";
@@ -110,7 +111,8 @@ function Profile() {
         <div className="px-4 pb-4">
           <div className="flex items-end justify-between -mt-10">
             <div className="rounded-full p-1" style={{ background: "var(--bg, #fff)" }}><Avatar name={u.name} src={u.avatar} size={80} /></div>
-            <div className="flex gap-2 pb-1">
+            <div className="flex flex-wrap justify-end gap-2 pb-1">
+              <ShareMenu url={absoluteUrl(profileUrl(u.name))} text={`@${u.name} — Rook Club`} label={ru ? "Поделиться профилем" : "Share profile"} className="btn btn-ghost !py-2" />
               {u.me ? (
                 <>
                   <button type="button" className="btn btn-ghost !py-2" onClick={startEdit}>{ru ? "Редактировать" : "Edit profile"}</button>

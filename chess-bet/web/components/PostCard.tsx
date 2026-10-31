@@ -5,6 +5,7 @@ import { useApp } from "@/lib/ctx";
 import { absoluteUrl, postUrl, profileUrl } from "@/lib/urls";
 import { editPost, errText, like, removePost, type SPost } from "@/lib/social";
 import Avatar, { mediaUrl } from "./Avatar";
+import ShareMenu from "./ShareMenu";
 
 const ago = (t: number, ru: boolean) => {
   const s = Math.max(1, Math.floor((Date.now() - t) / 1000));
@@ -26,7 +27,6 @@ export default function PostCard({ post, token, myName, onGone }: { post: SPost;
   const [edited, setEdited] = useState(post.edited > 0);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState("");
-  const [menu, setMenu] = useState(false);
   const mine = !!myName && myName.toLowerCase() === post.user.name.toLowerCase();
   const link = absoluteUrl(postUrl(post.id));
   const shareText = (text ? text.slice(0, 100) + (text.length > 100 ? "…" : "") + " — " : "") + "Rook Club";
@@ -55,17 +55,6 @@ export default function PostCard({ post, token, myName, onGone }: { post: SPost;
     } catch (e) { toast(errText(e, ru), "err"); }
     finally { setBusy(false); }
   };
-  const copy = async () => {
-    try { await navigator.clipboard.writeText(link); toast(ru ? "Ссылка скопирована" : "Link copied", "ok"); }
-    catch { window.prompt(ru ? "Скопируйте ссылку:" : "Copy the link:", link); }
-    setMenu(false);
-  };
-  const native = async () => {
-    try { await navigator.share({ title: "Rook Club", text: shareText, url: link }); } catch { /* закрыли окно */ }
-    setMenu(false);
-  };
-  const canNative = typeof navigator !== "undefined" && typeof navigator.share === "function";
-  const item = "block w-full text-start px-3 py-2 text-sm hover:bg-black/5 dark:hover:bg-white/10";
 
   return (
     <article className="card flex gap-3">
@@ -105,17 +94,9 @@ export default function PostCard({ post, token, myName, onGone }: { post: SPost;
             <span aria-hidden>{liked ? "♥" : "♡"}</span> {n > 0 ? n : ""}
             <span className="sr-only">{ru ? "Нравится" : "Like"}</span>
           </button>
-          <button type="button" onClick={() => setMenu((v) => !v)} aria-expanded={menu} className="opacity-70 hover:opacity-100">↗ {ru ? "Поделиться" : "Share"}</button>
+          <ShareMenu url={link} text={shareText} />
           {mine && !editing && <button type="button" onClick={startEdit} className="opacity-70 hover:opacity-100">✎ {ru ? "Изменить" : "Edit"}</button>}
           {mine && <button type="button" onClick={del} className="ms-auto text-xs opacity-60 hover:opacity-100">{ru ? "Удалить" : "Delete"}</button>}
-          {menu && (
-            <div className="absolute z-20 start-0 top-7 min-w-[12rem] rounded-xl border shadow-lg bg-white dark:bg-ink-800 overflow-hidden">
-              <a className={item} target="_blank" rel="noopener noreferrer" href={`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(shareText)}`} onClick={() => setMenu(false)}>✈️ Telegram</a>
-              <a className={item} target="_blank" rel="noopener noreferrer" href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(link)}`} onClick={() => setMenu(false)}>𝕏 X (Twitter)</a>
-              <button type="button" className={item} onClick={copy}>🔗 {ru ? "Копировать ссылку" : "Copy link"}</button>
-              {canNative && <button type="button" className={item} onClick={native}>⋯ {ru ? "Ещё…" : "More…"}</button>}
-            </div>
-          )}
         </div>
       </div>
     </article>
