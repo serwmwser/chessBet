@@ -94,6 +94,9 @@ export default function PostCard({ post, token, myName, onGone }: { post: SPost;
             <span aria-hidden>{liked ? "♥" : "♡"}</span> {n > 0 ? n : ""}
             <span className="sr-only">{ru ? "Нравится" : "Like"}</span>
           </button>
+          <Link href={postUrl(post.id)} className="flex items-center gap-1 opacity-70 hover:opacity-100" aria-label={ru ? "Комментарии" : "Comments"}>
+            <span aria-hidden>💬</span> {post.comments ? post.comments : ""}
+          </Link>
           <ShareMenu url={link} text={shareText} />
           {mine && !editing && <button type="button" onClick={startEdit} className="opacity-70 hover:opacity-100">✎ {ru ? "Изменить" : "Edit"}</button>}
           {mine && <button type="button" onClick={del} className="ms-auto text-xs opacity-60 hover:opacity-100">{ru ? "Удалить" : "Delete"}</button>}

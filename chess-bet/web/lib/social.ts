@@ -9,7 +9,7 @@ export type SUser = {
   name: string; bio: string; country: string; link: string; avatar: string; banner: string; joined: number;
   following: number; followers: number; posts: number; me: boolean; follows: boolean; addr?: string;
 };
-export type SPost = { id: number; edited: number; text: string; media: string[]; created: number; user: { name: string; avatar: string }; likes: number; liked: boolean };
+export type SPost = { id: number; edited: number; text: string; media: string[]; created: number; user: { name: string; avatar: string }; likes: number; liked: boolean; comments?: number };
 
 /** Признак «не входить автоматически»: ставится, если игрок отказался от подписи или нажал «Выйти» (до закрытия вкладки) */
 export const AUTO_OFF = "cb_autologin_off";

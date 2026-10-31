@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import PostCard from "@/components/PostCard";
+import Comments from "@/components/Comments";
 import { useApp } from "@/lib/ctx";
 import { getPost, useSocial, type SPost } from "@/lib/social";
 import { profileUrl, ROUTES } from "@/lib/urls";
@@ -35,6 +36,7 @@ function One() {
   return (
     <>
       <PostCard key={post.id} post={post} token={s.token} myName={s.me?.name} onGone={() => setGone(true)} />
+      <Comments postId={post.id} token={s.token} signIn={s.signIn} />
       <div className="flex gap-2 flex-wrap">
         <Link href={profileUrl(post.user.name)} className="btn btn-ghost !py-2">👤 @{post.user.name}</Link>
         <Link href={ROUTES.feed} className="btn btn-ghost !py-2">📰 {ru ? "Лента" : "Feed"}</Link>
