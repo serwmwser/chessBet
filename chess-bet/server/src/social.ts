@@ -24,6 +24,10 @@ CREATE INDEX IF NOT EXISTS posts_addr ON posts(addr, id);
 CREATE TABLE IF NOT EXISTS follows(a TEXT NOT NULL, b TEXT NOT NULL, created INTEGER NOT NULL, PRIMARY KEY(a, b));
 CREATE INDEX IF NOT EXISTS follows_b ON follows(b);
 CREATE TABLE IF NOT EXISTS likes(post INTEGER NOT NULL, addr TEXT NOT NULL, PRIMARY KEY(post, addr));
+CREATE TABLE IF NOT EXISTS comments(
+  id INTEGER PRIMARY KEY AUTOINCREMENT, post INTEGER NOT NULL, addr TEXT NOT NULL, text TEXT NOT NULL,
+  created INTEGER NOT NULL, deleted INTEGER NOT NULL DEFAULT 0);
+CREATE INDEX IF NOT EXISTS comments_post ON comments(post, id);
 `);
 
 try { db.exec("ALTER TABLE posts ADD COLUMN edited INTEGER NOT NULL DEFAULT 0"); } catch { /* колонка уже есть */ }
@@ -153,15 +157,16 @@ function profile(u: U, viewer: string) {
   };
 }
 
-type PRow = { id: number; edited: number; text: string; media: string; created: number; name: string; avatar: string; likes: number; liked: number };
+type PRow = { id: number; edited: number; text: string; media: string; created: number; name: string; avatar: string; likes: number; liked: number; comments: number };
 const POST_SELECT = `SELECT p.id,p.edited,p.text,p.media,p.created,u.name,u.avatar,
   (SELECT COUNT(*) FROM likes l WHERE l.post=p.id) likes,
-  EXISTS(SELECT 1 FROM likes l WHERE l.post=p.id AND l.addr=@v) liked
+  EXISTS(SELECT 1 FROM likes l WHERE l.post=p.id AND l.addr=@v) liked,
+  (SELECT COUNT(*) FROM comments cm JOIN users cu ON cu.addr=cm.addr WHERE cm.post=p.id AND cm.deleted=0 AND cu.banned=0) comments
   FROM posts p JOIN users u ON u.addr=p.addr`;
 const shape = (r: PRow) => {
   let media: string[] = [];
   try { media = JSON.parse(r.media); } catch { /* пусто */ }
-  return { id: r.id, edited: r.edited, text: r.text, media, created: r.created, user: { name: r.name, avatar: r.avatar }, likes: r.likes, liked: !!r.liked };
+  return { id: r.id, edited: r.edited, text: r.text, media, created: r.created, user: { name: r.name, avatar: r.avatar }, likes: r.likes, liked: !!r.liked, comments: r.comments };
 };
 
 function readBody(req: http.IncomingMessage): Promise<Record<string, unknown>> {

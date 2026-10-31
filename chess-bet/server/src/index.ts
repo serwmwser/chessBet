@@ -12,6 +12,7 @@ import { startTg, tgChallenge, tgConfirm, tgNotify, tgStatus } from "./tg.js";
 import { handleSocial, viewerOf, setLegacy, socialPublic, socialNameOwner } from "./social.js";
 import { handleMedia } from "./media.js";
 import { handleDm, setDmNotify } from "./dm.js";
+import { handleComments } from "./comments.js";
 
 const SITE_URL = process.env.SITE_URL || "https://chessbet.lol";
 
@@ -512,6 +513,7 @@ const server = http.createServer((req, res) => {
   const url = new URL(req.url ?? "/", "http://x");
   const parts = url.pathname.split("/").filter(Boolean);
   const out = (o: unknown) => res.end(JSON.stringify(o));
+  if (url.pathname === "/api/comments" || url.pathname.startsWith("/api/comment/")) { handleComments(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (url.pathname.startsWith("/api/dm/")) { handleDm(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (parts[0] === "media" || url.pathname === "/api/upload" || url.pathname === "/api/upload-voice") { handleMedia(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (parts[0] === "api") { handleSocial(req, res, url).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
