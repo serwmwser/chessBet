@@ -43,21 +43,9 @@ export default function AppDownload() {
           <div className="text-xs opacity-70">{ru ? "Значок на экране, запуск без адресной строки." : "Home-screen icon, opens without the address bar."}</div>
         </div>
       </div>
-      {android ? (
-        <div className="grid grid-cols-1 gap-2">
-          <a href={`${BASE}/Chess_Bet.apk`} download="Chess_Bet.apk" className="w-full text-center px-4 py-3 rounded-xl font-extrabold text-black text-base" style={{ ...green, boxShadow: "0 4px 0 rgba(0,0,0,.25)" }}>
-            ⬇ {ru ? "Скачать APK для Android" : "Download Android APK"}
-          </a>
-          <div className="text-[11px] opacity-70">{ru ? "Откройте скачанный файл и разрешите установку. Если Play Защита спросит, нажмите «Всё равно установить»." : "Open the downloaded file and allow installation. If Play Protect asks, tap “Install anyway”."}</div>
-          <button type="button" onClick={install} className="w-full px-4 py-2 rounded-xl font-bold border border-emerald-400/60 text-emerald-300">
-            {ru ? "Или установить через браузер" : "Or install via browser"}
-          </button>
-        </div>
-      ) : (
-        <button type="button" onClick={install} className="w-full px-4 py-3 rounded-xl font-extrabold text-black text-base" style={green}>
-          {ru ? "Установить" : "Install"}
-        </button>
-      )}
+      <button type="button" onClick={install} className="w-full px-4 py-3 rounded-xl font-extrabold text-black text-base" style={green}>
+        {ru ? "Установить" : "Install"}
+      </button>
       {hint && (
         <div className="text-xs opacity-80">
           {ru ? "Откройте меню браузера (три точки или кнопка «Поделиться») и выберите «Установить приложение» / «Добавить на главный экран»." : "Open the browser menu (three dots or the Share button) and choose “Install app” / “Add to Home screen”."}

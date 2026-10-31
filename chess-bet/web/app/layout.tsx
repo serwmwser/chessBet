@@ -5,7 +5,6 @@ import { Providers } from "@/lib/ctx";
 import OpenSplash from "@/components/OpenSplash";
 import TelegramInit from "@/components/TelegramInit";
 import Analytics from "@/components/Analytics";
-import AutoLogin from "@/components/AutoLogin";
 
 const inter = Inter({ subsets: ["latin", "cyrillic"], variable: "--font-inter" });
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
@@ -62,7 +61,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="apple-touch-icon" href={`${BASE}/icon-192.png`} />
       </head>
       <body className="font-sans">
-        <Providers>{children}<Analytics /><AutoLogin /></Providers>
+        <Providers>{children}<Analytics /></Providers>
         <OpenSplash />
         <TelegramInit />
         <script

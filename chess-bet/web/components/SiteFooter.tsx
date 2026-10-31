@@ -23,7 +23,6 @@ export default function SiteFooter() {
     [ru ? "Возраст 18+ и ответственная игра" : "Age 18+ and responsible play", `${BASE}/age/`, false],
     [ru ? "Дорожная карта" : "Roadmap", `${BASE}/roadmap/`, false],
     [ru ? "Chess Bet в Telegram" : "Chess Bet on Telegram", TG_BOT_URL, true],
-    [ru ? "Скачать для Android (APK)" : "Download for Android (APK)", `${BASE}/Chess_Bet.apk`, false],
   ];
   return (
     <footer className="space-y-3">
