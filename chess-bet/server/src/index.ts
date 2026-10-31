@@ -513,7 +513,7 @@ const server = http.createServer((req, res) => {
   const parts = url.pathname.split("/").filter(Boolean);
   const out = (o: unknown) => res.end(JSON.stringify(o));
   if (url.pathname.startsWith("/api/dm/")) { handleDm(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
-  if (parts[0] === "media" || url.pathname === "/api/upload") { handleMedia(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
+  if (parts[0] === "media" || url.pathname === "/api/upload" || url.pathname === "/api/upload-voice") { handleMedia(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (parts[0] === "api") { handleSocial(req, res, url).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (parts[0] === "tg") {
     if (req.method === "GET" && parts[1] === "status") return out(tgStatus(url.searchParams.get("addr") ?? ""));
