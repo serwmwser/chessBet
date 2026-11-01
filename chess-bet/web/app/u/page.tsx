@@ -5,6 +5,7 @@ import PageShell from "@/components/PageShell";
 import Avatar, { mediaUrl } from "@/components/Avatar";
 import PostCard from "@/components/PostCard";
 import ChatPanel from "@/components/ChatPanel";
+import DailyQuests, { PlayerBadges } from "@/components/DailyQuests";
 import { useUnread } from "@/lib/dm";
 import ShareMenu from "@/components/ShareMenu";
 import PostComposer, { uploadImage } from "@/components/PostComposer";
@@ -143,6 +144,8 @@ function Profile() {
           <p className="mt-2 text-sm"><b>{u.following}</b> {ru ? "Подписки" : "Following"} · <b>{u.followers}</b> {ru ? "Подписчики" : "Followers"} · <b>{u.posts}</b> {ru ? "Постов" : "Posts"}</p>
         </div>
       </section>
+
+      {!edit && (u.me ? <DailyQuests token={s.token} signIn={s.signIn} /> : <PlayerBadges name={u.name} />)}
 
       {edit && (
         <section className="card space-y-3">

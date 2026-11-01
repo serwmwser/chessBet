@@ -7,6 +7,7 @@
 - [Play chess online free](https://chessbet.lol/chess/): practise against a bot or a friend by private link, no stakes needed.
 - [Crypto chess game](https://chessbet.lol/crypto/): how USDC stakes on Polygon work, who holds the money, fees and risks.
 - [FAQ](https://chessbet.lol/faq/): answers about stakes, fees, payouts, age, fair play, chess NFTs and the community.
+- [Tournaments](https://chessbet.lol/tournaments/): free hourly chess arenas with points, badges and cups; daily quests and streaks.
 - [Chess NFTs](https://chessbet.lol/nft/): turn a move from your own finished game into an ERC-721 NFT on Polygon.
 - [Terms of use](https://chessbet.lol/terms/): age limit, stakes, fees, refunds, responsible play.
 - [Age 18+ and responsible play](https://chessbet.lol/age/)

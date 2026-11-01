@@ -17,6 +17,7 @@ export const ROUTES = {
   terms: `${BASE}/terms/`,
   age: `${BASE}/age/`,
   roadmap: `${BASE}/roadmap/`,
+  tournaments: `${BASE}/tournaments/`,
 } as const;
 
 /** Профиль игрока: пока адрес с параметром, потом можно заменить на /u/имя/ */
