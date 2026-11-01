@@ -1,6 +1,8 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useActiveAccount } from "thirdweb/react";
 import { WS_URL } from "./config";
+import { tokenFor } from "./social";
 
 // Бесплатная партия с другом по ссылке: без кошелька и ставок. Сервер: /room (server/src/rooms.ts).
 
@@ -69,6 +71,10 @@ export function useRoom(roomId: string | null, create: Color | "r" = "r", minute
   const [notice, setNotice] = useState<{ code: string; n: number } | null>(null); // нефатальные ошибки сервера (чат, пауза и т.д.)
   const ws = useRef<WebSocket | null>(null);
   const cur = useRef<string | null>(roomId);
+  const account = useActiveAccount();
+  const authTok = tokenFor(account?.address); // вход на сайте: «адрес|токен» или пусто
+  const authRef = useRef("");
+  authRef.current = authTok;
   const lastMsg = useRef(0); // ROOMFIX: когда последний раз что-то приходило с сервера
 
   useEffect(() => {
@@ -80,6 +86,7 @@ export function useRoom(roomId: string | null, create: Color | "r" = "r", minute
       ws.current = s;
       s.onopen = () => {
         setOnline(true); tries = 0;
+        if (authRef.current) s.send(JSON.stringify({ t: "auth", token: authRef.current })); // сначала сообщаем, чей аккаунт
         if (cur.current) s.send(JSON.stringify({ t: "join", id: cur.current, token: readTok(cur.current) }));
         else s.send(JSON.stringify({ t: "create", color: create, minutes }));
       };
@@ -125,6 +132,11 @@ export function useRoom(roomId: string | null, create: Color | "r" = "r", minute
     return () => { stop = true; if (retry) clearTimeout(retry); document.removeEventListener("visibilitychange", wake); window.removeEventListener("online", wake); window.removeEventListener("focus", wake); ws.current?.close(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // AUTHSEND: вход выполнен уже после подключения к комнате — отправляем токен сразу
+  useEffect(() => {
+    if (authTok && ws.current?.readyState === WebSocket.OPEN) ws.current.send(JSON.stringify({ t: "auth", token: authTok }));
+  }, [authTok]);
 
   const send = useCallback((o: object) => { if (ws.current?.readyState === WebSocket.OPEN) ws.current.send(JSON.stringify(o)); }, []);
   return {

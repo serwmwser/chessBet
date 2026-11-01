@@ -4,6 +4,7 @@ import path from "node:path";
 import type http from "node:http";
 import { WebSocketServer, WebSocket } from "ws";
 import { Chess } from "chess.js";
+import { checkSession } from "./session.js";
 
 // Бесплатные комнаты «партия с другом по ссылке»: без кошелька, без ставок и без блокчейна.
 // Возможности как в партии на токены: часы, ничья, сдача, чат, паузы, реванш. Подключение: ws(s)://хост/room
@@ -30,6 +31,7 @@ type Room = {
   pausesLeft: { w: number; b: number };
   rematch: Color | null; // кто предложил реванш
   next: string | null; // номер комнаты реванша, когда оба согласились
+  accts?: { w?: string; b?: string }; // аккаунты сайта (адреса) игроков: нужны для заданий и турниров
   hold: number | null; // ожидание: соперник сделал ход, а тот, чей ход, не в комнате; его часы стоят (время начала ожидания)
 };
 
@@ -45,6 +47,10 @@ const HOLD_MAX_MS = 72 * 3600_000; // игрок не заходил в комн
 
 export const roomsWss = new WebSocketServer({ noServer: true, maxPayload: 4096 });
 const rooms = new Map<string, Room>();
+export type FinishInfo = { id: string; w: string; b: string; winner: Color | null; reason: string; plies: number; minutes: number };
+let finishHook: ((i: FinishInfo) => void) | null = null;
+/** Хук «партия окончена»: вызывается один раз за партию. Подключается в index.ts (задания, турниры) */
+export function setFinishHook(fn: (i: FinishInfo) => void) { finishHook = fn; }
 const created = new Map<string, number[]>();
 const lastChat = new WeakMap<WebSocket, number>();
 
@@ -57,7 +63,7 @@ function saveRooms() {
       id: r.id, tokens: r.tokens, moves: r.chess.history(), over: r.over, reason: r.reason, winner: r.winner, drawOffer: r.drawOffer,
       touched: r.touched, limit: r.limit, clock: remaining(r),
       chat: r.chat.slice(-100), pauseBy: r.pause?.by ?? null, pauseLeft: r.pause ? Math.max(0, r.pause.until - now) : 0,
-      pausesLeft: r.pausesLeft, rematch: r.rematch, next: r.next, hold: r.hold,
+      pausesLeft: r.pausesLeft, rematch: r.rematch, next: r.next, hold: r.hold, accts: r.accts,
     }));
     fs.mkdirSync(path.dirname(ROOMS_FILE), { recursive: true });
     fs.writeFileSync(ROOMS_FILE + ".tmp", JSON.stringify(out));
@@ -85,6 +91,7 @@ function loadRooms() {
         rematch: o.rematch === "w" || o.rematch === "b" ? o.rematch : null,
         next: typeof o.next === "string" ? o.next : null,
         hold: Number(o.hold) > 0 ? Number(o.hold) : null,
+        accts: o.accts && typeof o.accts === "object" ? { w: typeof o.accts.w === "string" ? o.accts.w : undefined, b: typeof o.accts.b === "string" ? o.accts.b : undefined } : {},
       });
     }
     console.log("rooms restored:", rooms.size);
@@ -126,8 +133,13 @@ function broadcast(r: Room) {
   for (const [ws, who] of r.socks) if (ws.readyState === WebSocket.OPEN) ws.send(who === "s" ? lite : full);
 }
 function finish(r: Room, winner: Color | null, reason: string) {
+  const wasOver = r.over;
   if (running(r)) { const t = r.chess.turn(); r.clock[t] = Math.max(0, r.clock[t] - (Date.now() - r.last)); } // замораживаем часы
   r.over = true; r.winner = winner; r.reason = reason; r.drawOffer = null; r.pause = null; r.hold = null;
+  if (!wasOver && finishHook && reason !== "abort") {
+    try { finishHook({ id: r.id, w: r.accts?.w ?? "", b: r.accts?.b ?? "", winner, reason, plies: r.chess.history().length, minutes: Math.round(r.limit / 60_000) }); }
+    catch (e) { console.error("finish hook", e); }
+  }
 }
 /** Конец партии по правилам шахмат (мат, пат, нехватка материала, повтор, 50 ходов) */
 function checkEnd(r: Room) {
@@ -192,14 +204,23 @@ roomsWss.on("connection", (ws: WebSocket, req: http.IncomingMessage) => {
   ws.on("error", () => { /* ошибка одного соединения не должна ронять весь сервер */ });
   let room: Room | undefined;
   let who: Who = "s";
+  let acct = ""; // адрес аккаунта сайта, если игрок вошёл (проверен по токену)
   let win = Date.now(), n = 0;
   const send = (o: unknown) => ws.readyState === WebSocket.OPEN && ws.send(JSON.stringify(o));
   const err = (m: string) => send({ t: "error", message: m });
   const leave = () => { if (room) { room.socks.delete(ws); broadcast(room); room = undefined; } };
 
+  /** Привязывает аккаунт к месту игрока (только пока партия идёт) */
+  const bind = () => {
+    if (!acct || !room || room.over || (who !== "w" && who !== "b")) return;
+    room.accts = room.accts ?? {};
+    if (room.accts[who] !== acct) room.accts[who] = acct;
+  };
+
   const enter = (r: Room, w: Who, token?: string) => {
     leave();
     room = r; who = w; r.socks.set(ws, w); r.touched = Date.now();
+    bind();
     send({ t: "seat", id: r.id, color: w, token });
     // игрок вернулся в старую комнату, а реванш уже согласован: переводим его в новую
     if (r.next && (w === "w" || w === "b")) {
@@ -232,6 +253,12 @@ roomsWss.on("connection", (ws: WebSocket, req: http.IncomingMessage) => {
       r.tokens[color] = token;
       rooms.set(r.id, r);
       return enter(r, color, token);
+    }
+    if (m.t === "auth") {
+      // вход аккаунта сайта: токен «адрес|токен»; без него играть можно, но очки и задания не засчитываются
+      const [a, t] = String(m.token ?? "").split("|");
+      if (a && t && /^0x[0-9a-fA-F]{40}$/.test(a) && checkSession(a, t)) { acct = a.toLowerCase(); bind(); }
+      return;
     }
     if (m.t === "join") {
       const id = String(m.id ?? "");
