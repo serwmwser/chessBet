@@ -47,7 +47,7 @@ const RU: Sec[] = [
     "Сервис предоставляется «как есть». Мы не отвечаем за сбои сети Polygon, кошельков и сторонних площадок, потерю ключей, решения игроков и убытки от ставок. Смарт-контракт может содержать ошибки, несмотря на проверки.",
   ]],
   ["12. Изменения и связь", [
-    "Мы можем менять эти условия; продолжая пользоваться сервисом, вы принимаете новую редакцию. Контакт для обращений: [укажите адрес электронной почты].",
+    "Мы можем менять эти условия; продолжая пользоваться сервисом, вы принимаете новую редакцию. Контакт для обращений: chessgrokearn@gmail.com.",
   ]],
 ];
 
@@ -94,7 +94,7 @@ const EN: Sec[] = [
     "The service is provided as is. We are not responsible for failures of the Polygon network, wallets and third-party platforms, lost keys, players' decisions and losses from stakes. A smart contract may contain errors despite checks.",
   ]],
   ["12. Changes and contact", [
-    "We may change these terms; by continuing to use the service you accept the new version. Contact: [enter an email address].",
+    "We may change these terms; by continuing to use the service you accept the new version. Contact: chessgrokearn@gmail.com.",
   ]],
 ];
 

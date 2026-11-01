@@ -22,6 +22,7 @@ export default function SiteFooter() {
     [ru ? "Шахматы онлайн бесплатно" : "Play chess online free", `${BASE}/chess/`, false],
     [ru ? "Крипто шахматы на USDC" : "Crypto chess for USDC", `${BASE}/crypto/`, false],
     [ru ? "Вопросы и ответы" : "FAQ", `${BASE}/faq/`, false],
+    [ru ? "О нас" : "About us", `${BASE}/about/`, false],
     [ru ? "Лента Rook Club" : "Rook Club feed", `${BASE}/feed/`, false],
     [ru ? "Условия использования" : "Terms of use", `${BASE}/terms/`, false],
     [ru ? "Возраст 18+ и ответственная игра" : "Age 18+ and responsible play", `${BASE}/age/`, false],
