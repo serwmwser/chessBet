@@ -350,3 +350,29 @@ roomsWss.on("connection", (ws: WebSocket, req: http.IncomingMessage) => {
     err("unknown");
   });
 });
+
+// ---------- Для турниров (tournaments.ts) ----------
+/** Комната для турнирной партии: места заданы заранее, аккаунты игроков привязаны */
+export function createTourRoom(wAddr: string, bAddr: string, minutes: number): { id: string; wToken: string; bToken: string } | null {
+  if (rooms.size >= MAX_ROOMS) return null;
+  const r = newRoom("w", Math.min(MAX_MIN, Math.max(1, Math.round(minutes))), Date.now());
+  r.tokens.w = newToken(); r.tokens.b = newToken();
+  r.accts = { w: wAddr, b: bAddr };
+  rooms.set(r.id, r);
+  return { id: r.id, wToken: r.tokens.w, bToken: r.tokens.b };
+}
+/** Состояние комнаты для судейства турнира; null, если комнаты нет */
+export function roomInfo(id: string) {
+  const r = rooms.get(id);
+  if (!r) return null;
+  const on = (c: Color) => [...r.socks.values()].includes(c);
+  return { over: r.over, winner: r.winner, reason: r.reason, plies: r.chess.history().length, turn: r.chess.turn(), online: { w: on("w"), b: on("b") }, touched: r.touched };
+}
+/** Завершить партию принудительно (неявка, брошенная партия) */
+export function forceFinish(id: string, winner: Color | null, reason: string): boolean {
+  const r = rooms.get(id);
+  if (!r || r.over) return false;
+  finish(r, winner, reason);
+  broadcast(r);
+  return true;
+}
