@@ -6,7 +6,9 @@ import { WebSocketServer, WebSocket } from "ws";
 import { Chess } from "chess.js";
 import { ethers } from "ethers";
 import { createSession, checkSession } from "./session.js";
-import { roomsWss } from "./rooms.js";
+import { roomsWss, setFinishHook } from "./rooms.js";
+import { handleQuests, recordGame } from "./quests.js";
+import { handleTournaments, onGameFinished, startTournaments } from "./tournaments.js";
 import { imgFromMeta, renderNft } from "./nftImg.js";
 import { startTg, tgChallenge, tgConfirm, tgNotify, tgStatus } from "./tg.js";
 import { handleSocial, viewerOf, setLegacy, socialPublic, socialNameOwner } from "./social.js";
@@ -514,6 +516,8 @@ const server = http.createServer((req, res) => {
   const parts = url.pathname.split("/").filter(Boolean);
   const out = (o: unknown) => res.end(JSON.stringify(o));
   if (url.pathname === "/api/comments" || url.pathname.startsWith("/api/comment/")) { handleComments(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
+  if (url.pathname === "/api/quests" || url.pathname.startsWith("/api/quests/")) { handleQuests(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
+  if (url.pathname === "/api/tournaments" || url.pathname.startsWith("/api/tournaments/")) { handleTournaments(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (url.pathname.startsWith("/api/dm/")) { handleDm(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (parts[0] === "media" || url.pathname === "/api/upload" || url.pathname === "/api/upload-voice") { handleMedia(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (parts[0] === "api") { handleSocial(req, res, url).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
@@ -869,6 +873,8 @@ async function main() {
   ev("GameCancelled", (id: bigint) => { open.delete(Number(id)); });
   setInterval(() => void sync().catch((e) => console.error("sync:", e.message)), Math.max(1000, Number(SYNC_MS) || 60_000));
   startTg();
+  setFinishHook((i) => { recordGame(i); onGameFinished(i); }); // окончание бесплатной партии: задания, очки, турниры
+  startTournaments();
   server.listen(Number(PORT), () => console.log(`server :${PORT}, oracle ${wallet.address}, fee ${feeBps} bps`));
 }
 main().catch((e) => { console.error(e); process.exit(1); });
