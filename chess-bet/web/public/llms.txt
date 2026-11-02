@@ -8,7 +8,7 @@
 - [Crypto chess game](https://chessbet.lol/crypto/): how USDC stakes on Polygon work, who holds the money, fees and risks.
 - [FAQ](https://chessbet.lol/faq/): answers about stakes, fees, payouts, age, fair play, chess NFTs and the community.
 - [About](https://chessbet.lol/about/): what Chess Bet is, how it works and how to contact the project.
-- [Dating](https://chessbet.lol/dating/): free 18+ dating for chess lovers in the Rook Club community: profiles with 3 photos, filters, likes and matches.
+- [Dating](https://chessbet.lol/dating/): free 18+ dating for everyone in the Rook Club community: profiles with 3 photos, filters, likes and matches.
 - [Tournaments](https://chessbet.lol/tournaments/): free hourly chess arenas with points, badges and cups; daily quests and streaks.
 - [Chess NFTs](https://chessbet.lol/nft/): turn a move from your own finished game into an ERC-721 NFT on Polygon.
 - [Terms of use](https://chessbet.lol/terms/): age limit, stakes, fees, refunds, responsible play.

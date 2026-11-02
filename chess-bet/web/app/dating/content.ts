@@ -9,14 +9,14 @@ export type DatingText = {
 
 export const RU: DatingText = {
   crumb: "Знакомства",
-  title: "Знакомства для любителей шахмат",
-  intro: "Найдите партнёра по партиям и по жизни: анкета с тремя фото, лента с фильтрами, лайки и совпадения. Бесплатно, только для 18+.",
-  seoTitle: "Шахматные знакомства 18+ — Rook Club | Chess Bet",
-  seoDesc: "Бесплатные знакомства для любителей шахмат в сообществе Rook Club: анкета с 3 фото, фильтры по возрасту и стране, лайки, совпадения и личные сообщения. Только 18+, без ссылок и контактов в анкете.",
+  title: "Знакомства для всех",
+  intro: "Находите новых людей рядом и по всему миру: анкета с тремя фото, лента с фильтрами, лайки и совпадения. Бесплатно, только для 18+.",
+  seoTitle: "Знакомства 18+ для всех — Rook Club | Chess Bet",
+  seoDesc: "Бесплатные знакомства для всех в сообществе Rook Club: анкета с 3 фото, фильтры по возрасту и стране, лайки, совпадения и личные сообщения. Только 18+, без ссылок и контактов в анкете.",
   why: {
-    h: "Почему шахматные знакомства",
+    h: "Почему знакомства в Rook Club",
     p: [
-      "Общий интерес — лучший повод для разговора. В шахматах он есть сразу: можно обсудить партию, сыграть бесплатный матч и познакомиться по ходу игры.",
+      "Играть в шахматы не обязательно. Знакомьтесь, общайтесь и находите людей по интересам, а если захочется, сыграйте бесплатную партию и познакомьтесь по ходу игры.",
       "Знакомства встроены в сообщество Rook Club: у каждого участника есть профиль, уровень, значки и ежедневные задания, поэтому видно, что это живой человек, а не пустая анкета.",
     ],
   },
@@ -48,14 +48,14 @@ export const RU: DatingText = {
 
 export const EN: DatingText = {
   crumb: "Dating",
-  title: "Dating for chess lovers",
-  intro: "Find a partner for games and for life: a profile with three photos, a filtered feed, likes and matches. Free, 18+ only.",
-  seoTitle: "Chess Dating 18+ — Rook Club | Chess Bet",
-  seoDesc: "Free dating for chess lovers in the Rook Club community: a profile with 3 photos, age and country filters, likes, matches and private messages. 18+ only, no links or contacts in profiles.",
+  title: "Dating for everyone",
+  intro: "Meet new people near you and around the world: a profile with three photos, a filtered feed, likes and matches. Free, 18+ only.",
+  seoTitle: "Dating 18+ for Everyone — Rook Club | Chess Bet",
+  seoDesc: "Free dating for everyone in the Rook Club community: a profile with 3 photos, age and country filters, likes, matches and private messages. 18+ only, no links or contacts in profiles.",
   why: {
-    h: "Why chess dating",
+    h: "Why dating in Rook Club",
     p: [
-      "A shared interest is the best conversation starter. With chess it is built in: discuss a game, play a free match and get to know each other over the board.",
+      "You don't have to play chess. Meet people, chat and find others with shared interests, and if you feel like it, play a free game and get to know each other over the board.",
       "Dating is part of the Rook Club community: every member has a profile, a level, badges and daily quests, so you can tell a real person from an empty profile.",
     ],
   },
