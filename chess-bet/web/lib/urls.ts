@@ -17,6 +17,7 @@ export const ROUTES = {
   terms: `${BASE}/terms/`,
   age: `${BASE}/age/`,
   roadmap: `${BASE}/roadmap/`,
+  puzzles: `${BASE}/puzzles/`,
   dating: `${BASE}/dating/`,
   about: `${BASE}/about/`,
   tournaments: `${BASE}/tournaments/`,
