@@ -6,6 +6,7 @@ import { absoluteUrl, postUrl, profileUrl } from "@/lib/urls";
 import { editPost, errText, like, removePost, type SPost } from "@/lib/social";
 import Avatar, { mediaUrl } from "./Avatar";
 import ShareMenu from "./ShareMenu";
+import ReportButton from "./ReportButton";
 
 const ago = (t: number, ru: boolean) => {
   const s = Math.max(1, Math.floor((Date.now() - t) / 1000));
@@ -100,6 +101,7 @@ export default function PostCard({ post, token, myName, onGone }: { post: SPost;
           <ShareMenu url={link} text={shareText} />
           {mine && !editing && <button type="button" onClick={startEdit} className="opacity-70 hover:opacity-100">✎ {ru ? "Изменить" : "Edit"}</button>}
           {mine && <button type="button" onClick={del} className="ms-auto text-xs opacity-60 hover:opacity-100">{ru ? "Удалить" : "Delete"}</button>}
+          {!mine && <span className="ms-auto"><ReportButton kind="post" id={post.id} token={token} /></span>}
         </div>
       </div>
     </article>
