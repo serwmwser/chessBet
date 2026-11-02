@@ -18,6 +18,7 @@ import { handleComments } from "./comments.js";
 import { handleMod } from "./mod.js";
 import { handleDating } from "./dating.js";
 import { handlePuzzles } from "./puzzles.js";
+import { callsWss, handleCalls } from "./calls.js";
 
 const SITE_URL = process.env.SITE_URL || "https://chessbet.lol";
 
@@ -522,6 +523,7 @@ const server = http.createServer((req, res) => {
   if (url.pathname === "/api/quests" || url.pathname.startsWith("/api/quests/")) { handleQuests(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (url.pathname === "/api/tournaments" || url.pathname.startsWith("/api/tournaments/")) { handleTournaments(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (url.pathname === "/api/report" || url.pathname.startsWith("/api/mod/")) { handleMod(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
+  if (url.pathname.startsWith("/api/calls/")) { handleCalls(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (url.pathname.startsWith("/api/puzzles/")) { handlePuzzles(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (url.pathname.startsWith("/api/dating/")) { handleDating(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (url.pathname.startsWith("/api/dm/")) { handleDm(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
@@ -699,7 +701,8 @@ const server = http.createServer((req, res) => {
 // ---------- WebSocket ----------
 const wss = new WebSocketServer({ noServer: true });
 server.on("upgrade", (req, socket, head) => {
-  if ((req.url !== "/ws" && req.url !== "/room") || geoBlocked(req) || !originOk(req.headers.origin as string | undefined)) { socket.destroy(); return; }
+  if ((req.url !== "/ws" && req.url !== "/room" && req.url !== "/call") || geoBlocked(req) || !originOk(req.headers.origin as string | undefined)) { socket.destroy(); return; }
+  if (req.url === "/call") { callsWss.handleUpgrade(req, socket, head, (ws) => callsWss.emit("connection", ws, req)); return; } // звонки из профиля
   if (req.url === "/room") { roomsWss.handleUpgrade(req, socket, head, (ws) => roomsWss.emit("connection", ws, req)); return; } // бесплатные комнаты с другом
   wss.handleUpgrade(req, socket, head, (ws) => wss.emit("connection", ws));
 });
