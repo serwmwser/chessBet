@@ -16,6 +16,7 @@ import { handleMedia } from "./media.js";
 import { handleDm, setDmNotify } from "./dm.js";
 import { handleComments } from "./comments.js";
 import { handleMod } from "./mod.js";
+import { handleDating } from "./dating.js";
 
 const SITE_URL = process.env.SITE_URL || "https://chessbet.lol";
 
@@ -520,6 +521,7 @@ const server = http.createServer((req, res) => {
   if (url.pathname === "/api/quests" || url.pathname.startsWith("/api/quests/")) { handleQuests(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (url.pathname === "/api/tournaments" || url.pathname.startsWith("/api/tournaments/")) { handleTournaments(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (url.pathname === "/api/report" || url.pathname.startsWith("/api/mod/")) { handleMod(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
+  if (url.pathname.startsWith("/api/dating/")) { handleDating(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (url.pathname.startsWith("/api/dm/")) { handleDm(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (parts[0] === "media" || url.pathname === "/api/upload" || url.pathname === "/api/upload-voice") { handleMedia(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (parts[0] === "api") { handleSocial(req, res, url).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }

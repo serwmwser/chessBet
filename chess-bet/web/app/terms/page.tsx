@@ -46,6 +46,12 @@ const RU: Sec[] = [
   ["11. Ограничение ответственности", [
     "Сервис предоставляется «как есть». Мы не отвечаем за сбои сети Polygon, кошельков и сторонних площадок, потерю ключей, решения игроков и убытки от ставок. Смарт-контракт может содержать ошибки, несмотря на проверки.",
   ]],
+  ["11a. Знакомства", [
+    "Раздел знакомств доступен только пользователям 18+. Публикуя анкету, вы подтверждаете возраст и что фото принадлежат вам.",
+    "В анкетах запрещены ссылки, контакты и реклама. Запрещены мошенничество, просьбы о деньгах и данных кошелька, оскорбления и откровенный контент. За нарушения аккаунт блокируется.",
+    "Мы не проверяем личность участников и не отвечаем за поведение людей при личном общении вне сайта. Не переводите деньги малознакомым людям.",
+    "Жалобы на анкеты и сообщения могут рассматриваться модераторами, в том числе с просмотром жалобы и связанного сообщения. Анкету можно скрыть или удалить в любой момент.",
+  ]],
   ["12. Изменения и связь", [
     "Мы можем менять эти условия; продолжая пользоваться сервисом, вы принимаете новую редакцию. Контакт для обращений: chessgrokearn@gmail.com.",
   ]],
@@ -92,6 +98,12 @@ const EN: Sec[] = [
   ]],
   ["11. Limitation of liability", [
     "The service is provided as is. We are not responsible for failures of the Polygon network, wallets and third-party platforms, lost keys, players' decisions and losses from stakes. A smart contract may contain errors despite checks.",
+  ]],
+  ["11a. Dating", [
+    "The dating section is for users aged 18+ only. By publishing a profile you confirm your age and that the photos are yours.",
+    "Links, contacts and advertising are not allowed in profiles. Fraud, requests for money or wallet details, abuse and explicit content are prohibited and lead to a ban.",
+    "We do not verify members' identities and are not responsible for how people behave when they communicate outside the site. Never send money to people you barely know.",
+    "Reports about profiles and messages may be reviewed by moderators, including the reported message. You can hide or delete your profile at any time.",
   ]],
   ["12. Changes and contact", [
     "We may change these terms; by continuing to use the service you accept the new version. Contact: chessgrokearn@gmail.com.",
