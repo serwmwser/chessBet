@@ -5,6 +5,7 @@ import { useApp } from "@/lib/ctx";
 import { profileUrl } from "@/lib/urls";
 import { dmBlock, dmDelete, dmErr, dmReport, dmSend, dmThread, type DmMsg, type DmThread as Thread } from "@/lib/dm";
 import Avatar from "./Avatar";
+import { useSocial } from "@/lib/social";
 import VoiceBubble from "./VoiceBubble";
 import VoiceRecorder from "./VoiceRecorder";
 import { parseVoice } from "@/lib/voice";
@@ -19,6 +20,7 @@ const merge = (a: DmMsg[], b: DmMsg[]) => {
 export default function DmThread({ name, token, onBack, onChanged, draft }: { name: string; token: string; onBack?: () => void; onChanged?: () => void; draft?: string }) {
   const { lang, toast } = useApp();
   const ru = lang === "ru";
+  const { me } = useSocial();
   const [info, setInfo] = useState<Pick<Thread, "peer" | "blockedByMe" | "canSend"> | null>(null);
   const [msgs, setMsgs] = useState<DmMsg[]>([]);
   const [more, setMore] = useState(false);
@@ -118,7 +120,11 @@ export default function DmThread({ name, token, onBack, onChanged, draft }: { na
         {more && <button type="button" className="btn btn-ghost w-full !py-1.5 text-xs" onClick={older}>{ru ? "Показать ранее" : "Show earlier"}</button>}
         {msgs.length === 0 && <p className="text-center text-sm opacity-60 py-6">{ru ? "Сообщений пока нет. Напишите первым!" : "No messages yet. Say hello!"}</p>}
         {msgs.map((m) => (
-          <div key={m.id} className={`flex ${m.mine ? "justify-end" : "justify-start"}`}>
+          <div key={m.id} className={`flex flex-col gap-0.5 ${m.mine ? "items-end" : "items-start"}`}>
+            <div className={`flex items-center gap-1.5 text-[11px] font-semibold opacity-80 ${m.mine ? "flex-row-reverse" : ""}`}>
+              <Avatar name={m.mine ? me?.name || "me" : info.peer.name} src={m.mine ? me?.avatar || "" : info.peer.avatar} size={20} />
+              <span>{m.mine ? (ru ? "Вы" : "You") + (me?.name ? ` · @${me.name}` : "") : `@${info.peer.name}`}</span>
+            </div>
             <div className="max-w-[85%] rounded-2xl px-3 py-2 text-sm break-words whitespace-pre-wrap"
               style={m.mine ? { background: "linear-gradient(90deg,#fde68a,#f5b301)", color: "#2b1a00" } : { background: "rgba(127,127,127,.16)" }}>
               {(() => { const v = parseVoice(m.text); return v ? <VoiceBubble path={v.path} sec={v.sec} /> : m.text; })()}

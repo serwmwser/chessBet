@@ -6,6 +6,7 @@ import Avatar, { mediaUrl } from "@/components/Avatar";
 import PostCard from "@/components/PostCard";
 import ChatPanel from "@/components/ChatPanel";
 import ReportButton from "@/components/ReportButton";
+import CallButton from "@/components/CallButton";
 import DailyQuests, { PlayerBadges } from "@/components/DailyQuests";
 import { useUnread } from "@/lib/dm";
 import ShareMenu from "@/components/ShareMenu";
@@ -131,6 +132,7 @@ function Profile() {
                     {u.follows ? (ru ? "Вы читаете" : "Following") : ru ? "Читать" : "Follow"}
                   </button>
                   <button type="button" className="btn btn-primary !py-2" onClick={() => { setTab("chat"); setEdit(false); }}>✉ {ru ? "Написать" : "Message"}</button>
+                  <CallButton name={u.name} className="!py-2" />
                   <ReportButton kind="user" name={u.name} token={s.token} className="btn btn-ghost !py-2 text-sm" />
                 </>
               )}

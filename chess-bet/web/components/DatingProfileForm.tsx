@@ -22,6 +22,11 @@ export default function DatingProfileForm({ token, initial, onSaved, onDeleted }
   const [busy, setBusy] = useState(false);
   const [up, setUp] = useState(false);
   const file = useRef<HTMLInputElement>(null);
+  // снимок полей: кнопка активна только при несохранённых изменениях
+  const cur = JSON.stringify([enabled, gender, seeking, birth, country, about.trim(), photos, adult]);
+  const [saved, setSaved] = useState(() => (initial ? cur : ""));
+  const dirty = cur !== saved;
+  const isSaved = saved !== "" && !dirty;
 
   const add = async (f?: File) => {
     if (!f || photos.length >= 3) return;
@@ -39,6 +44,7 @@ export default function DatingProfileForm({ token, initial, onSaved, onDeleted }
     try {
       const r = await saveDating(token, { enabled, gender, seeking, birth: Number(birth), country, about, photos, adult });
       onSaved(r.profile);
+      setSaved(cur);
       toast(ru ? "Анкета сохранена" : "Profile saved", "ok");
     } catch (e) { toast(datingError((e as Error).message, ru), "err"); }
     setBusy(false);
@@ -123,7 +129,7 @@ export default function DatingProfileForm({ token, initial, onSaved, onDeleted }
       </label>
 
       <div className="flex flex-wrap gap-2">
-        <button type="button" onClick={save} disabled={busy || up} className="btn btn-primary">{busy ? "…" : ru ? "Сохранить анкету" : "Save profile"}</button>
+        <button type="button" onClick={save} disabled={busy || up || isSaved} className="btn btn-primary">{busy ? "…" : isSaved ? (ru ? "✓ Сохранено" : "✓ Saved") : ru ? "Сохранить анкету" : "Save profile"}</button>
         {initial && <button type="button" onClick={remove} className="btn btn-danger">{ru ? "Удалить анкету" : "Delete profile"}</button>}
       </div>
     </div>

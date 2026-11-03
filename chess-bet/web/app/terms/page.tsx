@@ -52,6 +52,12 @@ const RU: Sec[] = [
     "Мы не проверяем личность участников и не отвечаем за поведение людей при личном общении вне сайта. Не переводите деньги малознакомым людям.",
     "Жалобы на анкеты и сообщения могут рассматриваться модераторами, в том числе с просмотром жалобы и связанного сообщения. Анкету можно скрыть или удалить в любой момент.",
   ]],
+  ["11b. Голосовые звонки", [
+    "Голосовые звонки доступны вошедшим пользователям. Звук передаётся напрямую между участниками (WebRTC); сайт запись разговоров не ведёт и не хранит. Для соединения может использоваться ретрансляционный сервер, который не сохраняет содержимое звонка.",
+    "Сервер хранит только служебные данные звонка: участников, время начала и длительность. Они нужны для защиты от злоупотреблений и для возможных будущих начислений.",
+    "Запрещены угрозы, оскорбления, мошенничество, спам и просьбы о деньгах и данных кошелька. Вы можете отклонить звонок или завершить его в любой момент и пожаловаться на пользователя через профиль.",
+    "Установлены лимиты на число звонков. Мы вправе ограничить звонки или заблокировать аккаунт при нарушениях. Вы сами решаете, отвечать ли на звонок и что говорить; не сообщайте незнакомым людям личные данные.",
+  ]],
   ["12. Изменения и связь", [
     "Мы можем менять эти условия; продолжая пользоваться сервисом, вы принимаете новую редакцию. Контакт для обращений: chessgrokearn@gmail.com.",
   ]],
@@ -104,6 +110,12 @@ const EN: Sec[] = [
     "Links, contacts and advertising are not allowed in profiles. Fraud, requests for money or wallet details, abuse and explicit content are prohibited and lead to a ban.",
     "We do not verify members' identities and are not responsible for how people behave when they communicate outside the site. Never send money to people you barely know.",
     "Reports about profiles and messages may be reviewed by moderators, including the reported message. You can hide or delete your profile at any time.",
+  ]],
+  ["11b. Voice calls", [
+    "Voice calls are available to signed-in users. Audio is sent directly between participants (WebRTC); the site does not record or store conversations. A relay server may be used to connect the call and does not keep its content.",
+    "The server stores only call metadata: participants, start time and duration. It is used to prevent abuse and for possible future rewards.",
+    "Threats, abuse, fraud, spam and requests for money or wallet details are prohibited. You can decline or end a call at any time and report a user from their profile.",
+    "Call limits apply. We may restrict calls or ban accounts for violations. You decide whether to answer and what to say; do not share personal details with strangers.",
   ]],
   ["12. Changes and contact", [
     "We may change these terms; by continuing to use the service you accept the new version. Contact: chessgrokearn@gmail.com.",
