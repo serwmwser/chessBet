@@ -1,13 +1,17 @@
 "use client";
-// Кнопка «Позвонить» на странице профиля. Скрыта для гостей и для своего профиля.
+// Кнопка «Позвонить» на странице профиля. Гостям показывает «Войдите, чтобы позвонить» (открывает подключение кошелька). Скрыта в своём профиле.
 import { useEffect, useState } from "react";
+import { useConnectModal } from "thirdweb/react";
+import { chain, client } from "@/lib/config";
 import { useApp } from "@/lib/ctx";
 import { useSocial } from "@/lib/social";
 import { callOnline, callUser, useCallState } from "@/lib/calls";
+import { wallets } from "./Header";
 
 export default function CallButton({ name, className = "" }: { name: string; className?: string }) {
-  const { lang, toast } = useApp();
-  const { token, me } = useSocial();
+  const { lang, dark, toast } = useApp();
+  const { addr, token, me, signIn } = useSocial();
+  const { connect } = useConnectModal();
   const ru = lang === "ru";
   const call = useCallState();
   const [st, setSt] = useState<{ online: boolean; busy: boolean } | null>(null);
@@ -24,7 +28,20 @@ export default function CallButton({ name, className = "" }: { name: string; cla
     return () => { on = false; clearInterval(t); };
   }, [token, name, mine]);
 
-  if (!token || mine || !name) return null;
+  if (!name || mine) return null;
+
+  // гость: кошелёк не подключён — открываем подключение; подключён, но нет входа — просим подпись
+  if (!token) {
+    const login = () => {
+      if (!addr) { void connect({ client, chain, wallets, theme: dark ? "dark" : "light", size: "compact", title: "Chess Bet" }); return; }
+      void signIn().catch(() => toast(ru ? "Не удалось войти. Подпишите сообщение в кошельке" : "Could not sign in. Sign the message in your wallet", "err"));
+    };
+    return (
+      <button type="button" className={"btn btn-ghost " + className} onClick={login} title={ru ? "Звонки доступны после входа на сайт" : "Calls are available after signing in"}>
+        📞 {ru ? "Войдите, чтобы позвонить" : "Sign in to call"}
+      </button>
+    );
+  }
 
   const inCall = call.status !== "idle";
   const disabled = inCall || !st || !st.online || st.busy;
