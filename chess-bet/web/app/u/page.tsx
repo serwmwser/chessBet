@@ -131,7 +131,7 @@ function Profile() {
                   <button type="button" className={u.follows ? "btn btn-ghost !py-2" : "btn btn-primary !py-2"} onClick={doFollow}>
                     {u.follows ? (ru ? "Вы читаете" : "Following") : ru ? "Читать" : "Follow"}
                   </button>
-                  <button type="button" className="btn btn-primary !py-2" onClick={() => { setTab("chat"); setEdit(false); }}>✉ {ru ? "Написать" : "Message"}</button>
+                  <button type="button" className="btn btn-primary !py-2" onClick={() => { setTab("chat"); setEdit(false); setTimeout(() => document.getElementById("profile-tabs")?.scrollIntoView({ behavior: "smooth", block: "start" }), 60); }}>✉ {ru ? "Написать" : "Message"}</button>
                   <CallButton name={u.name} className="!py-2" />
                   <ReportButton kind="user" name={u.name} token={s.token} className="btn btn-ghost !py-2 text-sm" />
                 </>
@@ -190,7 +190,7 @@ function Profile() {
           onPosted={(p) => { setPosts((a) => (tab === "feed" || tab === "posts" || p.media.length ? [p, ...a] : a)); setU((x) => (x ? { ...x, posts: x.posts + 1 } : x)); }} />
       )}
 
-      <nav className="flex gap-2" aria-label={ru ? "Разделы профиля" : "Profile sections"}>
+      <nav id="profile-tabs" className="flex gap-2 scroll-mt-4" aria-label={ru ? "Разделы профиля" : "Profile sections"}>
         {tabs.map(([k, label]) => (
           <button key={k} type="button" onClick={() => setTab(k)} aria-pressed={tab === k} className={tab === k ? "btn btn-primary !py-2" : "btn btn-ghost !py-2"}>{label}{k === "chat" && u.me && unread > 0 ? ` (${unread > 99 ? "99+" : unread})` : ""}</button>
         ))}
