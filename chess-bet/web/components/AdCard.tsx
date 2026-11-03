@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useApp } from "@/lib/ctx";
-import { KIND_LABEL, fmtPrice, type Ad } from "@/lib/ads";
+import { KIND_LABEL, fmtPrice, type Ad } from "@/lib/classifieds";
 import Avatar, { mediaUrl } from "./Avatar";
 
 /** Карточка объявления в списке: фото, цена, заголовок, место, продавец. Нажатие открывает объявление */
