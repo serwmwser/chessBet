@@ -20,6 +20,7 @@ import { handleDating } from "./dating.js";
 import { handlePuzzles } from "./puzzles.js";
 import { callsWss, handleCalls } from "./calls.js";
 import { handleAds } from "./ads.js";
+import { handleTranslate } from "./translate.js";
 
 const SITE_URL = process.env.SITE_URL || "https://chessbet.lol";
 
@@ -526,6 +527,7 @@ const server = http.createServer((req, res) => {
   if (url.pathname === "/api/report" || url.pathname.startsWith("/api/mod/")) { handleMod(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (url.pathname.startsWith("/api/calls/")) { handleCalls(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (url.pathname.startsWith("/api/ads/")) { handleAds(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
+  if (url.pathname === "/api/translate") { handleTranslate(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (url.pathname.startsWith("/api/puzzles/")) { handlePuzzles(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (url.pathname.startsWith("/api/dating/")) { handleDating(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (url.pathname.startsWith("/api/dm/")) { handleDm(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
