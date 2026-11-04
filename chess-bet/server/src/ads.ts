@@ -21,11 +21,15 @@ CREATE INDEX IF NOT EXISTS ads_addr ON ads(addr);
 CREATE TABLE IF NOT EXISTS ads_reports(ad INTEGER NOT NULL, reporter TEXT NOT NULL, reason TEXT NOT NULL DEFAULT '', created INTEGER NOT NULL, PRIMARY KEY(ad, reporter));
 `);
 
+try { db.exec("ALTER TABLE ads ADD COLUMN free INTEGER NOT NULL DEFAULT 1"); } catch { /* колонка уже есть */ }
+
 const DAY = 86400000;
 const TERM = 30 * DAY;          // срок объявления
 const RENEW_WINDOW = 7 * DAY;   // продлевать можно за 7 дней до конца и после
 const PAGE = 20;
-const MAX_ACTIVE = 10;          // активных объявлений на человека в бесплатный период
+const MAX_ACTIVE = 10;          // активных объявлений на человека
+const BASE_FREE = 1;            // бесплатных объявлений у каждого
+const MAX_BONUS = 20;           // максимум бонусных объявлений за приглашённых
 const KINDS = ["sale", "buy", "rent", "job", "service"] as const;
 type Kind = (typeof KINDS)[number];
 const clean = (s: unknown, max: number) =>
@@ -43,13 +47,35 @@ function limited(key: string, max: number, ms: number): boolean {
   return false;
 }
 
-type Row = { id: number; addr: string; kind: string; title: string; body: string; price: number | null; currency: string; country: string; city: string; photos: string; status: string; created: number; updated: number; expires: number; pinned_until: number; views: number; cl: string; cy: string; ft: string };
+type Row = { id: number; addr: string; kind: string; title: string; body: string; price: number | null; currency: string; country: string; city: string; photos: string; status: string; created: number; updated: number; expires: number; pinned_until: number; views: number; cl: string; cy: string; ft: string; free: number };
 type U = { addr: string; name: string; avatar: string; banned: number };
 const userByAddr = (a: string) => db.prepare("SELECT addr,name,avatar,banned FROM users WHERE addr=?").get(a) as U | undefined;
 const level = (addr: string) => {
   try { const r = db.prepare("SELECT xp FROM q_stats WHERE addr=?").get(addr) as { xp: number } | undefined; return Math.floor(Math.sqrt((r?.xp ?? 0) / 25)) + 1; } catch { return 1; }
 };
 const photosOf = (r: Row): string[] => { try { const a = JSON.parse(r.photos); return Array.isArray(a) ? a.filter((x) => typeof x === "string").slice(0, 5) : []; } catch { return []; } };
+
+/** Приглашённые пользователи. Источник задаёт index.ts: ожидающие подтверждения адреса и число друзей, зафиксированных в контракте */
+type RefSource = (addr: string) => Promise<{ pending: string[]; chain: number }>;
+let refSource: RefSource = async () => ({ pending: [], chain: 0 });
+export function setRefSource(fn: RefSource) { refSource = fn; }
+
+/** Бесплатные объявления: 1 + по одному за каждого приглашённого. Засчитывается приглашённый с профилем и хоть какой-то активностью (опыт больше нуля), без блокировки */
+async function quota(addr: string) {
+  let bonus = 0;
+  try {
+    const r = await refSource(addr);
+    const ok = r.pending.filter((a) => {
+      const u = userByAddr(a);
+      if (!u || u.banned || a === addr) return false;
+      try { return ((db.prepare("SELECT xp FROM q_stats WHERE addr=?").get(a) as { xp: number } | undefined)?.xp ?? 0) > 0; } catch { return false; }
+    }).length;
+    bonus = Math.min(MAX_BONUS, ok + Math.max(0, r.chain));
+  } catch { /* без бонуса */ }
+  const used = (db.prepare("SELECT COUNT(*) n FROM ads WHERE addr=? AND free=1").get(addr) as { n: number }).n; // удаление кредит не возвращает
+  const credits = BASE_FREE + bonus;
+  return { credits, used, left: Math.max(0, credits - used), referred: bonus };
+}
 
 function view(r: Row, full: boolean) {
   const u = userByAddr(r.addr);
@@ -59,7 +85,7 @@ function view(r: Row, full: boolean) {
     photos: photosOf(r), created: r.created, expires: r.expires, pinned: r.pinned_until > now,
     seller: { name: u?.name ?? "", avatar: u?.avatar ?? "", level: level(r.addr) },
   };
-  if (full) { o.body = r.body; o.views = r.views; o.status = r.status; }
+  if (full) { o.body = r.body; o.views = r.views; o.status = r.status; o.free = !!r.free; }
   else o.preview = r.body.slice(0, 140);
   return o;
 }
@@ -125,6 +151,10 @@ export async function handleAds(req: http.IncomingMessage, res: http.ServerRespo
         list.forEach((c) => c.cities.sort((a, b) => b.count - a.count));
         return out(200, { ok: true, places: list }, true);
       }
+      if (p === "/api/ads/quota") {
+        if (!viewer) return bad("auth", 401);
+        return out(200, { ok: true, ...(await quota(viewer)) });
+      }
       if (p === "/api/ads/mine") {
         if (!viewer) return bad("auth", 401);
         const rows = db.prepare("SELECT * FROM ads WHERE addr=? AND status<>'deleted' ORDER BY id DESC LIMIT 100").all(viewer) as Row[];
@@ -167,11 +197,12 @@ export async function handleAds(req: http.IncomingMessage, res: http.ServerRespo
           .run({ k: kind, t: title, b: body, pr: price, cur: currency, c: country, city, ph: JSON.stringify(photos), now, id, ...idx });
         return out(200, { ok: true, id });
       }
+      if ((await quota(me)).left <= 0) return bad("payment_required", 402); // бесплатные кредиты закончились, оплата USDC ещё не запущена
       const active = (db.prepare("SELECT COUNT(*) n FROM ads WHERE addr=? AND status='active' AND expires>?").get(me, now) as { n: number }).n;
       if (active >= MAX_ACTIVE) return bad("too_many");
       if (db.prepare("SELECT 1 FROM ads WHERE addr=? AND status='active' AND lower(title)=lower(?)").get(me, title)) return bad("duplicate");
       const r = db.prepare(
-        `INSERT INTO ads(addr,kind,title,body,price,currency,country,city,photos,created,updated,expires,cl,cy,ft) VALUES(@a,@k,@t,@b,@pr,@cur,@c,@city,@ph,@now,@now,@exp,@cl,@cy,@ft)`
+        `INSERT INTO ads(addr,kind,title,body,price,currency,country,city,photos,created,updated,expires,cl,cy,ft,free) VALUES(@a,@k,@t,@b,@pr,@cur,@c,@city,@ph,@now,@now,@exp,@cl,@cy,@ft,1)`
       ).run({ a: me, k: kind, t: title, b: body, pr: price, cur: currency, c: country, city, ph: JSON.stringify(photos), now, exp: now + TERM, ...idx });
       return out(200, { ok: true, id: Number(r.lastInsertRowid) });
     }
@@ -179,6 +210,7 @@ export async function handleAds(req: http.IncomingMessage, res: http.ServerRespo
       const id = Math.floor(Number(m.id));
       const r = db.prepare("SELECT * FROM ads WHERE id=? AND addr=? AND status IN ('active','expired')").get(id, me) as Row | undefined;
       if (!r) return bad("not_found", 404);
+      if (r.free) return bad("payment_required", 402); // продление платное (1 USDC), оплата ещё не запущена
       if (r.expires - now > RENEW_WINDOW) return bad("too_early");
       const exp = Math.max(now, r.expires) + TERM;
       db.prepare("UPDATE ads SET expires=?, status='active', updated=? WHERE id=?").run(exp, now, id);

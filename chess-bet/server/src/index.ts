@@ -19,7 +19,7 @@ import { handleMod } from "./mod.js";
 import { handleDating } from "./dating.js";
 import { handlePuzzles } from "./puzzles.js";
 import { callsWss, handleCalls } from "./calls.js";
-import { handleAds } from "./ads.js";
+import { handleAds, setRefSource } from "./ads.js";
 import { handleTranslate } from "./translate.js";
 
 const SITE_URL = process.env.SITE_URL || "https://chessbet.lol";
@@ -362,6 +362,20 @@ async function ensureRefs(players: string[]) {
     } catch (e) { console.error(`setReferrer ${u}:`, (e as Error).message); }
   }
 }
+
+// Приглашённые для бесплатных объявлений: ожидающие у нас (ещё не сыграли платную партию) + друзья, уже закреплённые в контракте (число кэшируем на 5 минут)
+const friendsCache = new Map<string, { n: number; t: number }>();
+setRefSource(async (addr) => {
+  const pending = [...refPending.entries()].filter(([, r]) => r === addr).map(([u]) => u);
+  let chain = 0;
+  const c = friendsCache.get(addr);
+  if (c && Date.now() - c.t < 300_000) chain = c.n;
+  else {
+    try { chain = Number((await escrow.refInfo(addr))[0]); friendsCache.set(addr, { n: chain, t: Date.now() }); }
+    catch { chain = c?.n ?? 0; }
+  }
+  return { pending, chain };
+});
 
 let queue: Promise<unknown> = Promise.resolve();
 const enqueue = <T,>(f: () => Promise<T>) => { const r = queue.then(f, f); queue = r.catch(() => {}); return r; };
