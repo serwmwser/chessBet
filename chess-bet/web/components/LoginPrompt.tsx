@@ -5,6 +5,7 @@ import { chain, client } from "@/lib/config";
 import { useApp } from "@/lib/ctx";
 import { AUTO_OFF, errText, useSocial } from "@/lib/social";
 import { wallets } from "./Header";
+import WalletBrowserLinks from "./WalletBrowserLinks";
 
 /** Единый блок входа вместо отдельных кнопок «Войти».
  *  Кошелёк не подключён — одна кнопка «Подключить кошелёк»; после подключения вход (бесплатная подпись) идёт автоматически.
@@ -34,6 +35,7 @@ export default function LoginPrompt({ text }: { text?: string }) {
         <button type="button" className="btn btn-primary" onClick={() => { void connect({ client, chain, wallets, theme: dark ? "dark" : "light", size: "compact", title: "Chess Bet" }); }}>
           {ru ? "Подключить кошелёк" : "Connect wallet"}
         </button>
+        <WalletBrowserLinks />
       </section>
     );
   }
@@ -50,6 +52,7 @@ export default function LoginPrompt({ text }: { text?: string }) {
           {busy ? (ru ? "Ждём подпись в кошельке…" : "Waiting for your signature…") : ru ? "Подписать вход" : "Sign in"}
         </button>
       )}
+      {retry && <WalletBrowserLinks />}
     </section>
   );
 }
