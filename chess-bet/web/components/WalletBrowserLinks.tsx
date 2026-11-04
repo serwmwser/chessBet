@@ -23,7 +23,7 @@ export default function WalletBrowserLinks() {
   if (!href) return null;
   const enc = encodeURIComponent(href);
   const links: [string, string][] = [
-    ["Bitget Wallet", "https://bkcode.vip?action=dapp&url=" + enc],
+    ["Bitget Wallet", "https://bkcode.vip?action=dapp&url=" + (/[&#]/.test(href) ? href.split(/[?#]/)[0] : href)],
     ["MetaMask", "https://metamask.app.link/dapp/" + href.replace(/^https?:\/\//, "")],
     ["Trust Wallet", "https://link.trustwallet.com/open_url?coin_id=966&url=" + enc],
     ["Coinbase Wallet", "https://go.cb-w.com/dapp?cb_url=" + enc],
