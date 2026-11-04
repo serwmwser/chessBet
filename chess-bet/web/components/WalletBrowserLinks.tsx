@@ -3,6 +3,7 @@
 // В браузере кошелька подключение и вход работают без переходов туда-сюда. Адрес страницы (в том числе ?ref=) сохраняется.
 import { useEffect, useState } from "react";
 import { useApp } from "@/lib/ctx";
+import { inTelegram } from "@/lib/telegram";
 
 type Eth = { ethereum?: unknown };
 
@@ -15,7 +16,7 @@ export default function WalletBrowserLinks() {
     try {
       const mobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
       const inWallet = !!(window as unknown as Eth).ethereum; // внутри браузера кошелька провайдер уже есть
-      if (mobile && !inWallet) setHref(location.href);
+      if (mobile && !inWallet && !inTelegram()) setHref(location.href); // в Telegram эти ссылки не нужны
     } catch { /* без подсказки */ }
   }, []);
 

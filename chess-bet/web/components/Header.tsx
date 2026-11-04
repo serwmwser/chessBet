@@ -5,14 +5,17 @@ import { chain, client } from "@/lib/config";
 import { useApp } from "@/lib/ctx";
 import { LANGS, Lang } from "@/lib/i18n";
 import MusicToggle from "./MusicToggle";
+import { inTelegram } from "@/lib/telegram";
 
-export const wallets = [
+const allWallets = [
   inAppWallet({ auth: { options: ["email", "google", "apple", "telegram", "passkey"] } }),
   createWallet("io.metamask"),
   createWallet("com.coinbase.wallet"),
   createWallet("com.trustwallet.app"),
   createWallet("walletConnect"),
 ];
+// Внутри Telegram нет расширений кошельков, а ссылки вида metamask:// окно Telegram не открывает (ошибка ERR_UNKNOWN_URL_SCHEME): там только вход по почте
+export const wallets = inTelegram() ? [inAppWallet({ auth: { options: ["email"] } })] : allWallets;
 
 export default function Header() {
   const { lang, setLang, dark, toggleDark } = useApp();
