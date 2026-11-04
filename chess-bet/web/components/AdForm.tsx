@@ -115,8 +115,8 @@ export default function AdForm({ token, initial, onSaved, onCancel }: {
       </div>
 
       <p className="text-xs opacity-70">
-        {ru ? "Сейчас размещение бесплатное: объявление живёт 30 дней, до 10 активных объявлений. Запрещены мошенничество, запрещённые товары и просьбы перевести деньги вне сайта. Нарушения ведут к блокировке."
-          : "Posting is free for now: an ad lives 30 days, up to 10 active ads. Fraud, prohibited goods and requests to pay outside the site are banned and lead to a block."}
+        {ru ? "Первое объявление бесплатно, и ещё по одному бесплатному за каждого приглашённого друга, который начал пользоваться сайтом. Дальше размещение будет платным (ориентир: 1 USDC за 30 дней). Объявление живёт 30 дней, до 10 активных. Запрещены мошенничество, запрещённые товары и просьбы перевести деньги вне сайта. Нарушения ведут к блокировке."
+          : "Your first ad is free, plus one more free ad for every invited friend who starts using the site. After that, posting will be paid (guideline: 1 USDC for 30 days). An ad lives 30 days, up to 10 active ads. Fraud, prohibited goods and requests to pay outside the site are banned and lead to a block."}
       </p>
 
       <div className="flex flex-wrap gap-2">

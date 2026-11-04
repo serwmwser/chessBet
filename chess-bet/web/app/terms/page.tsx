@@ -61,7 +61,7 @@ const RU: Sec[] = [
   ["11c. Объявления", [
     "Раздел объявлений позволяет пользователям публиковать объявления о продаже, покупке, аренде, работе и услугах. Сайт предоставляет площадку и не является стороной сделок между пользователями, не проверяет товары, услуги и вакансии и не отвечает за них, за качество, цену, законность и исполнение обязательств.",
     "Автор отвечает за содержание объявления и права на фото. Запрещены поддельные, украденные и запрещённые законом товары и услуги, обман, спам, реклама сторонних сервисов, а также телефоны, ссылки и контакты в тексте. Общение ведётся в чате сайта.",
-    "Сейчас размещение бесплатное: объявление действует 30 дней, на одного пользователя приходится не более 10 активных объявлений. Платные опции (продление, закрепление вверху) могут быть введены позже; цены и порядок оплаты будут показаны заранее и действуют только для новых размещений.",
+    "Одно объявление на пользователя бесплатно, ещё по одному бесплатному даётся за каждого приглашённого пользователя, который начал пользоваться сайтом. Объявление действует 30 дней, на одного пользователя приходится не более 10 активных объявлений. Платное размещение (ориентировочно 1 USDC за 30 дней), платное продление и закрепление вверху могут быть введены позже; цены и порядок оплаты будут показаны заранее и действуют только для новых размещений. Бесплатные кредиты могут быть изменены, при злоупотреблении (фиктивные приглашённые) не засчитываются.",
     "Модерация вправе скрыть или удалить объявление и заблокировать аккаунт при нарушениях; три жалобы пользователей скрывают объявление до проверки. Не переводите предоплату незнакомым людям и не сообщайте данные кошелька. Проверяйте товар и человека до оплаты.",
   ]],
   ["12. Изменения и связь", [
@@ -126,7 +126,7 @@ const EN: Sec[] = [
   ["11c. Classifieds", [
     "The classifieds section lets users post ads for sale, wanted, rent, jobs and services. The site provides the platform and is not a party to deals between users, does not verify goods, services or vacancies and is not responsible for them, for their quality, price, legality or the performance of obligations.",
     "The author is responsible for the content of the ad and the rights to its photos. Counterfeit, stolen and illegal goods and services, fraud, spam, advertising of third-party services, and phone numbers, links and contacts in the text are prohibited. Communication takes place in the site chat.",
-    "Posting is free for now: an ad is valid for 30 days, with at most 10 active ads per user. Paid options (renewal, top placement) may be introduced later; prices and payment terms will be shown in advance and apply to new placements only.",
+    "One ad per user is free, plus one more free ad for each invited user who starts using the site. An ad is valid for 30 days, with at most 10 active ads per user. Paid posting (guideline: 1 USDC for 30 days), paid renewal and top placement may be introduced later; prices and payment terms will be shown in advance and apply to new placements only. Free credits may change and are not counted in case of abuse (fake invitees).",
     "Moderators may hide or delete an ad and block an account for violations; three user reports hide an ad until it is reviewed. Never prepay strangers or share wallet details. Check the item and the person before you pay.",
   ]],
   ["12. Changes and contact", [
