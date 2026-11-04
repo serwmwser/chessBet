@@ -58,6 +58,12 @@ const RU: Sec[] = [
     "Запрещены угрозы, оскорбления, мошенничество, спам и просьбы о деньгах и данных кошелька. Вы можете отклонить звонок или завершить его в любой момент и пожаловаться на пользователя через профиль.",
     "Установлены лимиты на число звонков. Мы вправе ограничить звонки или заблокировать аккаунт при нарушениях. Вы сами решаете, отвечать ли на звонок и что говорить; не сообщайте незнакомым людям личные данные.",
   ]],
+  ["11c. Объявления", [
+    "Раздел объявлений позволяет пользователям публиковать объявления о продаже, покупке, аренде, работе и услугах. Сайт предоставляет площадку и не является стороной сделок между пользователями, не проверяет товары, услуги и вакансии и не отвечает за них, за качество, цену, законность и исполнение обязательств.",
+    "Автор отвечает за содержание объявления и права на фото. Запрещены поддельные, украденные и запрещённые законом товары и услуги, обман, спам, реклама сторонних сервисов, а также телефоны, ссылки и контакты в тексте. Общение ведётся в чате сайта.",
+    "Сейчас размещение бесплатное: объявление действует 30 дней, на одного пользователя приходится не более 10 активных объявлений. Платные опции (продление, закрепление вверху) могут быть введены позже; цены и порядок оплаты будут показаны заранее и действуют только для новых размещений.",
+    "Модерация вправе скрыть или удалить объявление и заблокировать аккаунт при нарушениях; три жалобы пользователей скрывают объявление до проверки. Не переводите предоплату незнакомым людям и не сообщайте данные кошелька. Проверяйте товар и человека до оплаты.",
+  ]],
   ["12. Изменения и связь", [
     "Мы можем менять эти условия; продолжая пользоваться сервисом, вы принимаете новую редакцию. Контакт для обращений: chessgrokearn@gmail.com.",
   ]],
@@ -116,6 +122,12 @@ const EN: Sec[] = [
     "The server stores only call metadata: participants, start time and duration. It is used to prevent abuse and for possible future rewards.",
     "Threats, abuse, fraud, spam and requests for money or wallet details are prohibited. You can decline or end a call at any time and report a user from their profile.",
     "Call limits apply. We may restrict calls or ban accounts for violations. You decide whether to answer and what to say; do not share personal details with strangers.",
+  ]],
+  ["11c. Classifieds", [
+    "The classifieds section lets users post ads for sale, wanted, rent, jobs and services. The site provides the platform and is not a party to deals between users, does not verify goods, services or vacancies and is not responsible for them, for their quality, price, legality or the performance of obligations.",
+    "The author is responsible for the content of the ad and the rights to its photos. Counterfeit, stolen and illegal goods and services, fraud, spam, advertising of third-party services, and phone numbers, links and contacts in the text are prohibited. Communication takes place in the site chat.",
+    "Posting is free for now: an ad is valid for 30 days, with at most 10 active ads per user. Paid options (renewal, top placement) may be introduced later; prices and payment terms will be shown in advance and apply to new placements only.",
+    "Moderators may hide or delete an ad and block an account for violations; three user reports hide an ad until it is reviewed. Never prepay strangers or share wallet details. Check the item and the person before you pay.",
   ]],
   ["12. Changes and contact", [
     "We may change these terms; by continuing to use the service you accept the new version. Contact: chessgrokearn@gmail.com.",
