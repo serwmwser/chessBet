@@ -1,4 +1,5 @@
 "use client";
+import AdQuota from "@/components/AdQuota";
 import LoginPrompt from "@/components/LoginPrompt";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
@@ -153,7 +154,10 @@ export default function AdsPage() {
       )}
 
       {tab === "new" && (!token ? guest : !me ? needProfile : (
-        <AdForm token={token} onSaved={() => { setTab("mine"); void load(filters, 0); }} />
+        <>
+          <AdQuota token={token} addr={addr ?? ""} />
+          <AdForm token={token} onSaved={() => { setTab("mine"); void load(filters, 0); }} />
+        </>
       ))}
 
       {tab === "mine" && (!token ? guest : !me ? needProfile : edit ? (

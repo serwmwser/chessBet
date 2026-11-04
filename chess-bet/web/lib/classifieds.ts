@@ -52,6 +52,8 @@ export const listAds = (f: AdFilters, page = 0, token = "") => {
 export const getAd = (id: number, token = "") => call<{ item: Ad; mine: boolean }>(`/api/ads/item?id=${id}`, { token });
 export const adPlaces = () => call<{ places: Place[] }>("/api/ads/places").then((r) => r.places);
 export const myAds = (token: string) => call<{ items: Ad[] }>("/api/ads/mine", { token }).then((r) => r.items);
+export type Quota = { credits: number; used: number; left: number; referred: number };
+export const adsQuota = (token: string) => call<Quota>("/api/ads/quota", { token });
 export const saveAd = (token: string, a: AdInput) => call<{ id: number }>("/api/ads/save", { post: a, token });
 export const renewAd = (token: string, id: number) => call<{ expires: number }>("/api/ads/renew", { post: { id }, token });
 export const deleteAd = (token: string, id: number) => call<object>("/api/ads/delete", { post: { id }, token });
@@ -90,6 +92,7 @@ export function adsError(code: string, ru: boolean): string {
     slow_down: ["Слишком часто, попробуйте позже", "Too fast, try again later"],
     forbidden: ["Недоступно для этого аккаунта", "Not available for this account"],
     not_found: ["Объявление недоступно", "Ad is not available"],
+    payment_required: ["Бесплатные объявления закончились. Платное размещение (1 USDC) скоро заработает. Пригласите друга и получите ещё одно бесплатное", "Free ads are used up. Paid posting (1 USDC) is coming soon. Invite a friend to get one more free ad"],
     too_big: ["Слишком большой текст", "Text is too large"],
   };
   const x = m[code];
