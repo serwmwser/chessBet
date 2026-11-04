@@ -19,7 +19,7 @@ import { handleMod } from "./mod.js";
 import { handleDating } from "./dating.js";
 import { handlePuzzles } from "./puzzles.js";
 import { callsWss, handleCalls } from "./calls.js";
-import { handleAds, setRefSource } from "./ads.js";
+import { handleAds, setPayVerifier, setRefSource } from "./ads.js";
 import { handleTranslate } from "./translate.js";
 
 const SITE_URL = process.env.SITE_URL || "https://chessbet.lol";
@@ -375,6 +375,18 @@ setRefSource(async (addr) => {
     catch { chain = c?.n ?? 0; }
   }
   return { pending, chain };
+});
+
+// Проверка оплаты объявлений: в транзакции есть перевод USDC от плательщика на наш адрес не меньше нужной суммы, не старше часа
+const TRANSFER_TOPIC = ethers.id("Transfer(address,address,uint256)");
+setPayVerifier(async (tx, from, to, token, min) => {
+  const rc = await provider.getTransactionReceipt(tx);
+  if (!rc || rc.status !== 1) return false;
+  const blk = await provider.getBlock(rc.blockNumber);
+  if (!blk || Date.now() / 1000 - blk.timestamp > 3600) return false;
+  const addrOf = (t: string) => ("0x" + t.slice(26)).toLowerCase();
+  return rc.logs.some((l) => l.address.toLowerCase() === token && l.topics.length === 3 && l.topics[0] === TRANSFER_TOPIC
+    && addrOf(l.topics[1]) === from.toLowerCase() && addrOf(l.topics[2]) === to.toLowerCase() && BigInt(l.data) >= BigInt(min));
 });
 
 let queue: Promise<unknown> = Promise.resolve();

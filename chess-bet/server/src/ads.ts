@@ -22,6 +22,8 @@ CREATE TABLE IF NOT EXISTS ads_reports(ad INTEGER NOT NULL, reporter TEXT NOT NU
 `);
 
 try { db.exec("ALTER TABLE ads ADD COLUMN free INTEGER NOT NULL DEFAULT 1"); } catch { /* колонка уже есть */ }
+// оплаты в USDC: хеш транзакции можно использовать только один раз
+db.exec("CREATE TABLE IF NOT EXISTS ads_pay(tx TEXT PRIMARY KEY, addr TEXT NOT NULL, purpose TEXT NOT NULL, ad INTEGER NOT NULL DEFAULT 0, amount INTEGER NOT NULL, created INTEGER NOT NULL)");
 
 const DAY = 86400000;
 const TERM = 30 * DAY;          // срок объявления
@@ -30,6 +32,31 @@ const PAGE = 20;
 const MAX_ACTIVE = 10;          // активных объявлений на человека
 const BASE_FREE = 1;            // бесплатных объявлений у каждого
 const MAX_BONUS = 20;           // максимум бонусных объявлений за приглашённых
+// Платные опции. Платежи включаются, когда задан ADS_PAY_TO (адрес получателя, тот же, куда идут 10% комиссии). Цены в минимальных единицах USDC (6 знаков)
+const PAY_TO = (process.env.ADS_PAY_TO || "").toLowerCase();
+const PAY_TOKEN = (process.env.ADS_USDC || "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359").toLowerCase();
+const PRICE_POST = 1_000_000;   // 1 USDC: объявление сверх бесплатных, 30 дней
+const PRICE_RENEW = 1_000_000;  // 1 USDC: продление на 30 дней
+const PRICE_PIN = 3_000_000;    // 3 USDC: закрепление вверху на неделю
+const PIN_TERM = 7 * DAY;
+const payOn = () => /^0x[a-f0-9]{40}$/.test(PAY_TO);
+type PayCheck = (tx: string, from: string, to: string, token: string, min: number) => Promise<boolean>;
+let payCheck: PayCheck = async () => false;
+/** Проверка перевода USDC в блокчейне (подключается из index.ts) */
+export function setPayVerifier(fn: PayCheck) { payCheck = fn; }
+/** Проверяет перевод и «съедает» хеш. Возвращает {tx} или {err} */
+async function takePayment(me: string, m: Record<string, unknown>, purpose: string, price: number, ad: number): Promise<{ tx: string } | { err: string }> {
+  if (!payOn()) return { err: "payment_required" };
+  const tx = String(m.tx ?? "").toLowerCase();
+  if (!/^0x[a-f0-9]{64}$/.test(tx)) return { err: "payment_required" };
+  if (db.prepare("SELECT 1 FROM ads_pay WHERE tx=?").get(tx)) return { err: "tx_used" };
+  let ok = false;
+  try { ok = await payCheck(tx, me, PAY_TO, PAY_TOKEN, price); } catch { return { err: "pay_unverified" }; }
+  if (!ok) return { err: "pay_unverified" };
+  try { db.prepare("INSERT INTO ads_pay(tx,addr,purpose,ad,amount,created) VALUES(?,?,?,?,?,?)").run(tx, me, purpose, ad, price, Date.now()); }
+  catch { return { err: "tx_used" }; }
+  return { tx };
+}
 const KINDS = ["sale", "buy", "rent", "job", "service"] as const;
 type Kind = (typeof KINDS)[number];
 const clean = (s: unknown, max: number) =>
@@ -151,6 +178,9 @@ export async function handleAds(req: http.IncomingMessage, res: http.ServerRespo
         list.forEach((c) => c.cities.sort((a, b) => b.count - a.count));
         return out(200, { ok: true, places: list }, true);
       }
+      if (p === "/api/ads/prices") {
+        return out(200, { ok: true, enabled: payOn(), to: PAY_TO, token: PAY_TOKEN, post: PRICE_POST, renew: PRICE_RENEW, pin: PRICE_PIN, pinDays: PIN_TERM / DAY }, true);
+      }
       if (p === "/api/ads/quota") {
         if (!viewer) return bad("auth", 401);
         return out(200, { ok: true, ...(await quota(viewer)) });
@@ -197,24 +227,42 @@ export async function handleAds(req: http.IncomingMessage, res: http.ServerRespo
           .run({ k: kind, t: title, b: body, pr: price, cur: currency, c: country, city, ph: JSON.stringify(photos), now, id, ...idx });
         return out(200, { ok: true, id });
       }
-      if ((await quota(me)).left <= 0) return bad("payment_required", 402); // бесплатные кредиты закончились, оплата USDC ещё не запущена
+      const freeLeft = (await quota(me)).left > 0; // бесплатные кредиты закончились — нужна оплата 1 USDC
       const active = (db.prepare("SELECT COUNT(*) n FROM ads WHERE addr=? AND status='active' AND expires>?").get(me, now) as { n: number }).n;
       if (active >= MAX_ACTIVE) return bad("too_many");
       if (db.prepare("SELECT 1 FROM ads WHERE addr=? AND status='active' AND lower(title)=lower(?)").get(me, title)) return bad("duplicate");
+      let payTx = "";
+      if (!freeLeft) {
+        const pay = await takePayment(me, m, "post", PRICE_POST, 0);
+        if ("err" in pay) return bad(pay.err, pay.err === "payment_required" ? 402 : 400);
+        payTx = pay.tx;
+      }
       const r = db.prepare(
-        `INSERT INTO ads(addr,kind,title,body,price,currency,country,city,photos,created,updated,expires,cl,cy,ft,free) VALUES(@a,@k,@t,@b,@pr,@cur,@c,@city,@ph,@now,@now,@exp,@cl,@cy,@ft,1)`
-      ).run({ a: me, k: kind, t: title, b: body, pr: price, cur: currency, c: country, city, ph: JSON.stringify(photos), now, exp: now + TERM, ...idx });
+        `INSERT INTO ads(addr,kind,title,body,price,currency,country,city,photos,created,updated,expires,cl,cy,ft,free) VALUES(@a,@k,@t,@b,@pr,@cur,@c,@city,@ph,@now,@now,@exp,@cl,@cy,@ft,@free)`
+      ).run({ a: me, k: kind, t: title, b: body, pr: price, cur: currency, c: country, city, ph: JSON.stringify(photos), now, exp: now + TERM, free: freeLeft ? 1 : 0, ...idx });
+      if (payTx) db.prepare("UPDATE ads_pay SET ad=? WHERE tx=?").run(Number(r.lastInsertRowid), payTx);
       return out(200, { ok: true, id: Number(r.lastInsertRowid) });
     }
     if (p === "/api/ads/renew") { // продление на 30 дней (сейчас бесплатно; позже 1 USDC)
       const id = Math.floor(Number(m.id));
       const r = db.prepare("SELECT * FROM ads WHERE id=? AND addr=? AND status IN ('active','expired')").get(id, me) as Row | undefined;
       if (!r) return bad("not_found", 404);
-      if (r.free) return bad("payment_required", 402); // продление платное (1 USDC), оплата ещё не запущена
       if (r.expires - now > RENEW_WINDOW) return bad("too_early");
+      const pay = await takePayment(me, m, "renew", PRICE_RENEW, id); // продление всегда платное (1 USDC)
+      if ("err" in pay) return bad(pay.err, pay.err === "payment_required" ? 402 : 400);
       const exp = Math.max(now, r.expires) + TERM;
       db.prepare("UPDATE ads SET expires=?, status='active', updated=? WHERE id=?").run(exp, now, id);
       return out(200, { ok: true, expires: exp });
+    }
+    if (p === "/api/ads/pin") { // закрепление вверху списка на неделю (3 USDC), можно продлевать подряд
+      const id = Math.floor(Number(m.id));
+      const r = db.prepare("SELECT * FROM ads WHERE id=? AND addr=? AND status='active' AND expires>?").get(id, me, now) as Row | undefined;
+      if (!r) return bad("not_found", 404);
+      const pay = await takePayment(me, m, "pin", PRICE_PIN, id);
+      if ("err" in pay) return bad(pay.err, pay.err === "payment_required" ? 402 : 400);
+      const until = Math.max(now, r.pinned_until) + PIN_TERM;
+      db.prepare("UPDATE ads SET pinned_until=?, updated=? WHERE id=?").run(until, now, id);
+      return out(200, { ok: true, pinned_until: until });
     }
     if (p === "/api/ads/delete") {
       db.prepare("UPDATE ads SET status='deleted' WHERE id=? AND addr=?").run(Math.floor(Number(m.id)), me);
