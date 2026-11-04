@@ -22,16 +22,17 @@ export default function WalletBrowserLinks() {
   if (!href) return null;
   const enc = encodeURIComponent(href);
   const links: [string, string][] = [
+    ["Bitget Wallet", "https://bkcode.vip?action=dapp&url=" + enc],
     ["MetaMask", "https://metamask.app.link/dapp/" + href.replace(/^https?:\/\//, "")],
     ["Trust Wallet", "https://link.trustwallet.com/open_url?coin_id=966&url=" + enc],
     ["Coinbase Wallet", "https://go.cb-w.com/dapp?cb_url=" + enc],
   ];
   return (
     <div className="space-y-2 text-sm">
-      <p className="opacity-80">{ru ? "Удобнее всего открыть сайт внутри приложения кошелька: там вход проходит без переходов." : "The easiest way is to open the site inside your wallet app: sign-in works without switching apps."}</p>
+      <p className="opacity-80"><b>{ru ? "Надёжнее открыть сайт внутри приложения кошелька." : "Safer: open the site inside your wallet app."}</b> {ru ? "На Android ответ кошелька иногда не возвращается в обычный браузер, а внутри кошелька вход проходит без переходов." : "On Android the wallet's reply sometimes does not return to a regular browser; inside the wallet app sign-in works without switching."}</p>
       <div className="flex flex-wrap justify-center gap-2">
         {links.map(([name, url]) => (
-          <a key={name} className="btn btn-ghost !py-2" href={url}>{ru ? "Открыть в " : "Open in "}{name}</a>
+          <a key={name} className="btn btn-primary !py-2" href={url}>{ru ? "Открыть в " : "Open in "}{name}</a>
         ))}
       </div>
     </div>

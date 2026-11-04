@@ -52,7 +52,7 @@ export default function LoginPrompt({ text }: { text?: string }) {
           {busy ? (ru ? "Ждём подпись в кошельке…" : "Waiting for your signature…") : ru ? "Подписать вход" : "Sign in"}
         </button>
       )}
-      {retry && <WalletBrowserLinks />}
+      <WalletBrowserLinks />
     </section>
   );
 }
