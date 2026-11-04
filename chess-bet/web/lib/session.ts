@@ -30,14 +30,16 @@ async function create(account: Acc): Promise<string | null> {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ address: account.address, ts, sig }),
     });
-  } catch { return null; }
+  } catch { throw new Error("network"); }
+  if (r.status === 403) throw new Error("origin"); // сервер не пускает с этого адреса сайта
   try {
-    const j = (await r.json()) as { ok?: boolean; token?: string; exp?: number };
+    const j = (await r.json()) as { ok?: boolean; token?: string; exp?: number; error?: string };
+    if (j && !j.ok && j.error) throw new Error(j.error);
     if (j && j.ok && j.token && j.exp) {
       try { localStorage.setItem(key(account.address), JSON.stringify({ token: j.token, exp: j.exp })); } catch {}
       return j.token;
     }
-  } catch {}
+  } catch (e) { if ((e as Error).message !== "Unexpected end of JSON input" && /^[a-z_]+$/.test((e as Error).message)) throw e; }
   return null; // старый сервер без /session: вызывающий код вернётся к подписи по-старому
 }
 

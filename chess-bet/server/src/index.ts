@@ -604,10 +604,13 @@ const server = http.createServer((req, res) => {
   if (req.method === "POST" && parts[0] === "session") {
     if (origins.length && !originOk(origin)) { res.writeHead(403).end("{}"); return; }
     let body = "";
-    req.on("data", (c) => { body += c; if (body.length > 2_000) req.destroy(); });
-    req.on("end", () => {
+    req.on("data", (c) => { body += c; if (body.length > 20_000) req.destroy(); }); // подписи смарт-кошельков длиннее обычных
+    req.on("end", async () => {
       try {
-        const r = createSession(JSON.parse(body));
+        const r = await createSession(JSON.parse(body), async (a, hash, sig) => {
+          const c = new ethers.Contract(a, ["function isValidSignature(bytes32,bytes) view returns (bytes4)"], provider);
+          return (await c.isValidSignature(hash, sig)) === "0x1626ba7e";
+        });
         out(typeof r === "string" ? { ok: false, error: r } : { ok: true, token: r.token, exp: r.exp });
       } catch { out({ ok: false, error: "bad_request" }); }
     });

@@ -36,15 +36,17 @@ function prune() {
 }
 
 /** Одна подпись кошелька -> токен на 24 часа. Возвращает { token, exp } или код ошибки. */
-export function createSession(m: any): { token: string; exp: number } | string {
+export async function createSession(m: any, verify1271?: (addr: string, hash: string, sig: string) => Promise<boolean>): Promise<{ token: string; exp: number } | string> {
   const addr = String(m?.address ?? "").toLowerCase();
   if (!ethers.isAddress(addr)) return "bad_address";
   const ts = Number(m.ts);
   if (!Number.isFinite(ts) || Math.abs(Date.now() - ts) > 10 * 60_000) return "bad_time";
   const msg = `ChessBet session\nAddress: ${m.address}\nTime: ${ts}`;
-  try {
-    if (ethers.verifyMessage(msg, String(m.sig ?? "")).toLowerCase() !== addr) return "bad_signature";
-  } catch { return "bad_signature"; }
+  let okSig = false;
+  try { okSig = ethers.verifyMessage(msg, String(m.sig ?? "")).toLowerCase() === addr; } catch { okSig = false; }
+  // смарт-кошельки (Coinbase Wallet и др.) подписывают по ERC-1271: проверяет сам контракт кошелька
+  if (!okSig && verify1271) { try { okSig = await verify1271(addr, ethers.hashMessage(msg), String(m.sig ?? "")); } catch { okSig = false; } }
+  if (!okSig) return "bad_signature";
   prune();
   const token = crypto.randomBytes(32).toString("hex");
   const exp = Date.now() + TTL;
