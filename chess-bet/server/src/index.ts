@@ -623,7 +623,7 @@ const server = http.createServer((req, res) => {
         const user = lc(String(m.address ?? "")), ref = lc(String(m.ref ?? ""));
         if (!ethers.isAddress(user) || !ethers.isAddress(ref) || user === ref) return out({ ok: false, error: "bad_address" });
         const msg = `ChessBet referral\nUser: ${user}\nReferrer: ${ref}`;
-        if (lc(ethers.verifyMessage(msg, String(m.sig ?? ""))) !== user) return out({ ok: false, error: "bad_sig" });
+        if (!(m.token && checkSession(user, m.token)) && lc(ethers.verifyMessage(msg, String(m.sig ?? ""))) !== user) return out({ ok: false, error: "bad_sig" });
         if (refPending.has(user)) return out({ ok: true });
         if (done.some((d) => d.white === user || d.black === user) || [...live.values()].some((g) => g.white === user || g.black === user)) return out({ ok: false, error: "already_played" });
         if (String(await escrow.referrerOf(user)) !== ethers.ZeroAddress) return out({ ok: true });

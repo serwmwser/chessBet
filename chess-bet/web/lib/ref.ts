@@ -1,4 +1,5 @@
 // Реферальная программа «Вечный гамбит»: ссылка, учёт переходов, ставки уровней.
+import { ensureToken } from "./session";
 export const REF_ENABLED = process.env.NEXT_PUBLIC_REFERRAL === "1";
 const KEY = "cb_ref";
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
@@ -34,9 +35,10 @@ export async function registerRef(account: { address: string; signMessage: (a: {
   const k = `cb_ref_sent_${user}`;
   try {
     if (localStorage.getItem(k)) return;
-    const sig = await account.signMessage({ message: `ChessBet referral\nUser: ${user}\nReferrer: ${ref}` });
+    const token = await ensureToken(account); // та же одна подпись входа, второй не нужно
+    const sig = token ? "" : await account.signMessage({ message: `ChessBet referral\nUser: ${user}\nReferrer: ${ref}` });
     const { postRef } = await import("./api");
-    const r = await postRef({ address: user, ref, sig });
+    const r = await postRef({ address: user, ref, sig, token: token || undefined });
     if (r.ok || r.error === "already_played") localStorage.setItem(k, "1");
   } catch {}
 }
