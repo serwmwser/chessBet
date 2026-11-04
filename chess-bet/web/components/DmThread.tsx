@@ -9,6 +9,7 @@ import { useSocial } from "@/lib/social";
 import VoiceBubble from "./VoiceBubble";
 import VoiceRecorder from "./VoiceRecorder";
 import { parseVoice } from "@/lib/voice";
+import { targetLang, translateError, translateText } from "@/lib/translate";
 
 const MAX = 1000;
 const merge = (a: DmMsg[], b: DmMsg[]) => {
@@ -26,6 +27,7 @@ export default function DmThread({ name, token, onBack, onChanged, draft }: { na
   const [more, setMore] = useState(false);
   const [missing, setMissing] = useState(false);
   const [text, setText] = useState((draft || "").slice(0, MAX));
+  const [tr, setTr] = useState<Record<number, { text: string; show: boolean } | "load">>({}); // переводы сообщений собеседника
   const [busy, setBusy] = useState(false);
   const last = useRef(0);
   const box = useRef<HTMLDivElement>(null);
@@ -95,6 +97,22 @@ export default function DmThread({ name, token, onBack, onChanged, draft }: { na
     try { const b = await dmBlock(token, name, on); setInfo({ ...info, blockedByMe: b, canSend: !b && info.canSend }); } catch (e) { toast(dmErr(e, ru), "err"); }
   };
 
+  // «Перевести» / «Показать оригинал»: перевод идёт на язык сайта
+  const doTr = async (m: DmMsg) => {
+    const cur = tr[m.id];
+    if (cur === "load") return;
+    if (cur) { setTr((a) => ({ ...a, [m.id]: { ...cur, show: !cur.show } })); return; }
+    setTr((a) => ({ ...a, [m.id]: "load" }));
+    try {
+      const r = await translateText(token, m.text, targetLang(lang));
+      if (r.same) { toast(ru ? "Сообщение уже на вашем языке" : "The message is already in your language", "info"); setTr((a) => { const b = { ...a }; delete b[m.id]; return b; }); return; }
+      setTr((a) => ({ ...a, [m.id]: { text: r.text, show: true } }));
+    } catch (e) {
+      toast(translateError((e as Error).message, ru), "err");
+      setTr((a) => { const b = { ...a }; delete b[m.id]; return b; });
+    }
+  };
+
   if (!token) return <section className="card text-center opacity-80">{ru ? "Войдите, чтобы писать сообщения." : "Sign in to send messages."}</section>;
   if (missing) return <section className="card text-center">{ru ? "Такого игрока нет." : "This player does not exist."}</section>;
   if (!info) return <section className="card text-center opacity-70">…</section>;
@@ -127,11 +145,16 @@ export default function DmThread({ name, token, onBack, onChanged, draft }: { na
             </div>
             <div className="max-w-[85%] rounded-2xl px-3 py-2 text-sm break-words whitespace-pre-wrap"
               style={m.mine ? { background: "linear-gradient(90deg,#fde68a,#f5b301)", color: "#2b1a00" } : { background: "rgba(127,127,127,.16)" }}>
-              {(() => { const v = parseVoice(m.text); return v ? <VoiceBubble path={v.path} sec={v.sec} /> : m.text; })()}
+              {(() => { const v = parseVoice(m.text); if (v) return <VoiceBubble path={v.path} sec={v.sec} />; const t = tr[m.id]; return t && t !== "load" && t.show ? t.text : m.text; })()}
               <div className="mt-1 flex items-center gap-2 text-[10px] opacity-60">
                 <span>{time(m.created)}{m.mine && m.read ? " ✓✓" : ""}</span>
                 {m.mine ? <button type="button" onClick={() => del(m.id)} className="underline">{ru ? "удалить" : "delete"}</button>
                   : <button type="button" onClick={() => report(m.id)} className="underline">{ru ? "пожаловаться" : "report"}</button>}
+                {!m.mine && !parseVoice(m.text) && (
+                  <button type="button" onClick={() => void doTr(m)} disabled={tr[m.id] === "load"} className="underline">
+                    🌐 {tr[m.id] === "load" ? "…" : tr[m.id] && tr[m.id] !== "load" && (tr[m.id] as { show: boolean }).show ? (ru ? "оригинал" : "original") : ru ? "перевести" : "translate"}
+                  </button>
+                )}
               </div>
             </div>
           </div>
