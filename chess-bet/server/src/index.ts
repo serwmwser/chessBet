@@ -611,6 +611,7 @@ const server = http.createServer((req, res) => {
           const c = new ethers.Contract(a, ["function isValidSignature(bytes32,bytes) view returns (bytes4)"], provider);
           return (await c.isValidSignature(hash, sig)) === "0x1626ba7e";
         });
+        if (typeof r === "string") console.log("session fail:", r, origin ?? "-");
         out(typeof r === "string" ? { ok: false, error: r } : { ok: true, token: r.token, exp: r.exp });
       } catch { out({ ok: false, error: "bad_request" }); }
     });
