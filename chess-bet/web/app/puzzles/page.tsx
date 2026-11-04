@@ -1,4 +1,5 @@
 "use client";
+import LoginPrompt from "@/components/LoginPrompt";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import PageShell from "@/components/PageShell";
@@ -34,10 +35,7 @@ export default function PuzzlesPage() {
       </nav>
 
       {!token ? (
-        <section className="card space-y-2">
-          <p className="text-sm">{ru ? "Войдите на сайт, чтобы решать задачи: сервер проверяет ходы и начисляет XP на ваш аккаунт." : "Sign in to solve puzzles: the server checks your moves and adds XP to your account."}</p>
-          <button type="button" className="btn btn-primary !py-2 w-full sm:w-auto" onClick={() => void signIn().catch(() => {})}>{ru ? "Войти" : "Sign in"}</button>
-        </section>
+        <LoginPrompt text={ru ? "Подключите кошелёк, чтобы решать задачи: сервер проверяет ходы и начисляет XP на ваш аккаунт." : "Connect your wallet to solve puzzles: the server checks your moves and adds XP to your account."} />
       ) : (
         <section className="card space-y-3" aria-label={ru ? "Решение задач" : "Solve puzzles"}>
           <div role="tablist" className="flex flex-wrap gap-2">

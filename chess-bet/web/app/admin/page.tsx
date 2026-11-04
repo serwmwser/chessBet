@@ -1,4 +1,5 @@
 "use client";
+import LoginPrompt from "@/components/LoginPrompt";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import PageShell from "@/components/PageShell";
@@ -125,11 +126,7 @@ export default function AdminPage() {
   return (
     <PageShell title={ru ? "Модерация" : "Moderation"}>
       {!s.token ? (
-        <section className="card text-sm">
-          {ru ? "Войдите кошельком модератора." : "Sign in with the moderator wallet."}
-          <button type="button" className="btn btn-primary !py-2 mt-2 w-full sm:w-auto" disabled={s.busy || !s.addr} onClick={() => void s.signIn().catch(() => {})}>{ru ? "Войти" : "Sign in"}</button>
-          {!s.addr && <p className="mt-2 opacity-70">{ru ? "Сначала подключите кошелёк кнопкой в шапке." : "Connect your wallet with the button in the header first."}</p>}
-        </section>
+        <LoginPrompt text={ru ? "Войдите кошельком модератора." : "Sign in with the moderator wallet."} />
       ) : admin === null ? (
         <p className="text-sm opacity-60">…</p>
       ) : !admin ? (

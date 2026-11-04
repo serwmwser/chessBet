@@ -94,8 +94,7 @@ export default function DailyQuests({ token, signIn }: { token: string; signIn?:
 
       {data.guest ? (
         <div className="rounded-xl bg-black/5 dark:bg-white/5 p-3 text-sm">
-          {ru ? "Войдите на сайт, чтобы прогресс засчитывался." : "Sign in so your progress counts."}
-          {signIn && <button type="button" className="btn btn-primary !py-2 mt-2 w-full" onClick={() => void signIn()}>{ru ? "Войти" : "Sign in"}</button>}
+          {ru ? "Подключите кошелёк, чтобы прогресс засчитывался." : "Connect your wallet so your progress counts."}
         </div>
       ) : (
         <Link href={ROUTES.home} className="btn btn-primary !py-2.5 w-full">{ru ? "♟ Играть" : "♟ Play"}</Link>

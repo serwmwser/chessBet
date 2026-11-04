@@ -1,4 +1,5 @@
 "use client";
+import LoginPrompt from "@/components/LoginPrompt";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import PageShell from "@/components/PageShell";
@@ -63,12 +64,7 @@ export default function DatingPage() {
         <Link href={ROUTES.home} className="underline">Chess Bet</Link> › <span>{c.crumb}</span>
       </nav>
 
-      {!token && (
-        <section className="card space-y-2">
-          <p className="text-sm">{ru ? "Чтобы смотреть анкеты и создать свою, войдите на сайт. Знакомства доступны только пользователям 18+." : "Sign in to browse profiles and create yours. Dating is available to users 18+ only."}</p>
-          <button type="button" className="btn btn-primary !py-2 w-full sm:w-auto" onClick={() => void signIn().catch(() => {})}>{ru ? "Войти" : "Sign in"}</button>
-        </section>
-      )}
+      {!token && <LoginPrompt text={ru ? "Чтобы смотреть анкеты и создать свою, подключите кошелёк. Знакомства доступны только пользователям 18+." : "Connect your wallet to browse profiles and create yours. Dating is available to users 18+ only."} />}
 
       {token && !me && (
         <section className="card space-y-2">

@@ -1,4 +1,5 @@
 "use client";
+import LoginPrompt from "@/components/LoginPrompt";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useConnectModal } from "thirdweb/react";
@@ -78,12 +79,7 @@ export default function AdsPage() {
   const chip = (on: boolean) => `chip ${on ? "chip-on" : ""}`;
   const tabs: [Tab, string][] = [["list", ru ? "Объявления" : "Ads"], ["new", ru ? "Подать объявление" : "Post an ad"], ["mine", ru ? "Мои объявления" : "My ads"]];
 
-  const guest = (
-    <section className="card space-y-2">
-      <p className="text-sm">{ru ? "Чтобы подавать объявления и писать продавцам, войдите на сайт (подключите кошелёк, подпись бесплатна)." : "Sign in to post ads and message sellers (connect your wallet; signing is free)."}</p>
-      <button type="button" className="btn btn-primary !py-2 w-full sm:w-auto" onClick={login}>{ru ? "Войти" : "Sign in"}</button>
-    </section>
-  );
+  const guest = <LoginPrompt text={ru ? "Чтобы подавать объявления и писать продавцам, подключите кошелёк (подпись бесплатна)." : "Connect your wallet to post ads and message sellers (signing is free)."} />;
   const needProfile = (
     <section className="card space-y-2">
       <p className="text-sm">{ru ? "Сначала создайте профиль в Rook Club (ник и фото): объявления подаются от его имени." : "First create your Rook Club profile (nickname and avatar): ads are posted under it."}</p>

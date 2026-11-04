@@ -1,4 +1,5 @@
 "use client";
+import LoginPrompt from "@/components/LoginPrompt";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import PageShell from "@/components/PageShell";
@@ -86,23 +87,7 @@ function Profile() {
 
   // нет ника в адресе и не вошли
   if (!target) {
-    const login = async () => { setErr(""); try { await s.signIn(); } catch (e) { const m = errText(e, ru); setErr(m); toast(m, "err"); } };
-    return (
-      <section className="card space-y-3 text-center">
-        {s.addr ? (
-          <>
-            <p className="font-semibold text-emerald-500">✅ {ru ? "Кошелёк подключён" : "Wallet connected"}: {shortAddr(s.addr)}</p>
-            <p className="text-sm opacity-80">{ru ? "Осталось войти: нажмите кнопку и подпишите бесплатное сообщение в кошельке. Деньги не списываются." : "One more step: press the button and sign a free message in your wallet. No money is spent."}</p>
-          </>
-        ) : (
-          <p>{ru ? "Подключите кошелёк кнопкой в шапке сайта, затем нажмите «Войти»." : "Connect your wallet with the button in the header, then press Sign in."}</p>
-        )}
-        <button type="button" className="btn btn-primary" disabled={s.busy || !s.addr} onClick={login}>
-          {s.busy ? (ru ? "Ждём подпись в кошельке…" : "Waiting for your signature…") : ru ? "Войти" : "Sign in"}
-        </button>
-        {err && <p className="text-sm text-red-500" role="alert">{err}</p>}
-      </section>
-    );
+    return <LoginPrompt text={ru ? "Войдите, чтобы открыть свой профиль: подключите кошелёк, вход выполнится автоматически." : "Connect your wallet to open your profile: sign-in happens automatically."} />;
   }
   if (missing) return <section className="card text-center">{ru ? "Такого профиля нет." : "This profile does not exist."}</section>;
   if (!u) return <section className="card text-center opacity-70">…</section>;

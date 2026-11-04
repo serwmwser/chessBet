@@ -1,4 +1,5 @@
 "use client";
+import LoginPrompt from "@/components/LoginPrompt";
 import { useCallback, useEffect, useState } from "react";
 import PageShell from "@/components/PageShell";
 import PostCard from "@/components/PostCard";
@@ -48,12 +49,7 @@ export default function FeedPage() {
       )}
 
       {needLogin ? (
-        <section className="card space-y-3 text-center">
-          <p>{ru ? "Чтобы видеть посты тех, на кого вы подписаны, подключите кошелёк и войдите (подпись бесплатна)." : "To see posts from people you follow, connect your wallet and sign in (the signature is free)."}</p>
-          <button type="button" className="btn btn-primary" disabled={s.busy || !s.addr} onClick={() => s.signIn().catch((e) => toast(errText(e, ru), "err"))}>
-            {s.addr ? (ru ? "Войти" : "Sign in") : ru ? "Сначала подключите кошелёк" : "Connect your wallet first"}
-          </button>
-        </section>
+        <LoginPrompt text={ru ? "Чтобы видеть посты тех, на кого вы подписаны, подключите кошелёк (подпись бесплатна)." : "To see posts from people you follow, connect your wallet (the signature is free)."} />
       ) : (
         <div className="space-y-3">
           {posts.map((p) => (

@@ -78,9 +78,7 @@ export default function Profile({ onOpenGame, onOpenRoom }: { onOpenGame: (id: n
               </div>
               {sm ? (
                 <a className="chip chip-on" href={`${ROUTES.profile}?edit=1`}>{t("editProfile")}</a>
-              ) : (
-                <button className="chip chip-on" disabled={social.busy} onClick={() => social.signIn().catch(() => toast(uiLang === "ru" ? "Не удалось войти" : "Sign-in failed", "err"))}>{uiLang === "ru" ? "Войти" : "Sign in"}</button>
-              )}
+              ) : null}
             </div>
             {sm?.bio && <p className="text-sm opacity-80 break-words">{sm.bio}</p>}
             {sm?.link && <a className="text-sm text-emerald-600 dark:text-emerald-400 underline break-all" dir="ltr" href={sm.link} target="_blank" rel="noopener noreferrer nofollow ugc">{sm.link.replace(/^https?:\/\//, "")}</a>}

@@ -1,4 +1,5 @@
 "use client";
+import LoginPrompt from "./LoginPrompt";
 import { useCallback, useEffect, useState } from "react";
 import Avatar from "./Avatar";
 import DmThread from "./DmThread";
@@ -41,14 +42,7 @@ export default function ChatPanel({ token, addr, busy, signIn, peer, initial }: 
   };
 
   if (!token) {
-    return (
-      <section className="card space-y-3 text-center">
-        <p>{ru ? "Чтобы писать сообщения, подключите кошелёк и войдите (подпись бесплатна)." : "To send messages, connect your wallet and sign in (the signature is free)."}</p>
-        <button type="button" className="btn btn-primary" disabled={busy || !addr} onClick={() => signIn().catch((e) => toast(errText(e, ru), "err"))}>
-          {addr ? (ru ? "Войти" : "Sign in") : ru ? "Сначала подключите кошелёк" : "Connect your wallet first"}
-        </button>
-      </section>
-    );
+    return <LoginPrompt text={ru ? "Чтобы писать сообщения, подключите кошелёк (подпись бесплатна)." : "To send messages, connect your wallet (the signature is free)."} />;
   }
 
   if (peer) return <DmThread name={peer} token={token} draft={draft} />;

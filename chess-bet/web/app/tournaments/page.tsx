@@ -1,4 +1,5 @@
 "use client";
+import LoginPrompt from "@/components/LoginPrompt";
 import { Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -88,12 +89,7 @@ function ListView({ token, signIn }: { token: string; signIn: () => Promise<stri
         ))}
       </section>
 
-      {!token && (
-        <section className="card text-sm">
-          {ru ? "Войдите на сайт, чтобы участвовать в турнирах." : "Sign in to join tournaments."}
-          <button type="button" className="btn btn-primary !py-2 mt-2 w-full sm:w-auto" onClick={() => void signIn().catch(() => {})}>{ru ? "Войти" : "Sign in"}</button>
-        </section>
-      )}
+      {!token && <LoginPrompt text={ru ? "Подключите кошелёк, чтобы участвовать в турнирах." : "Connect your wallet to join tournaments."} />}
 
       {data && data.past.length > 0 && (
         <section className="space-y-3" aria-label={ru ? "Недавние турниры" : "Recent tournaments"}>
@@ -168,7 +164,6 @@ function DetailView({ id, token, signIn }: { id: string; token: string; signIn: 
         {error && <p className="text-sm text-red-500">{tourErr(error, ru)}</p>}
 
         <div className="flex flex-wrap gap-2">
-          {!token && <button type="button" className="btn btn-primary" onClick={() => void signIn().catch(() => {})}>{ru ? "Войти" : "Sign in"}</button>}
           {token && !registered && open && <button type="button" disabled={busy} className="btn btn-primary" onClick={() => void join()}>{ru ? "Участвовать" : "Join"}</button>}
           {token && registered && open && !me?.current && <button type="button" disabled={busy} className="btn btn-ghost" onClick={() => void leave()}>{ru ? "Выйти из турнира" : "Leave"}</button>}
           {token && !registered && !open && (t.status === "upcoming" || t.status === "running") && <span className="text-sm opacity-70">{ru ? "Вход закрыт: до конца осталось меньше 5 минут" : "Entry closed: less than 5 minutes left"}</span>}
