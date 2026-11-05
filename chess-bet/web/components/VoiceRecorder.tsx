@@ -108,10 +108,10 @@ export default function VoiceRecorder({ token, disabled, onVoice }: { token: str
         {state === "up" ? "…" : "🎤"}
       </button>
       {alt && (
-        <button type="button" className="btn btn-ghost !py-2 !px-3" disabled={disabled || state === "up"} onClick={() => pick.current?.click()}
+        <button type="button" className="btn btn-ghost !py-2 !px-3" disabled={disabled || state === "up"} onClick={() => { toast(ru ? "Выберите запись, сделанную в приложении «Диктофон»" : "Pick a recording made in your Recorder app", "ok"); pick.current?.click(); }}
           aria-label={ru ? "Записать приложением телефона" : "Record with the phone's recorder app"} title={ru ? "Записать приложением телефона" : "Record with the phone's recorder app"}>📱</button>
       )}
-      <input ref={pick} type="file" accept="audio/*" capture hidden onChange={(e) => void fromFile(e.target.files?.[0])} />
+      <input ref={pick} type="file" accept="audio/*" hidden onChange={(e) => void fromFile(e.target.files?.[0])} />
     </div>
   );
 }

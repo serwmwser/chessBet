@@ -28,7 +28,7 @@ export const canRecord = () => typeof navigator !== "undefined" && !!navigator.m
 
 /** Открывает микрофон. На Android «Could not start audio source» часто временная: пробуем два набора настроек и до трёх раз с паузой */
 export async function openMic(): Promise<MediaStream> {
-  const tries: MediaStreamConstraints[] = [{ audio: { echoCancellation: true, noiseSuppression: true } }, { audio: true }];
+  const tries: MediaStreamConstraints[] = [{ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } }, { audio: true }, { audio: { echoCancellation: true, noiseSuppression: true } }];
   let last: unknown = new Error("mic");
   for (let i = 0; i < 3; i++) {
     for (const c of tries) {
@@ -82,7 +82,7 @@ export function voiceErr(e: unknown, ru: boolean): string {
   if (m === "NotAllowedError" || (e as Error)?.name === "NotAllowedError") return ru ? "Нет доступа к микрофону. Разрешите его в настройках браузера" : "No microphone access. Allow it in your browser settings";
   if ((e as Error)?.name === "NotFoundError") return ru ? "Микрофон не найден" : "No microphone found";
   if ((e as Error)?.name === "NotReadableError" || (e as Error)?.name === "AbortError" || /audio source|Could not start/i.test(String((e as Error)?.message || ""))) {
-    return ru ? "Микрофон занят или не запускается. Закройте приложения, которые используют микрофон (звонки, запись экрана, игры, видео), и попробуйте снова. Или нажмите 📱 рядом с микрофоном и запишите голос приложением-диктофоном телефона" : "The microphone is busy or cannot start. Close apps that use the microphone (calls, screen recording, games, video) and try again. Or tap 📱 next to the microphone and record with your phone's voice recorder app";
+    return ru ? "Микрофон занят или не запускается. Закройте приложения, которые используют микрофон (звонки, запись экрана, игры, видео), и попробуйте снова. Или запишите голос в приложении «Диктофон» телефона, нажмите 📱 рядом с микрофоном и выберите запись" : "The microphone is busy or cannot start. Close apps that use the microphone (calls, screen recording, games, video) and try again. Or record in your phone's Recorder app, tap 📱 next to the microphone and pick the recording";
   }
   return errText(e, ru);
 }
