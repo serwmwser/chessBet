@@ -104,8 +104,15 @@ export default function MusicToggle() {
       if (document.hidden) void e.ctx.suspend(); else void e.ctx.resume();
     };
     document.addEventListener("visibilitychange", onVis);
+    let paused = false;
+    const micOn = () => { const e = eng.current; if (e && e.ctx.state === "running") { paused = true; void e.ctx.suspend(); } };
+    const micOff = () => { const e = eng.current; if (e && paused && !document.hidden) void e.ctx.resume(); paused = false; };
+    window.addEventListener("cb-mic-start", micOn);
+    window.addEventListener("cb-mic-stop", micOff);
     return () => {
       document.removeEventListener("visibilitychange", onVis);
+      window.removeEventListener("cb-mic-start", micOn);
+      window.removeEventListener("cb-mic-stop", micOff);
       if (eng.current) { stopEngine(eng.current); eng.current = null; }
     };
   }, []);

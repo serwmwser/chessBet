@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useApp } from "@/lib/ctx";
-import { VOICE_MAX_SEC, canRecord, encodeVoice, pickMime, uploadVoice, voiceErr } from "@/lib/voice";
+import { VOICE_MAX_SEC, canRecord, encodeVoice, openMic, pickMime, uploadVoice, voiceErr } from "@/lib/voice";
 
 const fmt = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
@@ -24,6 +24,7 @@ export default function VoiceRecorder({ token, disabled, onVoice }: { token: str
     stream.current?.getTracks().forEach((t) => t.stop());
     stream.current = null;
     rec.current = null;
+    try { window.dispatchEvent(new Event("cb-mic-stop")); } catch { /* вне браузера */ } // фоновая музыка снова может играть
   };
   useEffect(() => () => { act.current = "cancel"; try { rec.current?.stop(); } catch { /* уже остановлена */ } release(); }, []);
 
@@ -35,7 +36,8 @@ export default function VoiceRecorder({ token, disabled, onVoice }: { token: str
   const start = async () => {
     if (!canRecord()) { toast(ru ? "Этот браузер не умеет записывать голос" : "This browser cannot record voice", "err"); return; }
     try {
-      const st = await navigator.mediaDevices.getUserMedia({ audio: true });
+      window.dispatchEvent(new Event("cb-mic-start")); // на время записи ставим фоновую музыку на паузу: на части Android они конфликтуют
+      const st = await openMic();
       stream.current = st;
       const mime = pickMime();
       const r = new MediaRecorder(st, { ...(mime ? { mimeType: mime } : {}), audioBitsPerSecond: 32000 });

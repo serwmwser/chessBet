@@ -26,6 +26,24 @@ export function pickMime(): string {
 
 export const canRecord = () => typeof navigator !== "undefined" && !!navigator.mediaDevices?.getUserMedia && typeof MediaRecorder !== "undefined";
 
+/** Открывает микрофон. На Android «Could not start audio source» часто временная: пробуем два набора настроек и до трёх раз с паузой */
+export async function openMic(): Promise<MediaStream> {
+  const tries: MediaStreamConstraints[] = [{ audio: { echoCancellation: true, noiseSuppression: true } }, { audio: true }];
+  let last: unknown = new Error("mic");
+  for (let i = 0; i < 3; i++) {
+    for (const c of tries) {
+      try { return await navigator.mediaDevices.getUserMedia(c); }
+      catch (e) {
+        last = e;
+        const n = (e as Error)?.name;
+        if (n === "NotAllowedError" || n === "NotFoundError" || n === "SecurityError") throw e; // повтор не поможет
+      }
+    }
+    await new Promise((r) => setTimeout(r, 600));
+  }
+  throw last;
+}
+
 /** Загружает запись на сервер (нужен вход), возвращает путь вида /media/... */
 export async function uploadVoice(token: string, blob: Blob): Promise<string> {
   const [wallet, tok] = token.split("|");
@@ -45,5 +63,8 @@ export function voiceErr(e: unknown, ru: boolean): string {
   if (m === "too_big") return ru ? "Запись слишком большая" : "The recording is too large";
   if (m === "NotAllowedError" || (e as Error)?.name === "NotAllowedError") return ru ? "Нет доступа к микрофону. Разрешите его в настройках браузера" : "No microphone access. Allow it in your browser settings";
   if ((e as Error)?.name === "NotFoundError") return ru ? "Микрофон не найден" : "No microphone found";
+  if ((e as Error)?.name === "NotReadableError" || (e as Error)?.name === "AbortError" || /audio source|Could not start/i.test(String((e as Error)?.message || ""))) {
+    return ru ? "Микрофон занят или не запускается. Закройте приложения, которые используют микрофон (звонки, запись экрана, игры, видео), и попробуйте снова" : "The microphone is busy or cannot start. Close apps that use the microphone (calls, screen recording, games, video) and try again";
+  }
   return errText(e, ru);
 }
