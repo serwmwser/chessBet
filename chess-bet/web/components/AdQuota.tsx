@@ -31,7 +31,7 @@ export default function AdQuota({ token, addr }: { token: string; addr: string }
       <p className="opacity-80">
         {q.left > 0
           ? (ru ? "Первое объявление бесплатно. За каждого приглашённого друга, который зарегистрировался и начал пользоваться сайтом, вы получаете ещё одно бесплатное." : "Your first ad is free. For every invited friend who signs up and starts using the site you get one more free ad.")
-          : (ru ? "Бесплатные объявления закончились. Платное размещение (1 USDC) скоро появится. Пригласите друга и получите ещё одно бесплатное." : "Free ads are used up. Paid posting (1 USDC) is coming soon. Invite a friend to get one more free ad.")}
+          : (ru ? "Бесплатные объявления закончились. Новое объявление стоит 1 USDC за 30 дней (перевод USDC из кошелька при публикации). Пригласите друга и получите ещё одно бесплатное." : "Free ads are used up. A new ad costs 1 USDC for 30 days (paid in USDC from your wallet when you publish). Invite a friend to get one more free ad.")}
       </p>
       {addr && <button type="button" className="btn btn-ghost !py-2" onClick={() => void copy()}>🔗 {ru ? "Скопировать ссылку для друзей" : "Copy invite link"}</button>}
     </section>

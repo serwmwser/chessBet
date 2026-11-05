@@ -11,8 +11,9 @@ import { chain, client } from "@/lib/config";
 import { useApp } from "@/lib/ctx";
 import { useSocial } from "@/lib/social";
 import { ROUTES } from "@/lib/urls";
-import { KINDS, KIND_LABEL, adPlaces, adsError, adsQuery, deleteAd, fmtPrice, listAds, myAds, renewAd, type Ad, type AdFilters, type Kind, type Place } from "@/lib/classifieds";
+import { KINDS, KIND_LABEL, adPlaces, adsError, adsQuery, adsPrices, deleteAd, fmtPrice, listAds, myAds, pinAd, renewAd, type Ad, type AdFilters, type Kind, type Place } from "@/lib/classifieds";
 import { wallets } from "@/components/Header";
+import { payError, useAdPay } from "@/lib/adpay";
 import { EN, RU } from "./content";
 
 type Tab = "list" | "new" | "mine";
@@ -35,6 +36,7 @@ export default function AdsPage() {
   const [mine, setMine] = useState<Ad[]>([]);
   const [edit, setEdit] = useState<Ad | null>(null);
   const first = useRef(true);
+  const payAndCall = useAdPay();
 
   const load = useCallback(async (f: AdFilters, page: number) => {
     setLoading(true);
@@ -89,8 +91,24 @@ export default function AdsPage() {
   );
 
   const doRenew = async (a: Ad) => {
-    try { await renewAd(token, a.id); toast(ru ? "Объявление продлено на 30 дней" : "Ad renewed for 30 days", "ok"); loadMine(); }
-    catch (e) { toast(adsError((e as Error).message, ru), "err"); }
+    try {
+      const pr = await adsPrices();
+      if (!pr.enabled) throw new Error("payment_required");
+      const cost = pr.renew / 1e6;
+      if (!window.confirm(ru ? `Продлить объявление на 30 дней за ${cost} USDC? Откроется кошелёк для перевода USDC.` : `Renew this ad for 30 days for ${cost} USDC? Your wallet will open to send the USDC.`)) return;
+      await payAndCall("renew", a.id, (tx) => renewAd(token, a.id, tx));
+      toast(ru ? "Объявление продлено на 30 дней" : "Ad renewed for 30 days", "ok"); loadMine();
+    } catch (e) { toast(payError(e, ru), "err"); }
+  };
+  const doPin = async (a: Ad) => {
+    try {
+      const pr = await adsPrices();
+      if (!pr.enabled) throw new Error("payment_required");
+      const cost = pr.pin / 1e6;
+      if (!window.confirm(ru ? `Закрепить объявление вверху списка на ${pr.pinDays} дн. за ${cost} USDC? Откроется кошелёк для перевода USDC.` : `Pin this ad to the top of the list for ${pr.pinDays} days for ${cost} USDC? Your wallet will open to send the USDC.`)) return;
+      await payAndCall("pin", a.id, (tx) => pinAd(token, a.id, tx));
+      toast(ru ? "Объявление закреплено вверху" : "Ad pinned to the top", "ok"); loadMine(); void load(filters, 0);
+    } catch (e) { toast(payError(e, ru), "err"); }
   };
   const doDelete = async (a: Ad) => {
     if (!window.confirm(ru ? "Удалить объявление?" : "Delete this ad?")) return;
@@ -176,6 +194,7 @@ export default function AdsPage() {
               <div className="flex flex-wrap gap-2">
                 <button type="button" className="btn btn-ghost !py-1.5" onClick={() => setEdit(a)}>{ru ? "Изменить" : "Edit"}</button>
                 {(a.canRenew || a.expired) && <button type="button" className="btn btn-primary !py-1.5" onClick={() => void doRenew(a)}>{ru ? "Продлить на 30 дней" : "Renew for 30 days"}</button>}
+                {a.status === "active" && !a.expired && <button type="button" className="btn btn-ghost !py-1.5" onClick={() => void doPin(a)}>{a.pinned ? (ru ? "📌 Продлить закрепление" : "📌 Extend pin") : (ru ? "📌 Закрепить вверху" : "📌 Pin to top")}</button>}
                 <button type="button" className="btn btn-danger !py-1.5" onClick={() => void doDelete(a)}>{ru ? "Удалить" : "Delete"}</button>
               </div>
             </section>

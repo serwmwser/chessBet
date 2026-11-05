@@ -47,12 +47,12 @@ export const RU: AdsText = {
   ],
   faqH: "Частые вопросы",
   faq: [
-    ["Размещение объявлений платное?", "Первое объявление бесплатно. За каждого приглашённого друга, который зарегистрировался и начал пользоваться сайтом, даётся ещё одно бесплатное. Сверх этого размещение станет платным: ориентировочно 1 USDC за объявление на 30 дней, продление 1 USDC, закрепление вверху страницы 3 USDC на неделю. Платные опции пока не запущены, цены будут показаны заранее. Объявление живёт 30 дней, активных до 10."],
+    ["Размещение объявлений платное?", "Первое объявление бесплатно. За каждого приглашённого друга, который зарегистрировался и начал пользоваться сайтом, даётся ещё одно бесплатное. Сверх этого размещение платное: 1 USDC за объявление на 30 дней, продление 1 USDC, закрепление вверху страницы 3 USDC на неделю. Оплата переводом USDC (сеть Polygon) из вашего кошелька, комиссия сети платится в POL. Объявление живёт 30 дней, активных до 10."],
     ["Как подать объявление?", "Войдите на сайт (подключите кошелёк и подпишите вход), откройте вкладку «Подать объявление», заполните форму и нажмите «Опубликовать»."],
     ["В каких странах и городах работает доска?", "В любых. Страну и город вы указываете сами, а в списке можно фильтровать по месту."],
     ["Как общаться, если мы говорим на разных языках?", "В чате сайта у сообщений есть перевод на ваш язык. Это удобно для покупки и аренды за границей."],
     ["Можно ли указать телефон или Telegram?", "Нет. Контакты и ссылки в объявлениях запрещены, чтобы защитить участников от мошенников. Пишите в чат сайта."],
-    ["Как продлить объявление?", "В разделе «Мои объявления» за 7 дней до окончания появится кнопка «Продлить». Объявление продлится ещё на 30 дней."],
+    ["Как продлить объявление?", "В разделе «Мои объявления» за 7 дней до окончания появится кнопка «Продлить». Продление стоит 1 USDC, объявление продлится ещё на 30 дней."],
     ["Что делать, если меня обманули?", "Прекратите общение и нажмите «Пожаловаться» в объявлении. Сайт не участвует в расчётах между людьми и не гарантирует сделки."],
   ],
 };
@@ -96,12 +96,12 @@ export const EN: AdsText = {
   ],
   faqH: "FAQ",
   faq: [
-    ["Is posting paid?", "Your first ad is free. For every invited friend who signs up and starts using the site you get one more free ad. Beyond that posting will be paid: roughly 1 USDC per ad for 30 days, 1 USDC to renew, 3 USDC for a week of top placement. Paid options are not launched yet, prices will be shown in advance. An ad lives 30 days, up to 10 active ads."],
+    ["Is posting paid?", "Your first ad is free. For every invited friend who signs up and starts using the site you get one more free ad. Beyond that posting is paid: 1 USDC per ad for 30 days, 1 USDC to renew, 3 USDC for a week of top placement. You pay by sending USDC (Polygon network) from your wallet; the network fee is paid in POL. An ad lives 30 days, up to 10 active ads."],
     ["How do I post an ad?", "Sign in (connect your wallet and sign the login), open the Post an ad tab, fill in the form and press Publish."],
     ["Which countries and cities are supported?", "Any. You enter the country and city yourself, and the list can be filtered by place."],
     ["How do we talk if we speak different languages?", "Messages in the site chat have a translation into your language. It is handy for buying and renting abroad."],
     ["Can I add a phone number or Telegram?", "No. Contacts and links in ads are blocked to protect members from scammers. Use the site chat."],
-    ["How do I renew an ad?", "In My ads a Renew button appears 7 days before expiry. The ad is extended by another 30 days."],
+    ["How do I renew an ad?", "In My ads a Renew button appears 7 days before expiry. Renewing costs 1 USDC and extends the ad by another 30 days."],
     ["What if someone scams me?", "Stop talking and press Report in the ad. The site is not a party to payments between people and does not guarantee deals."],
   ],
 };

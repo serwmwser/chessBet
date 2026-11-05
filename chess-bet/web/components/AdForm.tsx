@@ -1,9 +1,10 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useApp } from "@/lib/ctx";
-import { BODY_MAX, KINDS, KIND_LABEL, MAX_PHOTOS, TITLE_MAX, adPlaces, adsError, saveAd, type Ad, type Kind, type Place } from "@/lib/classifieds";
+import { BODY_MAX, KINDS, KIND_LABEL, MAX_PHOTOS, TITLE_MAX, adPlaces, adsPrices, saveAd, type Ad, type Kind, type Place } from "@/lib/classifieds";
 import { uploadImage } from "./PostComposer";
 import { mediaUrl } from "./Avatar";
+import { payError, useAdPay } from "@/lib/adpay";
 
 const CURRENCIES = ["USD", "EUR", "USDC", "RUB", "GBP", "PLN", "UAH", "KZT", "TRY", "AED"];
 
@@ -13,6 +14,7 @@ export default function AdForm({ token, initial, onSaved, onCancel }: {
 }) {
   const { lang, toast } = useApp();
   const ru = lang === "ru";
+  const payAndCall = useAdPay();
   const [kind, setKind] = useState<Kind>(initial?.kind ?? "sale");
   const [title, setTitle] = useState(initial?.title ?? "");
   const [body, setBody] = useState(initial?.body ?? "");
@@ -41,13 +43,24 @@ export default function AdForm({ token, initial, onSaved, onCancel }: {
   const save = async () => {
     setBusy(true);
     try {
-      const r = await saveAd(token, {
+      const input = {
         id: initial?.id, kind, title, body, country, city, photos,
         price: price.trim() === "" ? null : Number(price.replace(",", ".")), currency: price.trim() === "" ? "" : currency,
-      });
+      };
+      let r: { id: number };
+      try { r = await saveAd(token, input); }
+      catch (e) {
+        if (initial || (e as Error).message !== "payment_required") throw e;
+        // бесплатные объявления закончились: предлагаем оплатить размещение
+        const pr = await adsPrices();
+        if (!pr.enabled) throw e;
+        const cost = pr.post / 1e6;
+        if (!window.confirm(ru ? `Бесплатные объявления закончились. Опубликовать за ${cost} USDC на 30 дней? Откроется кошелёк для перевода USDC.` : `Your free ads are used up. Publish for ${cost} USDC for 30 days? Your wallet will open to send the USDC.`)) { setBusy(false); return; }
+        r = await payAndCall("post", 0, (tx) => saveAd(token, input, tx));
+      }
       toast(initial ? (ru ? "Объявление сохранено" : "Ad saved") : (ru ? "Объявление опубликовано" : "Ad published"), "ok");
       onSaved(initial?.id ?? r.id);
-    } catch (e) { toast(adsError((e as Error).message, ru), "err"); }
+    } catch (e) { toast(payError(e, ru), "err"); }
     setBusy(false);
   };
 
@@ -115,8 +128,8 @@ export default function AdForm({ token, initial, onSaved, onCancel }: {
       </div>
 
       <p className="text-xs opacity-70">
-        {ru ? "Первое объявление бесплатно, и ещё по одному бесплатному за каждого приглашённого друга, который начал пользоваться сайтом. Дальше размещение будет платным (ориентир: 1 USDC за 30 дней). Объявление живёт 30 дней, до 10 активных. Запрещены мошенничество, запрещённые товары и просьбы перевести деньги вне сайта. Нарушения ведут к блокировке."
-          : "Your first ad is free, plus one more free ad for every invited friend who starts using the site. After that, posting will be paid (guideline: 1 USDC for 30 days). An ad lives 30 days, up to 10 active ads. Fraud, prohibited goods and requests to pay outside the site are banned and lead to a block."}
+        {ru ? "Первое объявление бесплатно, и ещё по одному бесплатному за каждого приглашённого друга, который начал пользоваться сайтом. Дальше размещение платное: 1 USDC за 30 дней (перевод USDC из кошелька при публикации). Объявление живёт 30 дней, до 10 активных. Запрещены мошенничество, запрещённые товары и просьбы перевести деньги вне сайта. Нарушения ведут к блокировке."
+          : "Your first ad is free, plus one more free ad for every invited friend who starts using the site. After that, posting costs 1 USDC for 30 days (paid in USDC from your wallet when you publish). An ad lives 30 days, up to 10 active ads. Fraud, prohibited goods and requests to pay outside the site are banned and lead to a block."}
       </p>
 
       <div className="flex flex-wrap gap-2">

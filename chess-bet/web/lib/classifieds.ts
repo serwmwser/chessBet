@@ -54,8 +54,11 @@ export const adPlaces = () => call<{ places: Place[] }>("/api/ads/places").then(
 export const myAds = (token: string) => call<{ items: Ad[] }>("/api/ads/mine", { token }).then((r) => r.items);
 export type Quota = { credits: number; used: number; left: number; referred: number };
 export const adsQuota = (token: string) => call<Quota>("/api/ads/quota", { token });
-export const saveAd = (token: string, a: AdInput) => call<{ id: number }>("/api/ads/save", { post: a, token });
-export const renewAd = (token: string, id: number) => call<{ expires: number }>("/api/ads/renew", { post: { id }, token });
+export type AdPrices = { enabled: boolean; to: string; token: string; post: number; renew: number; pin: number; pinDays: number };
+export const adsPrices = () => call<AdPrices>("/api/ads/prices");
+export const saveAd = (token: string, a: AdInput, tx?: string) => call<{ id: number }>("/api/ads/save", { post: tx ? { ...a, tx } : a, token });
+export const renewAd = (token: string, id: number, tx?: string) => call<{ expires: number }>("/api/ads/renew", { post: tx ? { id, tx } : { id }, token });
+export const pinAd = (token: string, id: number, tx?: string) => call<{ pinned_until: number }>("/api/ads/pin", { post: tx ? { id, tx } : { id }, token });
 export const deleteAd = (token: string, id: number) => call<object>("/api/ads/delete", { post: { id }, token });
 export const reportAd = (token: string, id: number, reason = "") => call<object>("/api/ads/report", { post: { id, reason }, token });
 
@@ -92,7 +95,9 @@ export function adsError(code: string, ru: boolean): string {
     slow_down: ["Слишком часто, попробуйте позже", "Too fast, try again later"],
     forbidden: ["Недоступно для этого аккаунта", "Not available for this account"],
     not_found: ["Объявление недоступно", "Ad is not available"],
-    payment_required: ["Бесплатные объявления закончились. Платное размещение (1 USDC) скоро заработает. Пригласите друга и получите ещё одно бесплатное", "Free ads are used up. Paid posting (1 USDC) is coming soon. Invite a friend to get one more free ad"],
+    payment_required: ["Бесплатные объявления закончились. Платные опции сейчас недоступны. Пригласите друга и получите ещё одно бесплатное", "Free ads are used up. Paid options are unavailable right now. Invite a friend to get one more free ad"],
+    pay_unverified: ["Сервер пока не увидел перевод. Подождите минуту и повторите: платить заново не придётся", "The server has not seen the payment yet. Wait a minute and try again: you will not be charged again"],
+    tx_used: ["Этот перевод уже использован", "This payment was already used"],
     too_big: ["Слишком большой текст", "Text is too large"],
   };
   const x = m[code];
