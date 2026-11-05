@@ -20,13 +20,36 @@ export function dropToken(addr: string) {
   try { localStorage.removeItem(key(addr)); } catch {}
 }
 
+export const STALE_EVENT = "cb-stale-wallet";
+
+/** Ждёт результат, но не дольше ms миллисекунд ВИДИМОГО времени: пока страница в фоне (человек в кошельке), время не идёт. Иначе ошибка "stale". */
+function waitVisible<T>(p: Promise<T>, ms: number): Promise<T> {
+  return new Promise<T>((res, rej) => {
+    let t: ReturnType<typeof setTimeout> | undefined;
+    let done = false;
+    const end = () => { if (t) clearTimeout(t); document.removeEventListener("visibilitychange", vis); };
+    const fire = () => { if (done) return; done = true; end(); rej(new Error("stale")); };
+    const arm = () => { if (t) clearTimeout(t); t = undefined; if (!document.hidden) t = setTimeout(fire, ms); };
+    const vis = () => arm();
+    document.addEventListener("visibilitychange", vis);
+    arm();
+    p.then((v) => { if (!done) { done = true; end(); res(v); } }, (e) => { if (!done) { done = true; end(); rej(e); } });
+  });
+}
+
 async function create(account: Acc): Promise<string | null> {
   const ts = Date.now();
   const message = `ChessBet session\nAddress: ${account.address}\nTime: ${ts}`;
   alog("запрос подписи отправлен в кошелёк");
   let sig: string;
-  try { sig = await account.signMessage({ message }); } // отказ от подписи пробрасываем наверх
-  catch (e) { alog("кошелёк вернул ошибку: " + String((e as Error)?.message || e).slice(0, 60)); throw e; }
+  try { sig = await waitVisible(account.signMessage({ message }), 25_000); } // отказ от подписи пробрасываем наверх
+  catch (e) {
+    if ((e as Error)?.message === "stale") {
+      alog("кошелёк не ответил за 25 с: отключаем его, подключите заново");
+      try { window.dispatchEvent(new Event(STALE_EVENT)); } catch { /* вне браузера */ }
+    } else alog("кошелёк вернул ошибку: " + String((e as Error)?.message || e).slice(0, 60));
+    throw e;
+  }
   alog("подпись получена, отправляем на сервер");
   let r: Response;
   try {

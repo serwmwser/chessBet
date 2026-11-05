@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
-import { useActiveAccount, useActiveWallet } from "thirdweb/react";
-import { ensureToken, getToken } from "@/lib/session";
+import { useActiveAccount, useActiveWallet, useDisconnect } from "thirdweb/react";
+import { STALE_EVENT, ensureToken, getToken } from "@/lib/session";
 import { AUTO_OFF, SESSION_EVENT, errText } from "@/lib/social";
 import { useApp } from "@/lib/ctx";
 import { alog } from "@/lib/authlog";
@@ -14,6 +14,17 @@ export default function AutoLogin() {
   const wallet = useActiveWallet();
   const { lang, toast } = useApp();
   const tried = useRef("");
+  const { disconnect } = useDisconnect();
+  useEffect(() => {
+    // Кошелёк не ответил на запрос подписи: старое подключение мертво. Отключаем, чтобы подключиться заново
+    const onStale = () => {
+      tried.current = "";
+      try { sessionStorage.removeItem(AUTO_OFF); } catch { /* без хранилища */ }
+      if (wallet) { try { disconnect(wallet); } catch { /* уже отключён */ } }
+    };
+    window.addEventListener(STALE_EVENT, onStale);
+    return () => window.removeEventListener(STALE_EVENT, onStale);
+  }, [wallet, disconnect]);
   useEffect(() => {
     if (!account) return;
     const addr = account.address.toLowerCase();
@@ -25,8 +36,8 @@ export default function AutoLogin() {
     ensureToken(account)
       .then((t) => { if (t) window.dispatchEvent(new Event(SESSION_EVENT)); })
       .catch((e) => {
-        try { sessionStorage.setItem(AUTO_OFF, "1"); } catch { /* без хранилища */ }
         const m = String((e as Error)?.message || e || "");
+        if (m !== "stale") { try { sessionStorage.setItem(AUTO_OFF, "1"); } catch { /* без хранилища */ } }
         if (!/reject|denied|cancel|declin|closed/i.test(m)) toast(errText(e, lang === "ru"), "err"); // отказ пользователя молчим, остальное показываем
       });
   }, [account, wallet, lang, toast]);

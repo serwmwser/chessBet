@@ -68,6 +68,7 @@ export function errText(e: unknown, ru: boolean): string {
     slow_down: ["Слишком часто, подождите минуту", "Too fast, wait a minute"],
     not_found: ["Не найдено", "Not found"],
     banned: ["Аккаунт заблокирован", "Account is blocked"],
+    stale: ["Кошелёк не ответил: подключение устарело. Подключите кошелёк заново и подтвердите подпись", "The wallet did not respond: the connection is stale. Connect your wallet again and confirm the signature"],
     expired: ["Время подписи вышло, повторите", "Signature expired, try again"],
     bad_signature: ["Сервер не принял подпись этого кошелька. Попробуйте другой кошелёк или вход по почте", "The server did not accept this wallet's signature. Try another wallet or email sign-in"],
     bad_time: ["Часы на устройстве неверны: включите автоматическое время и повторите", "Your device clock is wrong: turn on automatic time and try again"],
