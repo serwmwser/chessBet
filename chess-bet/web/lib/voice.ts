@@ -44,6 +44,24 @@ export async function openMic(): Promise<MediaStream> {
   throw last;
 }
 
+/** Максимальный размер файла с записью: лимит сервера 2 МБ */
+export const VOICE_FILE_MAX = 2 * 1024 * 1024 - 1024;
+
+/** Длительность аудиофайла в секундах (если узнать не удалось, 1) */
+export function audioSeconds(f: Blob): Promise<number> {
+  return new Promise((res) => {
+    const u = URL.createObjectURL(f);
+    const a = new Audio();
+    let done = false;
+    const end = (s: number) => { if (done) return; done = true; URL.revokeObjectURL(u); res(s); };
+    a.preload = "metadata";
+    a.onloadedmetadata = () => end(Number.isFinite(a.duration) && a.duration > 0 ? Math.max(1, Math.round(a.duration)) : 1);
+    a.onerror = () => end(1);
+    setTimeout(() => end(1), 3000);
+    a.src = u;
+  });
+}
+
 /** Загружает запись на сервер (нужен вход), возвращает путь вида /media/... */
 export async function uploadVoice(token: string, blob: Blob): Promise<string> {
   const [wallet, tok] = token.split("|");
@@ -64,7 +82,7 @@ export function voiceErr(e: unknown, ru: boolean): string {
   if (m === "NotAllowedError" || (e as Error)?.name === "NotAllowedError") return ru ? "Нет доступа к микрофону. Разрешите его в настройках браузера" : "No microphone access. Allow it in your browser settings";
   if ((e as Error)?.name === "NotFoundError") return ru ? "Микрофон не найден" : "No microphone found";
   if ((e as Error)?.name === "NotReadableError" || (e as Error)?.name === "AbortError" || /audio source|Could not start/i.test(String((e as Error)?.message || ""))) {
-    return ru ? "Микрофон занят или не запускается. Закройте приложения, которые используют микрофон (звонки, запись экрана, игры, видео), и попробуйте снова" : "The microphone is busy or cannot start. Close apps that use the microphone (calls, screen recording, games, video) and try again";
+    return ru ? "Микрофон занят или не запускается. Закройте приложения, которые используют микрофон (звонки, запись экрана, игры, видео), и попробуйте снова. Или нажмите 📱 рядом с микрофоном и запишите голос приложением-диктофоном телефона" : "The microphone is busy or cannot start. Close apps that use the microphone (calls, screen recording, games, video) and try again. Or tap 📱 next to the microphone and record with your phone's voice recorder app";
   }
   return errText(e, ru);
 }
