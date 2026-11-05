@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useApp } from "@/lib/ctx";
+import { releaseAudio, resumeAudio } from "@/lib/sfx";
 import { VOICE_MAX_SEC, canRecord, VOICE_FILE_MAX, audioSeconds, encodeVoice, openMic, pickMime, uploadVoice, voiceErr } from "@/lib/voice";
 
 const fmt = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
@@ -26,6 +27,7 @@ export default function VoiceRecorder({ token, disabled, onVoice }: { token: str
     stream.current?.getTracks().forEach((t) => t.stop());
     stream.current = null;
     rec.current = null;
+    resumeAudio();
     try { window.dispatchEvent(new Event("cb-mic-stop")); } catch { /* вне браузера */ } // фоновая музыка снова может играть
   };
   useEffect(() => () => { act.current = "cancel"; try { rec.current?.stop(); } catch { /* уже остановлена */ } release(); }, []);
@@ -38,7 +40,9 @@ export default function VoiceRecorder({ token, disabled, onVoice }: { token: str
   const start = async () => {
     if (!canRecord()) { toast(ru ? "Этот браузер не умеет записывать голос" : "This browser cannot record voice", "err"); return; }
     try {
-      window.dispatchEvent(new Event("cb-mic-start")); // на время записи ставим фоновую музыку на паузу: на части Android они конфликтуют
+      window.dispatchEvent(new Event("cb-mic-start")); // музыка выключается на время записи: на части Android она мешает микрофону
+      await releaseAudio(); // закрываем звуковой контекст звуков игры
+      await new Promise((r) => setTimeout(r, 200));
       const st = await openMic();
       stream.current = st;
       const mime = pickMime();

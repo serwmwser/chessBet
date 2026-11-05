@@ -104,9 +104,20 @@ export default function MusicToggle() {
       if (document.hidden) void e.ctx.suspend(); else void e.ctx.resume();
     };
     document.addEventListener("visibilitychange", onVis);
-    let paused = false;
-    const micOn = () => { const e = eng.current; if (e && e.ctx.state === "running") { paused = true; void e.ctx.suspend(); } };
-    const micOff = () => { const e = eng.current; if (e && paused && !document.hidden) void e.ctx.resume(); paused = false; };
+    let restart = false; // музыка была включена до записи
+    const micOn = () => {
+      const e = eng.current;
+      if (!e) return;
+      e.timers.forEach((id) => { clearInterval(id); clearTimeout(id); });
+      void e.ctx.close().catch(() => {});
+      eng.current = null; restart = true; setOn(false);
+    };
+    const micOff = () => {
+      if (!restart) return;
+      restart = false;
+      if (document.hidden) return;
+      try { eng.current = startEngine(); setOn(true); } catch { setOn(false); }
+    };
     window.addEventListener("cb-mic-start", micOn);
     window.addEventListener("cb-mic-stop", micOff);
     return () => {
