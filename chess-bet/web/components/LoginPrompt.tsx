@@ -37,6 +37,7 @@ export default function LoginPrompt({ text }: { text?: string }) {
         <button type="button" className="btn btn-primary" onClick={() => { void connect({ client, chain, wallets, theme: dark ? "dark" : "light", size: "compact", title: "Chess Bet" }); }}>
           {ru ? "Подключить кошелёк" : "Connect wallet"}
         </button>
+        <p className="text-xs opacity-70">{ru ? "При входе кошелёк попросит подтвердить два действия: 1) подключение к сайту, 2) подпись входа. Подпись бесплатна, деньги не списываются." : "When you sign in, your wallet will ask you to confirm two things: 1) connecting to the site, 2) the sign-in signature. The signature is free and no money is spent."}</p>
         <WalletBrowserLinks />
       </section>
     );

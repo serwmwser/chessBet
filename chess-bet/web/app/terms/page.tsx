@@ -40,7 +40,7 @@ const RU: Sec[] = [
     "Если игра перестала приносить удовольствие, остановитесь и обратитесь за помощью. Не играйте в состоянии опьянения и на заёмные деньги.",
   ]],
   ["10. Данные и конфиденциальность", [
-    "Для входа используется ваш кошелёк. Мы не просим email и пароли и не имеем доступа к вашим ключам. Адрес кошелька и транзакции публичны в блокчейне.",
+    "Для входа используется ваш кошелёк. Мы не просим email и пароли и не имеем доступа к вашим ключам. Адрес кошелька и транзакции публичны в блокчейне. При входе кошелёк просит подтвердить два действия: подключение к сайту и подпись входа (бесплатное сообщение: деньги не списываются, комиссия сети не нужна). Подпись действует 14 дней.",
     "Сервер хранит записи партий, подписи входа, привязку к пригласившему и данные профиля, которые вы указали. На устройстве сохраняются настройки (язык, тема, выбранные пешки и голос) и секреты мест в бесплатных партиях. Для работы используются сторонние сервисы (кошельки, поставщики доступа к сети), у которых свои правила.",
   ]],
   ["11. Ограничение ответственности", [
@@ -105,7 +105,7 @@ const EN: Sec[] = [
     "If playing stops being fun, stop and seek help. Do not play while intoxicated or with borrowed money.",
   ]],
   ["10. Data and privacy", [
-    "You sign in with your wallet. We do not ask for email or passwords and have no access to your keys. Your wallet address and transactions are public on the blockchain.",
+    "You sign in with your wallet. We do not ask for email or passwords and have no access to your keys. Your wallet address and transactions are public on the blockchain. When you sign in, your wallet asks you to confirm two things: connecting to the site and the sign-in signature (a free message: no money is spent and no network fee is needed). The signature is valid for 14 days.",
     "The server stores game records, sign-in signatures, the link to your inviter and the profile data you provided. Your device keeps settings (language, theme, chosen pawns and voice) and seat secrets of free games. Third-party services (wallets, network access providers) are used and have their own rules.",
   ]],
   ["11. Limitation of liability", [
