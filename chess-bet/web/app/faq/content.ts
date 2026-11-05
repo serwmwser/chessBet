@@ -41,6 +41,12 @@ export const EN: Content = {
       ["How much does it cost?", "Creating an NFT costs 1 USDC, plus a small network fee."],
       ["Can I sell it?", "NFTs are standard ERC-721 tokens with 5% creator royalties, so they can be listed on marketplaces such as OpenSea. An NFT is a collectible and does not promise any profit."],
     ] },
+    { h: "Classifieds and translation", items: [
+      ["What are Chess Bet classifieds?", "A free-to-start international classifieds board in the Rook Club community: for sale, wanted, rent, jobs and services in any country and city, with photos and a seller chat."],
+      ["Are ads and chats translated?", "Yes. Ads and chat messages can be translated into your language with one tap, so a buyer and a seller who speak different languages can understand each other. Translation is automatic, available to signed-in users with fair-use limits, and may contain mistakes."],
+      ["Is posting an ad free?", "Your first ad is free, plus one more free ad for every invited friend who starts using the site. After that an ad costs 1 USDC for 30 days. Renewal costs 1 USDC and top placement costs 3 USDC for 7 days. You pay by sending USDC on Polygon from your wallet."],
+      ["Can I put my phone number or a link in an ad?", "No. Links, phone numbers and contacts are not allowed in ads: use the site chat. This protects buyers and sellers from fraud."],
+    ] },
     { h: "Rook Club community", items: [
       ["What is Rook Club?", "Rook Club is the community of Chess Bet for chess, crypto and NFT fans. You get a public profile, posts with photos, a feed, comments, private messages and voice messages."],
       ["Are private messages encrypted?", "No. Messages are stored on the server and are not end-to-end encrypted. Never send your secret phrase, private keys or passwords in a message."],
@@ -87,6 +93,12 @@ export const RU: Content = {
       ["Что такое шахматный NFT здесь?", "После партии со ставкой игроки могут превратить ход из неё в NFT стандарта ERC-721 в сети Polygon. Вы выбираете стиль фигуры, настроение и фон. Каждый ход может стать NFT только один раз."],
       ["Сколько это стоит?", "Создание NFT стоит 1 USDC плюс небольшая комиссия сети."],
       ["Можно ли его продать?", "NFT это стандартные токены ERC-721 с 5% роялти автору, их можно выставить на площадках вроде OpenSea. NFT это коллекционный предмет, он не обещает прибыли."],
+    ] },
+    { h: "Объявления и перевод", items: [
+      ["Что такое объявления Chess Bet?", "Международная доска объявлений в сообществе Rook Club с бесплатным стартом: продажа, покупка, аренда, работа и услуги в любой стране и городе, с фото и чатом с продавцом."],
+      ["Переводятся ли объявления и чаты?", "Да. Объявления и сообщения в чате можно перевести на ваш язык одним нажатием, чтобы покупатель и продавец с разными языками понимали друг друга. Перевод автоматический, доступен вошедшим пользователям с разумными лимитами и может содержать ошибки."],
+      ["Размещение объявления бесплатное?", "Первое объявление бесплатно, плюс ещё одно за каждого приглашённого друга, который начал пользоваться сайтом. Дальше объявление стоит 1 USDC за 30 дней, продление 1 USDC, закрепление вверху 3 USDC за 7 дней. Оплата переводом USDC в сети Polygon из вашего кошелька."],
+      ["Можно ли указать в объявлении телефон или ссылку?", "Нет. Ссылки, телефоны и контакты в объявлениях запрещены: общайтесь в чате сайта. Так покупатели и продавцы защищены от мошенничества."],
     ] },
     { h: "Сообщество Rook Club", items: [
       ["Что такое Rook Club?", "Rook Club это сообщество Chess Bet для любителей шахмат, крипты и NFT. У вас есть публичный профиль, посты с фото, лента, комментарии, личные и голосовые сообщения."],

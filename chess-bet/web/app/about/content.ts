@@ -13,7 +13,7 @@ export type Content = {
 
 export const EN: Content = {
   title: "About Chess Bet",
-  intro: "Chess Bet is a chess platform where skill decides the game. Play for free, or put USDC on the line on the Polygon network, and meet other chess and crypto fans in the Rook Club community.",
+  intro: "Chess Bet is a chess platform where skill decides the game. Play for free, or put USDC on the line on the Polygon network, meet other chess and crypto fans in the Rook Club community, and use its international classifieds board with built-in translation.",
   crumb: "About",
   missionH: "Our mission",
   mission: [
@@ -33,6 +33,7 @@ export const EN: Content = {
     "Stakes are held by an open smart contract on Polygon, verified on Polygonscan.",
     "Free games with a friend by link, with no wallet and no stake.",
     "Chess NFTs: finished games can be saved as collectible NFTs.",
+    "International classifieds with chat translation: sell, buy, rent and find work in any country and city.",
     "Daily quests, streaks, badges and free hourly tournaments with cups.",
     "Rook Club: profiles, posts, photos, comments and private messages for chess and crypto fans.",
     "Works on phone and desktop, in the browser and as a Telegram Mini App.",
@@ -72,6 +73,7 @@ export const RU: Content = {
     "Ставки хранит открытый смарт-контракт в сети Polygon, он проверен на Polygonscan.",
     "Бесплатные партии с другом по ссылке: без кошелька и без ставки.",
     "Шахматные NFT: законченные партии можно сохранить как коллекционные NFT.",
+    "Международная доска объявлений с переводом чата: продавайте, покупайте, сдавайте и ищите работу в любой стране и городе.",
     "Ежедневные задания, серии дней, значки и бесплатные турниры каждый час с кубками.",
     "Rook Club: профили, посты, фото, комментарии и личные сообщения для любителей шахмат и крипты.",
     "Работает на телефоне и компьютере, в браузере и как Telegram Mini App.",

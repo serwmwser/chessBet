@@ -27,6 +27,7 @@ const JSON_LD = JSON.stringify({
       { "@type": "Question", name: "What is a chess NFT on Chess Bet?", acceptedAnswer: { "@type": "Answer", text: "In the NFT Studio you pick a move from your own finished game and combine it with a cartoon chess piece, a mood and a background. The result is an ERC-721 NFT on Polygon that shows the board position of that move. Each move of a game can become an NFT only once." } },
       { "@type": "Question", name: "Can I sell a chess NFT on OpenSea?", acceptedAnswer: { "@type": "Answer", text: "Yes. The NFTs are standard ERC-721 tokens on Polygon with 5% creator royalties (ERC-2981), so they can be listed and traded on OpenSea." } },
       { "@type": "Question", name: "How do I play chess for crypto?", acceptedAnswer: { "@type": "Answer", text: "Sign in or connect a wallet, get USDC and a little POL on Polygon, create a game with a stake or join one in the lobby, and play. The winner claims 90% of the pot from the smart contract." } },
+      { "@type": "Question", name: "What are Chess Bet classifieds and are chats translated?", acceptedAnswer: { "@type": "Answer", text: "Chess Bet has an international classifieds board in the Rook Club community: for sale, wanted, rent, jobs and services in any country and city. Ads and chat messages can be translated into your language with one tap. Your first ad is free." } },
       { "@type": "Question", name: "Can I practise for free?", acceptedAnswer: { "@type": "Answer", text: "Yes. You can play chess against a bot or a friend for free without any stake." } },
     ] },
   ],

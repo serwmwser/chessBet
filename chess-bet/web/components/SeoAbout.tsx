@@ -23,6 +23,7 @@ export default function SeoAbout() {
         <li>Free chess against a bot and free games with a friend</li>
         <li>Cartoon animated pieces and an NFT Studio: turn a move from your own game into a collectible NFT</li>
         <li>Telegram Mini App and Telegram notifications when it is your move</li>
+        <li>Free international classifieds in the Rook Club community with translation of ads and chat into your language</li>
         <li>Referral program</li>
       </ul>
       <h3 className="font-bold">FAQ</h3>
