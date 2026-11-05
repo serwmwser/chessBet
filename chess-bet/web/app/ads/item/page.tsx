@@ -9,6 +9,7 @@ import { useApp } from "@/lib/ctx";
 import { useSocial } from "@/lib/social";
 import { ROUTES, absoluteUrl, profileUrl } from "@/lib/urls";
 import { KIND_LABEL, adsError, fmtPrice, getAd, reportAd, type Ad } from "@/lib/classifieds";
+import { useTranslated } from "@/lib/adTranslate";
 
 /** Страница одного объявления: /ads/item/?id=123. Фото, цена, описание, продавец, чат, звонок, жалоба */
 export default function AdItemPage() {
@@ -45,6 +46,10 @@ export default function AdItemPage() {
     return () => { el.remove(); };
   }, [ad]);
 
+  // перевод названия, текста и места на язык сайта (для вошедших); можно вернуть оригинал
+  const [orig, setOrig] = useState(false);
+  const tx = useTranslated({ title: ad?.title ?? "", body: ad?.body ?? "", place: [ad?.city, ad?.country].filter(Boolean).join(", ") }, token, lang, !!ad);
+
   const report = async () => {
     if (!ad || !window.confirm(ru ? "Пожаловаться на это объявление?" : "Report this ad?")) return;
     try { await reportAd(token, ad.id); toast(ru ? "Жалоба отправлена" : "Report sent", "ok"); }
@@ -74,15 +79,16 @@ export default function AdItemPage() {
   const photos = ad.photos.filter((p) => mediaUrl(p));
   const cur = photos[Math.min(i, photos.length - 1)];
   const place = [ad.city, ad.country].filter(Boolean).join(", ");
+  const show = tx.translated && !orig ? tx.out : { title: ad.title, body: ad.body, place };
 
   return (
-    <PageShell title={ad.title} intro="">
+    <PageShell title={show.title} intro="">
       {crumbs}
       <article className="card !p-0 overflow-hidden">
         <div className="relative aspect-[4/3] bg-black/10 flex items-center justify-center">
           {cur ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={mediaUrl(cur)} alt={ad.title} className="absolute inset-0 w-full h-full object-contain" />
+            <img src={mediaUrl(cur)} alt={show.title} className="absolute inset-0 w-full h-full object-contain" />
           ) : <span className="text-5xl opacity-30" aria-hidden>🛍</span>}
           {ad.pinned && <span className="chip chip-on absolute top-2 left-2">📌 {ru ? "Вверху" : "Top"}</span>}
         </div>
@@ -100,11 +106,16 @@ export default function AdItemPage() {
         <div className="p-4 flex flex-col gap-3">
           <div className="flex flex-wrap items-center gap-2">
             <span className="chip">{KIND_LABEL[ad.kind][ru ? 0 : 1]}</span>
-            {place && <span className="text-sm opacity-80">📍 {place}</span>}
+            {show.place && <span className="text-sm opacity-80">📍 {show.place}</span>}
             <span className="ml-auto text-xs opacity-60">{new Date(ad.created).toLocaleDateString(ru ? "ru-RU" : "en-US", { day: "numeric", month: "long", year: "numeric" })}</span>
           </div>
           <div className="text-2xl font-extrabold">{fmtPrice(ad, ru)}</div>
-          <p className="whitespace-pre-line break-words text-sm">{ad.body}</p>
+          <p className="whitespace-pre-line break-words text-sm">{show.body}</p>
+          {tx.translated ? (
+            <div className="text-xs opacity-70">🌐 {orig ? (ru ? "Показан оригинал." : "Showing the original.") : (ru ? "Переведено автоматически." : "Translated automatically.")}{" "}
+              <button type="button" className="underline" onClick={() => setOrig((v) => !v)}>{orig ? (ru ? "Показать перевод" : "Show translation") : (ru ? "Показать оригинал" : "Show original")}</button>
+            </div>
+          ) : !token ? <div className="text-xs opacity-60">🌐 {ru ? "Войдите, чтобы читать объявления на языке сайта." : "Sign in to read ads in your site language."}</div> : null}
           <div className="text-xs opacity-60">👁 {ad.views ?? 0}</div>
         </div>
       </article>
