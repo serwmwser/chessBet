@@ -5,6 +5,7 @@ import { chain, client } from "@/lib/config";
 import { useApp } from "@/lib/ctx";
 import { AUTO_OFF, errText, useSocial } from "@/lib/social";
 import { wallets } from "./Header";
+import { useAuthLog } from "@/lib/authlog";
 import WalletBrowserLinks from "./WalletBrowserLinks";
 
 /** Единый блок входа вместо отдельных кнопок «Войти».
@@ -16,6 +17,7 @@ export default function LoginPrompt({ text }: { text?: string }) {
   const { connect } = useConnectModal();
   const ru = lang === "ru";
   const [retry, setRetry] = useState(false);
+  const log = useAuthLog();
 
   useEffect(() => {
     if (!addr || token) { setRetry(false); return; }
@@ -52,6 +54,7 @@ export default function LoginPrompt({ text }: { text?: string }) {
           {busy ? (ru ? "Ждём подпись в кошельке…" : "Waiting for your signature…") : ru ? "Подписать вход" : "Sign in"}
         </button>
       )}
+      {log.length > 0 && <pre className="text-left text-[11px] leading-4 opacity-60 whitespace-pre-wrap">{log.slice(-8).join("\n")}</pre>}
       <WalletBrowserLinks />
     </section>
   );

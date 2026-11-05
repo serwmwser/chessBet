@@ -1,10 +1,11 @@
 import { API_URL } from "./config";
+import { alog } from "./authlog";
 
 type Acc = { address: string; signMessage: (a: { message: string }) => Promise<string> };
 type Saved = { token: string; exp: number };
 
 const key = (a: string) => `cb_sess_${a.toLowerCase()}`;
-const inflight = new Map<string, Promise<string | null>>();
+const inflight = new Map<string, { p: Promise<string | null>; t: number }>();
 
 /** Действующий токен из браузера (с запасом в 2 минуты) или null. */
 export function getToken(addr: string): string | null {
@@ -22,7 +23,11 @@ export function dropToken(addr: string) {
 async function create(account: Acc): Promise<string | null> {
   const ts = Date.now();
   const message = `ChessBet session\nAddress: ${account.address}\nTime: ${ts}`;
-  const sig = await account.signMessage({ message }); // отказ от подписи пробрасываем наверх
+  alog("запрос подписи отправлен в кошелёк");
+  let sig: string;
+  try { sig = await account.signMessage({ message }); } // отказ от подписи пробрасываем наверх
+  catch (e) { alog("кошелёк вернул ошибку: " + String((e as Error)?.message || e).slice(0, 60)); throw e; }
+  alog("подпись получена, отправляем на сервер");
   let r: Response;
   try {
     r = await fetch(API_URL + "/session", {
@@ -30,12 +35,14 @@ async function create(account: Acc): Promise<string | null> {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ address: account.address, ts, sig }),
     });
-  } catch { throw new Error("network"); }
+  } catch { alog("нет связи с сервером"); throw new Error("network"); }
+  alog("сервер ответил " + r.status);
   if (r.status === 403) throw new Error("origin"); // сервер не пускает с этого адреса сайта
   try {
     const j = (await r.json()) as { ok?: boolean; token?: string; exp?: number; error?: string };
-    if (j && !j.ok && j.error) throw new Error(j.error);
+    if (j && !j.ok && j.error) { alog("ошибка сервера: " + j.error); throw new Error(j.error); }
     if (j && j.ok && j.token && j.exp) {
+      alog("вход выполнен");
       try { localStorage.setItem(key(account.address), JSON.stringify({ token: j.token, exp: j.exp })); } catch {}
       return j.token;
     }
@@ -48,10 +55,9 @@ export function ensureToken(account: Acc): Promise<string | null> {
   const have = getToken(account.address);
   if (have) return Promise.resolve(have);
   const k = account.address.toLowerCase();
-  let p = inflight.get(k);
-  if (!p) {
-    p = create(account).finally(() => inflight.delete(k));
-    inflight.set(k, p);
-  }
+  const cur = inflight.get(k);
+  if (cur && Date.now() - cur.t < 15_000) return cur.p; // если ответ кошелька потерян, через 15 с запрос можно повторить
+  const p: Promise<string | null> = create(account).finally(() => { if (inflight.get(k)?.p === p) inflight.delete(k); });
+  inflight.set(k, { p, t: Date.now() });
   return p;
 }
