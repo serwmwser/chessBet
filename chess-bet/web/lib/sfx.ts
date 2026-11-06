@@ -5,19 +5,8 @@ import { useEffect, useState } from "react";
 
 let shared: AudioContext | null = null;
 /** Общий звуковой контекст на всё приложение: создаётся один раз и просыпается от касания */
-let micBusy = false; // пока идёт запись голоса, звуковой контекст закрыт: на части Android он мешает запуску микрофона
-/** Закрывает общий звуковой контекст перед записью голоса и не создаёт новый до resumeAudio() */
-export async function releaseAudio(): Promise<void> {
-  micBusy = true;
-  const c = shared;
-  shared = null; master = null; masterCtx = null;
-  if (c) { try { await c.close(); } catch { /* уже закрыт */ } }
-}
-/** Запись закончилась: звуки игры снова разрешены */
-export function resumeAudio() { micBusy = false; }
 export function getAudio(): AudioContext | null {
   try {
-    if (micBusy) return null;
     if (!shared) {
       const AC = window.AudioContext || (window as any).webkitAudioContext;
       shared = new AC();

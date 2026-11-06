@@ -1,8 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useApp } from "@/lib/ctx";
-import { releaseAudio, resumeAudio } from "@/lib/sfx";
-import { VOICE_MAX_SEC, canRecord, VOICE_FILE_MAX, audioSeconds, encodeVoice, openMic, pickMime, uploadVoice, voiceErr } from "@/lib/voice";
+import { VOICE_MAX_SEC, canRecord, encodeVoice, pickMime, uploadVoice, voiceErr } from "@/lib/voice";
 
 const fmt = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
@@ -12,8 +11,6 @@ export default function VoiceRecorder({ token, disabled, onVoice }: { token: str
   const ru = lang === "ru";
   const [state, setState] = useState<"idle" | "rec" | "up">("idle");
   const [sec, setSec] = useState(0);
-  const [alt, setAlt] = useState(false); // микрофон браузера не запустился: предлагаем запись через приложение телефона
-  const pick = useRef<HTMLInputElement>(null);
   const rec = useRef<MediaRecorder | null>(null);
   const stream = useRef<MediaStream | null>(null);
   const chunks = useRef<Blob[]>([]);
@@ -27,8 +24,6 @@ export default function VoiceRecorder({ token, disabled, onVoice }: { token: str
     stream.current?.getTracks().forEach((t) => t.stop());
     stream.current = null;
     rec.current = null;
-    resumeAudio();
-    try { window.dispatchEvent(new Event("cb-mic-stop")); } catch { /* вне браузера */ } // фоновая музыка снова может играть
   };
   useEffect(() => () => { act.current = "cancel"; try { rec.current?.stop(); } catch { /* уже остановлена */ } release(); }, []);
 
@@ -40,10 +35,7 @@ export default function VoiceRecorder({ token, disabled, onVoice }: { token: str
   const start = async () => {
     if (!canRecord()) { toast(ru ? "Этот браузер не умеет записывать голос" : "This browser cannot record voice", "err"); return; }
     try {
-      window.dispatchEvent(new Event("cb-mic-start")); // музыка выключается на время записи: на части Android она мешает микрофону
-      await releaseAudio(); // закрываем звуковой контекст звуков игры
-      await new Promise((r) => setTimeout(r, 200));
-      const st = await openMic();
+      const st = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.current = st;
       const mime = pickMime();
       const r = new MediaRecorder(st, { ...(mime ? { mimeType: mime } : {}), audioBitsPerSecond: 32000 });
@@ -74,26 +66,7 @@ export default function VoiceRecorder({ token, disabled, onVoice }: { token: str
         setSec(s);
         if (s >= VOICE_MAX_SEC) finish("send");
       }, 250);
-    } catch (e) {
-      release(); setState("idle");
-      if ((e as Error)?.name !== "NotAllowedError") setAlt(true);
-      toast(voiceErr(e, ru), "err");
-    }
-  };
-
-  /** Запись, сделанная приложением-диктофоном телефона: загружаем файл как обычное голосовое */
-  const fromFile = async (f?: File) => {
-    if (pick.current) pick.current.value = "";
-    if (!f) return;
-    if (f.size > VOICE_FILE_MAX) { toast(voiceErr(new Error("too_big"), ru), "err"); return; }
-    setState("up");
-    try {
-      const secs = await audioSeconds(f);
-      if (secs > VOICE_MAX_SEC) { toast(ru ? "Запись длиннее 2 минут" : "The recording is longer than 2 minutes", "err"); return; }
-      const path = await uploadVoice(token, f);
-      await onVoice(encodeVoice(path, secs));
-    } catch (e) { toast(voiceErr(e, ru), "err"); }
-    finally { setState("idle"); }
+    } catch (e) { release(); setState("idle"); toast(voiceErr(e, ru), "err"); }
   };
 
   if (state === "rec") {
@@ -107,15 +80,8 @@ export default function VoiceRecorder({ token, disabled, onVoice }: { token: str
     );
   }
   return (
-    <div className="flex items-center gap-1">
-      <button type="button" className="btn btn-ghost !py-2 !px-3" disabled={disabled || state === "up"} onClick={start} aria-label={ru ? "Записать голосовое сообщение" : "Record a voice message"} title={ru ? "Голосовое сообщение" : "Voice message"}>
-        {state === "up" ? "…" : "🎤"}
-      </button>
-      {alt && (
-        <button type="button" className="btn btn-ghost !py-2 !px-3" disabled={disabled || state === "up"} onClick={() => { toast(ru ? "Выберите запись, сделанную в приложении «Диктофон»" : "Pick a recording made in your Recorder app", "ok"); pick.current?.click(); }}
-          aria-label={ru ? "Записать приложением телефона" : "Record with the phone's recorder app"} title={ru ? "Записать приложением телефона" : "Record with the phone's recorder app"}>📱</button>
-      )}
-      <input ref={pick} type="file" accept="audio/*" hidden onChange={(e) => void fromFile(e.target.files?.[0])} />
-    </div>
+    <button type="button" className="btn btn-ghost !py-2 !px-3" disabled={disabled || state === "up"} onClick={start} aria-label={ru ? "Записать голосовое сообщение" : "Record a voice message"} title={ru ? "Голосовое сообщение" : "Voice message"}>
+      {state === "up" ? "…" : "🎤"}
+    </button>
   );
 }
