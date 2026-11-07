@@ -172,6 +172,7 @@ export default function BotGame({ cartoon = false }: { cartoon?: boolean }) {
       <Clock ms={s[botColor]} active={s.playing && !s.pause && c.turn() === botColor} label={`🤖 ${t("level")} ${s.level}`} icon={kingIcon(botColor)} />
       <Captured taken={mat.taken[botColor]} color={s.me} plus={Math.max(0, botColor === "w" ? mat.diff : -mat.diff)} cartoon={cartoon} pawn={s.me === "w" ? pawnW : pawnB} />
       <AdvantageBar diff={mat.diff} />
+      <div className="relative">
       <BoardX
         pawnW={pawnW}
         pawnB={pawnB}
@@ -183,6 +184,25 @@ export default function BotGame({ cartoon = false }: { cartoon?: boolean }) {
         mute={!replay.isLive && !replay.playing}
         onMove={B.botMove}
       />
+      {res && showEnd && !hide && (
+          <div role="dialog" aria-modal="true" className="absolute inset-0 z-20 grid place-items-center overflow-y-auto rounded-xl p-2 bg-black/70 backdrop-blur-sm">
+            <div className="relative w-full max-w-sm max-h-full overflow-y-auto rounded-3xl border border-white/20 bg-slate-900 text-white shadow-2xl ring-4 ring-brand-500/40 p-5 text-center space-y-3">
+              <button type="button" aria-label="close" className="absolute top-2 end-3 text-2xl leading-none text-white/60 hover:text-white" onClick={() => setHide(true)}>✕</button>
+              {s.res?.kind === "win" && <WinSplash sub={pt.botWin} />}
+              {s.res?.kind === "lose" && <LoseSplash sub={pt.botLose} />}
+              {s.res?.kind === "draw" && <div className="text-2xl font-extrabold py-4">{res.text}</div>}
+              {cartoon && s.res && (
+                <div className="flex justify-center items-end gap-8 pt-1">
+                  <Piece type="k" side={s.me} size={84} mood={s.res.kind === "win" ? "cheer" : s.res.kind === "lose" ? "sad" : "idle"} />
+                  <Piece type="k" side={s.me === "w" ? "b" : "w"} size={84} mood={s.res.kind === "win" ? "sad" : s.res.kind === "lose" ? "cheer" : "idle"} />
+                </div>
+              )}
+              {res.sub && <div className="text-sm text-white/70">{res.sub}</div>}
+              <button className="btn btn-primary w-full" onClick={again}>{t("newGame")}</button>
+            </div>
+          </div>
+      )}
+      </div>
       <Clock ms={s[s.me]} active={myTurn} label={s.me === "w" ? t("white") : t("black")} icon={kingIcon(s.me)} />
       <Captured taken={mat.taken[s.me]} color={botColor} plus={Math.max(0, s.me === "w" ? mat.diff : -mat.diff)} cartoon={cartoon} pawn={botColor === "w" ? pawnW : pawnB} />
       {cartoon && <CartoonSettings />}
@@ -202,24 +222,7 @@ export default function BotGame({ cartoon = false }: { cartoon?: boolean }) {
       {res ? (
         !showEnd ? null : hide ? (
           <button className="btn btn-primary w-full" onClick={again}>{t("newGame")}</button>
-        ) : (
-          <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 grid place-items-center p-4 bg-black/70 backdrop-blur-sm">
-            <div className="relative w-full max-w-sm max-h-[90vh] overflow-y-auto rounded-3xl border border-white/20 bg-slate-900 text-white shadow-2xl ring-4 ring-brand-500/40 p-5 text-center space-y-3">
-              <button type="button" aria-label="close" className="absolute top-2 end-3 text-2xl leading-none text-white/60 hover:text-white" onClick={() => setHide(true)}>✕</button>
-              {s.res?.kind === "win" && <WinSplash sub={pt.botWin} />}
-              {s.res?.kind === "lose" && <LoseSplash sub={pt.botLose} />}
-              {s.res?.kind === "draw" && <div className="text-2xl font-extrabold py-4">{res.text}</div>}
-              {cartoon && s.res && (
-                <div className="flex justify-center items-end gap-8 pt-1">
-                  <Piece type="k" side={s.me} size={84} mood={s.res.kind === "win" ? "cheer" : s.res.kind === "lose" ? "sad" : "idle"} />
-                  <Piece type="k" side={s.me === "w" ? "b" : "w"} size={84} mood={s.res.kind === "win" ? "sad" : s.res.kind === "lose" ? "cheer" : "idle"} />
-                </div>
-              )}
-              {res.sub && <div className="text-sm text-white/70">{res.sub}</div>}
-              <button className="btn btn-primary w-full" onClick={again}>{t("newGame")}</button>
-            </div>
-          </div>
-        )
+        ) : null
       ) : (
         <button className="btn btn-danger w-full" onClick={B.botResign}>{t("resign")}</button>
       )}

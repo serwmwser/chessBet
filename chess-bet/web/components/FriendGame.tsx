@@ -42,6 +42,7 @@ export default function FriendGame({ roomId, color = "r", minutes = 60, onExit, 
   useEffect(() => { if (room.error === "room_not_found" && roomId) removeMyRoom(roomId); }, [room.error, roomId]);
   const replay = useReplay(st?.history ?? EMPTY);
   const [confirm, setConfirm] = useState(false);
+  const [endOpen, setEndOpen] = useState(true);
   const [now, setNow] = useState(() => Date.now()); // для хода часов
   useEffect(() => { const i = setInterval(() => setNow(Date.now()), 250); return () => clearInterval(i); }, []);
   const [intro, setIntro] = useState(true);
@@ -239,6 +240,27 @@ export default function FriendGame({ roomId, color = "r", minutes = 60, onExit, 
           onMove={(from, to, promotion) => room.move(from, to, promotion)}
           {...(cartoon ? { pawnW: cp.pawnW, pawnB: cp.pawnB, moods } : {})}
         />
+        {st.over && endOpen && (
+          <div className="absolute inset-0 z-20 grid place-items-center overflow-y-auto rounded-xl bg-ink-950/85 backdrop-blur-sm p-2 text-white text-center">
+            <button type="button" aria-label="close" className="absolute top-1 end-2 z-10 text-2xl leading-none text-white/60 hover:text-white" onClick={() => setEndOpen(false)}>✕</button>
+            <div className="w-full max-w-sm space-y-2 py-2">
+          {st.winner === null && <><div className="text-4xl">🤝</div><div className="text-xl font-bold">{ru ? "Ничья" : "Draw"}</div></>}
+          {st.winner !== null && !player && <div className="text-xl font-bold">🏁 {names(st.winner)}{ru ? " победили" : " won"}</div>}
+          {iWon && <WinSplash />}
+          {iLost && <LoseSplash />}
+          {reasonText && <div className="text-sm opacity-70">{reasonText}</div>}
+          {player && (
+            <div className="space-y-2">
+              {rematchByOpp && <div className="text-sm font-semibold">{ru ? "Друг предлагает реванш" : "Your friend wants a rematch"}</div>}
+              <button className="btn btn-primary w-full" disabled={rematchByMe} onClick={room.rematch}>
+                {rematchByMe ? (ru ? "Ждём согласия друга…" : "Waiting for your friend…") : rematchByOpp ? (ru ? "Принять реванш" : "Accept the rematch") : (ru ? "🔁 Реванш (поменяемся цветами)" : "🔁 Rematch (swap colors)")}
+              </button>
+            </div>
+          )}
+          <button className="btn btn-ghost w-full !bg-white/10" onClick={back}>{ru ? "Новая партия" : "New game"}</button>
+            </div>
+          </div>
+        )}
       </div>
       {clk(botC)}
       <Captured taken={mat.taken[botC]} color={topC} plus={0} cartoon={cartoon} pawn={pawnOf(topC)} />
@@ -276,22 +298,10 @@ export default function FriendGame({ roomId, color = "r", minutes = 60, onExit, 
         </div>
       )}
 
-      {st.over && (
-        <div className="card space-y-3 text-center">
-          {st.winner === null && <><div className="text-4xl">🤝</div><div className="text-xl font-bold">{ru ? "Ничья" : "Draw"}</div></>}
-          {st.winner !== null && !player && <div className="text-xl font-bold">🏁 {names(st.winner)}{ru ? " победили" : " won"}</div>}
-          {iWon && <WinSplash />}
-          {iLost && <LoseSplash />}
-          {reasonText && <div className="text-sm opacity-70">{reasonText}</div>}
-          {player && (
-            <div className="space-y-2">
-              {rematchByOpp && <div className="text-sm font-semibold">{ru ? "Друг предлагает реванш" : "Your friend wants a rematch"}</div>}
-              <button className="btn btn-primary w-full" disabled={rematchByMe} onClick={room.rematch}>
-                {rematchByMe ? (ru ? "Ждём согласия друга…" : "Waiting for your friend…") : rematchByOpp ? (ru ? "Принять реванш" : "Accept the rematch") : (ru ? "🔁 Реванш (поменяемся цветами)" : "🔁 Rematch (swap colors)")}
-              </button>
-            </div>
-          )}
-          <button className="btn btn-ghost w-full" onClick={back}>{ru ? "Новая партия" : "New game"}</button>
+      {st.over && !endOpen && (
+        <div className="grid grid-cols-2 gap-2">
+          <button className="btn btn-primary" onClick={() => setEndOpen(true)}>{ru ? "Итог партии" : "Result"}</button>
+          <button className="btn btn-ghost" onClick={back}>{ru ? "Новая партия" : "New game"}</button>
         </div>
       )}
 
