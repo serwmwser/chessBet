@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useApp } from "@/lib/ctx";
-import { VOICE_MAX_SEC, canRecord, encodeVoice, pickMime, uploadVoice, voiceErr } from "@/lib/voice";
+import { releaseAudio, resumeAudio } from "@/lib/sfx";
+import { VOICE_MAX_SEC, canRecord, encodeVoice, openMic, pickMime, uploadVoice, voiceErr } from "@/lib/voice";
 
 const fmt = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
@@ -17,6 +18,7 @@ export default function VoiceRecorder({ token, disabled, onVoice }: { token: str
   const t0 = useRef(0);
   const act = useRef<"send" | "cancel">("send");
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const opening = useRef(false); // микрофон сейчас открывается
 
   const release = () => {
     if (timer.current) clearInterval(timer.current);
@@ -24,6 +26,8 @@ export default function VoiceRecorder({ token, disabled, onVoice }: { token: str
     stream.current?.getTracks().forEach((t) => t.stop());
     stream.current = null;
     rec.current = null;
+    resumeAudio();
+    try { window.dispatchEvent(new Event("cb-mic-stop")); } catch { /* вне браузера */ } // музыка может вернуться
   };
   useEffect(() => () => { act.current = "cancel"; try { rec.current?.stop(); } catch { /* уже остановлена */ } release(); }, []);
 
@@ -34,8 +38,15 @@ export default function VoiceRecorder({ token, disabled, onVoice }: { token: str
 
   const start = async () => {
     if (!canRecord()) { toast(ru ? "Этот браузер не умеет записывать голос" : "This browser cannot record voice", "err"); return; }
+    if (opening.current || rec.current) return; // двойное нажатие не должно открывать микрофон дважды
+    opening.current = true;
+    setState("up"); // пока микрофон открывается, кнопка неактивна
     try {
-      const st = await navigator.mediaDevices.getUserMedia({ audio: true });
+      release(); // закрываем прежний поток: незакрытый поток держит микрофон, и новый не запускается
+      window.dispatchEvent(new Event("cb-mic-start")); // музыка выключается на время записи
+      await releaseAudio(); // закрываем звуковой контекст звуков игры
+      await new Promise((r) => setTimeout(r, 250));
+      const st = await openMic();
       stream.current = st;
       const mime = pickMime();
       const r = new MediaRecorder(st, { ...(mime ? { mimeType: mime } : {}), audioBitsPerSecond: 32000 });
@@ -60,13 +71,14 @@ export default function VoiceRecorder({ token, disabled, onVoice }: { token: str
       t0.current = Date.now();
       setSec(0);
       r.start();
+      opening.current = false;
       setState("rec");
       timer.current = setInterval(() => {
         const s = Math.floor((Date.now() - t0.current) / 1000);
         setSec(s);
         if (s >= VOICE_MAX_SEC) finish("send");
       }, 250);
-    } catch (e) { release(); setState("idle"); toast(voiceErr(e, ru), "err"); }
+    } catch (e) { opening.current = false; release(); setState("idle"); toast(voiceErr(e, ru) + " [" + ((e as Error)?.name || "?") + "]", "err"); }
   };
 
   if (state === "rec") {

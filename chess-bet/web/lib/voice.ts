@@ -39,11 +39,35 @@ export async function uploadVoice(token: string, blob: Blob): Promise<string> {
   return j.path;
 }
 
+/** Открывает микрофон: обычный запрос, затем без обработки звука, затем по очереди каждое устройство ввода (на части телефонов устройство «по умолчанию» не запускается) */
+export async function openMic(): Promise<MediaStream> {
+  const gum = (a: MediaTrackConstraints | boolean) => navigator.mediaDevices.getUserMedia({ audio: a });
+  const hard = (e: unknown) => { const n = (e as Error)?.name; return n === "NotAllowedError" || n === "SecurityError"; };
+  const tries: (MediaTrackConstraints | boolean)[] = [true, { echoCancellation: false, noiseSuppression: false, autoGainControl: false }];
+  let last: unknown = new Error("mic");
+  for (let round = 0; round < 2; round++) {
+    for (const c of tries) {
+      try { return await gum(c); } catch (e) { last = e; if (hard(e)) throw e; }
+    }
+    try {
+      const devs = (await navigator.mediaDevices.enumerateDevices()).filter((d) => d.kind === "audioinput" && d.deviceId);
+      for (const d of devs) {
+        try { return await gum({ deviceId: { exact: d.deviceId } }); } catch (e) { last = e; if (hard(e)) throw e; }
+      }
+    } catch { /* список устройств недоступен */ }
+    await new Promise((r) => setTimeout(r, 500));
+  }
+  throw last;
+}
+
 export function voiceErr(e: unknown, ru: boolean): string {
   const m = (e as Error)?.message;
   if (m === "bad_audio") return ru ? "Не удалось обработать запись" : "Could not process the recording";
   if (m === "too_big") return ru ? "Запись слишком большая" : "The recording is too large";
   if (m === "NotAllowedError" || (e as Error)?.name === "NotAllowedError") return ru ? "Нет доступа к микрофону. Разрешите его в настройках браузера" : "No microphone access. Allow it in your browser settings";
   if ((e as Error)?.name === "NotFoundError") return ru ? "Микрофон не найден" : "No microphone found";
+  if ((e as Error)?.name === "NotReadableError" || /audio source/i.test(String((e as Error)?.message || ""))) {
+    return ru ? "Микрофон занят или не запускается. Закройте приложение полностью, откройте заново и попробуйте снова. Если не помогло, закройте другие приложения с микрофоном (звонки, запись экрана, видео)" : "The microphone is busy or cannot start. Close the app completely, reopen it and try again. If that does not help, close other apps that use the microphone (calls, screen recording, video)";
+  }
   return errText(e, ru);
 }
