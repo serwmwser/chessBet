@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useApp } from "@/lib/ctx";
-import { profileUrl } from "@/lib/urls";
+import { BASE, profileUrl } from "@/lib/urls";
 import { dmBlock, dmDelete, dmErr, dmReport, dmSend, dmThread, type DmMsg, type DmThread as Thread } from "@/lib/dm";
 import Avatar from "./Avatar";
 import { useSocial } from "@/lib/social";
@@ -168,6 +168,7 @@ export default function DmThread({ name, token, onBack, onChanged, draft }: { na
             placeholder={ru ? "Сообщение…" : "Message…"} aria-label={ru ? "Текст сообщения" : "Message text"}
             className="flex-1 rounded-xl border px-3 py-2 bg-transparent outline-none resize-none text-sm" />
           <VoiceRecorder token={token} onVoice={sendVoice} />
+          <a href={`${BASE}/rec.html?to=${encodeURIComponent(name)}`} className="btn btn-ghost shrink-0 !px-2 !py-1.5 text-xs" title={ru ? "Запись голосового на отдельной странице" : "Record a voice message on a separate page"}>{ru ? "🎙 Запись" : "🎙 Record"}</a>
           <div className="flex flex-col items-end gap-1">
             <span className="text-[10px] opacity-50">{MAX - text.length}</span>
             <button type="button" className="btn btn-primary !py-2" disabled={busy || !text.trim()} onClick={send}>{busy ? "…" : ru ? "Отправить" : "Send"}</button>

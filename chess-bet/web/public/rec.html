@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Голосовое сообщение</title>
+<style>
+  body { font-family: sans-serif; background: #0b1b24; color: #fff; padding: 16px; font-size: 18px; max-width: 520px; margin: 0 auto; }
+  h2 { margin: 8px 0 16px; }
+  button, a.btn { display: block; box-sizing: border-box; text-align: center; text-decoration: none; font-size: 22px; padding: 16px 24px; border: 0; border-radius: 12px; width: 100%; margin: 12px 0; color: #000; background: #3fb950; }
+  button.stop { background: #f5b301; }
+  button.cancel, a.btn.gray { background: #3a4a55; color: #fff; font-size: 18px; }
+  #timer { font-size: 40px; text-align: center; margin: 12px 0; font-variant-numeric: tabular-nums; }
+  #msg { white-space: pre-wrap; word-break: break-word; font-size: 17px; line-height: 1.5; }
+  .err { color: #ff8a8a; }
+  .ok { color: #7ee787; }
+</style>
+</head>
+<body>
+<h2 id="title">Голосовое сообщение</h2>
+<div id="timer">0:00</div>
+<button id="go">🎙 Начать запись</button>
+<button id="stop" class="stop" style="display:none">■ Остановить и отправить</button>
+<button id="cancel" class="cancel" style="display:none">Отмена</button>
+<div id="msg"></div>
+<a id="back" class="btn gray" href="/messages/">← Вернуться в чат</a>
+<script>
+(function () {
+  var API = "https://api.chessbet.lol";
+  var MAX = 120;
+  var q = new URLSearchParams(location.search);
+  var to = (q.get("to") || "").replace(/^@/, "");
+  var $ = function (id) { return document.getElementById(id); };
+  var back = "/messages/" + (to ? "?with=" + encodeURIComponent(to) : "");
+  $("back").href = back;
+  $("title").textContent = to ? "Голосовое для @" + to : "Голосовое сообщение";
+  function say(t, cls) { var m = $("msg"); m.textContent = t; m.className = cls || ""; }
+  function errTxt(e) { return (e && e.name ? e.name : "?") + (e && e.message ? " — " + e.message : ""); }
+
+  // Вход берём из сайта: тот же домен, тот же сохранённый вход
+  var wallet = "", token = "";
+  try {
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      if (k && k.indexOf("cb_sess_") === 0) {
+        var s = JSON.parse(localStorage.getItem(k) || "null");
+        if (s && s.token && s.exp > Date.now() + 60000) { wallet = k.slice(8).toLowerCase(); token = s.token; }
+      }
+    }
+  } catch (e) {}
+  if (!token) { say("Вы не вошли. Откройте chessbet.lol, подключите кошелёк, затем снова нажмите «Запись» в чате.", "err"); $("go").style.display = "none"; return; }
+  if (!to) { say("Не указан получатель. Откройте страницу кнопкой «Запись» из чата.", "err"); $("go").style.display = "none"; return; }
+
+  var stream = null, rec = null, chunks = [], t0 = 0, timer = null, how = "send";
+  function stopTracks() { if (stream) { stream.getTracks().forEach(function (t) { t.stop(); }); stream = null; } }
+  function ui(state) {
+    $("go").style.display = state === "idle" ? "block" : "none";
+    $("stop").style.display = state === "rec" ? "block" : "none";
+    $("cancel").style.display = state === "rec" ? "block" : "none";
+  }
+  function fmt(s) { return Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2); }
+
+  $("go").onclick = async function () {
+    say("");
+    try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { say("Браузер не умеет записывать звук.", "err"); return; }
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      var mime = "";
+      ["audio/webm;codecs=opus", "audio/webm", "audio/ogg;codecs=opus", "audio/mp4"].forEach(function (m) { if (!mime && window.MediaRecorder && MediaRecorder.isTypeSupported(m)) mime = m; });
+      rec = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+      chunks = []; how = "send";
+      rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+      rec.onstop = onStop;
+      rec.start();
+      t0 = Date.now();
+      $("timer").textContent = "0:00";
+      timer = setInterval(function () {
+        var s = Math.floor((Date.now() - t0) / 1000);
+        $("timer").textContent = fmt(s);
+        if (s >= MAX) { $("stop").click(); }
+      }, 250);
+      ui("rec");
+    } catch (e) {
+      stopTracks();
+      say("Микрофон не открылся: " + errTxt(e) + "\n\nЗакройте другие приложения с микрофоном, перезагрузите телефон и попробуйте снова.", "err");
+      ui("idle");
+    }
+  };
+  $("stop").onclick = function () { how = "send"; try { rec.stop(); } catch (e) {} };
+  $("cancel").onclick = function () { how = "cancel"; try { rec.stop(); } catch (e) {} };
+
+  async function onStop() {
+    clearInterval(timer);
+    var secs = Math.round((Date.now() - t0) / 1000);
+    stopTracks();
+    ui("idle");
+    if (how === "cancel") { $("timer").textContent = "0:00"; say("Запись отменена."); return; }
+    if (secs < 1) { say("Слишком короткая запись.", "err"); return; }
+    var blob = new Blob(chunks, { type: (rec && rec.mimeType) || "audio/webm" });
+    if (blob.size > 2 * 1024 * 1024) { say("Запись больше 2 МБ, запишите покороче.", "err"); return; }
+    say("Отправляю…");
+    $("go").style.display = "none";
+    try {
+      var h = { authorization: "Bearer " + token, "x-wallet": wallet };
+      var r = await fetch(API + "/api/upload-voice", { method: "POST", headers: Object.assign({ "content-type": "application/octet-stream" }, h), body: blob });
+      var j = await r.json();
+      if (!j.ok || !j.path) throw new Error(j.error || "upload");
+      var text = "[voice:" + j.path.replace(/^\/media\//, "") + ":" + Math.max(1, Math.min(MAX, secs)) + "]";
+      var r2 = await fetch(API + "/api/dm/send", { method: "POST", headers: Object.assign({ "content-type": "application/json" }, h), body: JSON.stringify({ name: to, text: text }) });
+      var j2 = await r2.json();
+      if (!j2.ok) throw new Error(j2.error || "send");
+      say("Отправлено ✓ (" + secs + " сек)", "ok");
+      $("go").textContent = "🎙 Записать ещё";
+      $("go").style.display = "block";
+    } catch (e) {
+      say("Не отправилось: " + (e && e.message ? e.message : "ошибка") + ". Попробуйте ещё раз.", "err");
+      $("go").style.display = "block";
+    }
+  }
+})();
+</script>
+</body>
+</html>
