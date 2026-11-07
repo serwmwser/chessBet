@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Проверка микрофона</title>
+<style>
+  body { font-family: sans-serif; background: #0b1b24; color: #fff; padding: 16px; font-size: 18px; }
+  button { font-size: 22px; padding: 16px 24px; border: 0; border-radius: 12px; background: #3fb950; color: #000; width: 100%; }
+  pre { white-space: pre-wrap; word-break: break-word; font-size: 16px; line-height: 1.5; }
+</style>
+</head>
+<body>
+<h2>Проверка микрофона</h2>
+<button id="go">Проверить микрофон</button>
+<pre id="log"></pre>
+<script>
+var logEl = document.getElementById("log");
+function log(s) { logEl.textContent += s + "\n"; }
+function errTxt(e) { return (e && e.name ? e.name : "?") + (e && e.message ? " — " + e.message : ""); }
+document.getElementById("go").onclick = async function () {
+  logEl.textContent = "";
+  log("Браузер: " + navigator.userAgent);
+  try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { log("НЕТ mediaDevices (нужен https)"); return; }
+    log("1. Запрашиваю микрофон…");
+    var st = await navigator.mediaDevices.getUserMedia({ audio: true });
+    var tr = st.getAudioTracks()[0];
+    log("2. ОК. Устройство: " + (tr ? tr.label : "?") + ", состояние: " + (tr ? tr.readyState : "?"));
+    var devs = await navigator.mediaDevices.enumerateDevices();
+    devs.filter(function (d) { return d.kind === "audioinput"; }).forEach(function (d, i) { log("   вход " + (i + 1) + ": " + (d.label || "(без названия)")); });
+    log("3. Пишу 3 секунды, говорите…");
+    var mime = "";
+    ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/ogg;codecs=opus"].forEach(function (m) { if (!mime && window.MediaRecorder && MediaRecorder.isTypeSupported(m)) mime = m; });
+    var chunks = [];
+    var rec = mime ? new MediaRecorder(st, { mimeType: mime }) : new MediaRecorder(st);
+    rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+    rec.onstop = function () {
+      st.getTracks().forEach(function (t) { t.stop(); });
+      var size = chunks.reduce(function (a, b) { return a + b.size; }, 0);
+      log("4. Запись остановлена. Формат: " + (mime || "по умолчанию") + ", размер: " + size + " байт");
+      log(size > 1000 ? "РЕЗУЛЬТАТ: ЗАПИСЬ РАБОТАЕТ" : "РЕЗУЛЬТАТ: звук пустой");
+    };
+    rec.start();
+    setTimeout(function () { try { rec.stop(); } catch (e) { log("Ошибка остановки: " + errTxt(e)); } }, 3000);
+  } catch (e) {
+    log("ОШИБКА: " + errTxt(e));
+    log("РЕЗУЛЬТАТ: микрофон не открылся");
+  }
+};
+</script>
+</body>
+</html>
