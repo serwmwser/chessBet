@@ -17,6 +17,7 @@ export default function VoiceRecorder({ token, disabled, onVoice }: { token: str
   const t0 = useRef(0);
   const act = useRef<"send" | "cancel">("send");
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const opening = useRef(false); // микрофон сейчас открывается
 
   const release = () => {
     if (timer.current) clearInterval(timer.current);
@@ -34,7 +35,11 @@ export default function VoiceRecorder({ token, disabled, onVoice }: { token: str
 
   const start = async () => {
     if (!canRecord()) { toast(ru ? "Этот браузер не умеет записывать голос" : "This browser cannot record voice", "err"); return; }
+    if (opening.current || rec.current) return; // двойное нажатие не должно открывать микрофон дважды
+    opening.current = true;
+    setState("up"); // пока микрофон открывается, кнопка неактивна
     try {
+      release(); // закрываем прежний поток: незакрытый поток держит микрофон, и новый не запускается
       const st = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.current = st;
       const mime = pickMime();
@@ -60,13 +65,14 @@ export default function VoiceRecorder({ token, disabled, onVoice }: { token: str
       t0.current = Date.now();
       setSec(0);
       r.start();
+      opening.current = false;
       setState("rec");
       timer.current = setInterval(() => {
         const s = Math.floor((Date.now() - t0.current) / 1000);
         setSec(s);
         if (s >= VOICE_MAX_SEC) finish("send");
       }, 250);
-    } catch (e) { release(); setState("idle"); toast(voiceErr(e, ru), "err"); }
+    } catch (e) { opening.current = false; release(); setState("idle"); toast(voiceErr(e, ru), "err"); }
   };
 
   if (state === "rec") {

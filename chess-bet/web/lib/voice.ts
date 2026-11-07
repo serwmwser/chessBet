@@ -45,5 +45,8 @@ export function voiceErr(e: unknown, ru: boolean): string {
   if (m === "too_big") return ru ? "Запись слишком большая" : "The recording is too large";
   if (m === "NotAllowedError" || (e as Error)?.name === "NotAllowedError") return ru ? "Нет доступа к микрофону. Разрешите его в настройках браузера" : "No microphone access. Allow it in your browser settings";
   if ((e as Error)?.name === "NotFoundError") return ru ? "Микрофон не найден" : "No microphone found";
+  if ((e as Error)?.name === "NotReadableError" || /audio source/i.test(String((e as Error)?.message || ""))) {
+    return ru ? "Микрофон занят или не запускается. Закройте приложение полностью, откройте заново и попробуйте снова. Если не помогло, закройте другие приложения с микрофоном (звонки, запись экрана, видео)" : "The microphone is busy or cannot start. Close the app completely, reopen it and try again. If that does not help, close other apps that use the microphone (calls, screen recording, video)";
+  }
   return errText(e, ru);
 }
