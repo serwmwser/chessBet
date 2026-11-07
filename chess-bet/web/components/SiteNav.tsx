@@ -41,7 +41,7 @@ export default function SiteNav() {
   const unread = useUnread(token);
   return (
     <nav aria-label={ru ? "Разделы сайта" : "Site sections"} className="mx-auto max-w-3xl px-3 pt-2">
-      <ul className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none]">
+      <ul className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] md:flex-wrap md:overflow-visible">
         {ITEMS.map((it) => {
           const on = norm(it.href) === path;
           return (
