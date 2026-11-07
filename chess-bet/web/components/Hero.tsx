@@ -209,7 +209,7 @@ export default function Hero({ onBot, onEarn }: { onBot: () => void; onEarn?: ()
       <TrustBlock className="relative" />
 
       <div className="relative grid grid-cols-2 sm:grid-cols-4 gap-2">
-        {[<><Count to={94} />%</>, "0.5-500", "6", "0%"].map((v, i) => (
+        {[<><Count to={90} />%</>, "0.5-500", "6", "0%"].map((v, i) => (
           <motion.div key={i} initial={{ y: 18, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.4 + i * 0.1 }} className="rounded-2xl bg-white/5 border border-white/10 py-3 px-2">
             <div className="mono text-2xl font-extrabold bg-gradient-to-r from-violet-300 to-sky-300 bg-clip-text text-transparent" dir="ltr">{v}</div>
             <div className="text-[11px] text-white/65 leading-tight mt-0.5">{x.lb[i]}</div>
