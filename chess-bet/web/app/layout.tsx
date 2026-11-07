@@ -18,7 +18,7 @@ const DESC = "Social network with free worldwide classifieds and chat translatio
 const JSON_LD = JSON.stringify({
   "@context": "https://schema.org",
   "@graph": [
-    { "@type": "WebSite", "@id": SITE + "/#site", url: SITE, name: "Chess Bet", publisher: { "@id": SITE + "/#org" }, description: DESC, inLanguage: ["en", "de", "fr", "es", "pt", "zh", "ar", "tr", "ru"] },
+    { "@type": "WebSite", "@id": SITE + "/#site", url: SITE, name: "Chess Bet", alternateName: "Chess Bet: Social Network, Classifieds, Dating & Chess for USDC", publisher: { "@id": SITE + "/#org" }, description: DESC, inLanguage: ["en", "de", "fr", "es", "pt", "zh", "ar", "tr", "ru"] },
     { "@type": "Organization", "@id": SITE + "/#org", name: "Chess Bet", alternateName: "Rook Club", url: SITE, logo: SITE + "/icon-512.png", email: "chessgrokearn@gmail.com", sameAs: ["https://t.me/chess_betlolbot"] },
     { "@type": "WebApplication", "@id": SITE + "/#app", name: "Chess Bet", url: SITE, applicationCategory: "SocialNetworkingApplication", applicationSubCategory: "Social network, worldwide classifieds, dating, chess", featureList: ["Social network with profiles, posts, feed and private and voice messages", "Free worldwide classifieds with translation of ads and chat", "Free 18+ dating with profiles, likes and matches", "Online chess for USDC stakes on Polygon held by a smart contract", "Free chess against a bot or a friend, puzzles and tournaments", "Chess NFTs on Polygon"], operatingSystem: "Any (web browser, Android, Telegram Mini App)", description: DESC, offers: { "@type": "Offer", price: "0", priceCurrency: "USD", description: "Free to open and practise; stakes are optional" } },
     { "@type": "FAQPage", mainEntity: [

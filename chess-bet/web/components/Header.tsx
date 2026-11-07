@@ -19,12 +19,16 @@ export const wallets = inTelegram() ? [inAppWallet({ auth: { options: ["email"] 
 
 export default function Header() {
   const { lang, setLang, dark, toggleDark } = useApp();
+  const ru = lang === "ru";
   return (
     <header className="glass sticky top-0 z-40 border-x-0 border-t-0">
       <div className="mx-auto max-w-3xl flex items-center gap-2 px-3 py-2.5">
         <div className="flex items-center gap-2 font-bold text-lg tracking-tight me-auto">
           <span className="grid place-items-center w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-violet text-white text-xl">♞</span>
-          <span className="hidden sm:inline">Chess Bet</span>
+          <span className="hidden sm:block leading-tight">
+            <span className="block">Chess Bet</span>
+            <span className="block text-[11px] font-medium opacity-70 max-w-[16rem]">{ru ? "Соцсеть, объявления, знакомства и шахматы на USDC" : "Social Network, Classifieds, Dating & Chess for USDC"}</span>
+          </span>
         </div>
         <select
           aria-label="Language"
