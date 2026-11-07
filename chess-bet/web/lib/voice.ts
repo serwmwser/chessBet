@@ -3,32 +3,6 @@
 import { API_URL } from "./config";
 import { errText } from "./social";
 
-// Диагностика: считаем микрофонные потоки и звуковые контексты, которые открыла сама страница
-type Probe = { streams: MediaStream[]; ctxs: AudioContext[] };
-const probe: Probe = { streams: [], ctxs: [] };
-if (typeof window !== "undefined" && !(window as unknown as { __cbProbe?: Probe }).__cbProbe) {
-  (window as unknown as { __cbProbe?: Probe }).__cbProbe = probe;
-  try {
-    const md = navigator.mediaDevices;
-    const orig = md.getUserMedia.bind(md);
-    md.getUserMedia = async (c?: MediaStreamConstraints) => { const s = await orig(c); probe.streams.push(s); return s; };
-  } catch { /* нет mediaDevices */ }
-  try {
-    const AC = window.AudioContext;
-    if (AC) {
-      (window as unknown as { AudioContext: typeof AudioContext }).AudioContext = class extends AC {
-        constructor(o?: AudioContextOptions) { super(o); probe.ctxs.push(this); }
-      };
-    }
-  } catch { /* нет AudioContext */ }
-}
-/** Сколько живых микрофонных дорожек и незакрытых звуковых контекстов открыла страница */
-export function probeInfo(): string {
-  const live = probe.streams.reduce((n, s) => n + s.getAudioTracks().filter((t) => t.readyState === "live").length, 0);
-  const ctx = probe.ctxs.filter((c) => c.state !== "closed").length;
-  return "mic " + live + ", ctx " + ctx + "/" + probe.ctxs.length;
-}
-
 export const VOICE_MAX_SEC = 120;
 const VOICE_RE = /^\[voice:([a-f0-9]{20}\.(?:webm|ogg|m4a)):(\d{1,3})\]$/;
 
@@ -65,35 +39,11 @@ export async function uploadVoice(token: string, blob: Blob): Promise<string> {
   return j.path;
 }
 
-/** Открывает микрофон: обычный запрос, затем без обработки звука, затем по очереди каждое устройство ввода (на части телефонов устройство «по умолчанию» не запускается) */
-export async function openMic(): Promise<MediaStream> {
-  const gum = (a: MediaTrackConstraints | boolean) => navigator.mediaDevices.getUserMedia({ audio: a });
-  const hard = (e: unknown) => { const n = (e as Error)?.name; return n === "NotAllowedError" || n === "SecurityError"; };
-  const tries: (MediaTrackConstraints | boolean)[] = [true, { echoCancellation: false, noiseSuppression: false, autoGainControl: false }];
-  let last: unknown = new Error("mic");
-  for (let round = 0; round < 2; round++) {
-    for (const c of tries) {
-      try { return await gum(c); } catch (e) { last = e; if (hard(e)) throw e; }
-    }
-    try {
-      const devs = (await navigator.mediaDevices.enumerateDevices()).filter((d) => d.kind === "audioinput" && d.deviceId);
-      for (const d of devs) {
-        try { return await gum({ deviceId: { exact: d.deviceId } }); } catch (e) { last = e; if (hard(e)) throw e; }
-      }
-    } catch { /* список устройств недоступен */ }
-    await new Promise((r) => setTimeout(r, 500));
-  }
-  throw last;
-}
-
 export function voiceErr(e: unknown, ru: boolean): string {
   const m = (e as Error)?.message;
   if (m === "bad_audio") return ru ? "Не удалось обработать запись" : "Could not process the recording";
   if (m === "too_big") return ru ? "Запись слишком большая" : "The recording is too large";
   if (m === "NotAllowedError" || (e as Error)?.name === "NotAllowedError") return ru ? "Нет доступа к микрофону. Разрешите его в настройках браузера" : "No microphone access. Allow it in your browser settings";
   if ((e as Error)?.name === "NotFoundError") return ru ? "Микрофон не найден" : "No microphone found";
-  if ((e as Error)?.name === "NotReadableError" || /audio source/i.test(String((e as Error)?.message || ""))) {
-    return ru ? "Микрофон занят или не запускается. Закройте приложение полностью, откройте заново и попробуйте снова. Если не помогло, закройте другие приложения с микрофоном (звонки, запись экрана, видео)" : "The microphone is busy or cannot start. Close the app completely, reopen it and try again. If that does not help, close other apps that use the microphone (calls, screen recording, video)";
-  }
   return errText(e, ru);
 }
