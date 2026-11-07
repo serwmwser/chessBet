@@ -1,5 +1,6 @@
 "use client";
 import LoginPrompt from "@/components/LoginPrompt";
+import SectionsGrid from "@/components/SectionsGrid";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import PageShell from "@/components/PageShell";
@@ -87,7 +88,7 @@ function Profile() {
 
   // нет ника в адресе и не вошли
   if (!target) {
-    return <LoginPrompt text={ru ? "Войдите, чтобы открыть свой профиль: подключите кошелёк, вход выполнится автоматически." : "Connect your wallet to open your profile: sign-in happens automatically."} />;
+    return <><LoginPrompt text={ru ? "Войдите, чтобы открыть свой профиль: подключите кошелёк, вход выполнится автоматически." : "Connect your wallet to open your profile: sign-in happens automatically."} /><SectionsGrid /></>;
   }
   if (missing) return <section className="card text-center">{ru ? "Такого профиля нет." : "This profile does not exist."}</section>;
   if (!u) return <section className="card text-center opacity-70">…</section>;
@@ -135,6 +136,7 @@ function Profile() {
       </section>
 
       {!edit && (u.me ? <DailyQuests token={s.token} signIn={s.signIn} /> : <PlayerBadges name={u.name} />)}
+      {!edit && u.me && <SectionsGrid force />}
 
       {edit && (
         <section className="card space-y-3">
