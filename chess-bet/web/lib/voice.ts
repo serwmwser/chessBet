@@ -3,6 +3,32 @@
 import { API_URL } from "./config";
 import { errText } from "./social";
 
+// Диагностика: считаем микрофонные потоки и звуковые контексты, которые открыла сама страница
+type Probe = { streams: MediaStream[]; ctxs: AudioContext[] };
+const probe: Probe = { streams: [], ctxs: [] };
+if (typeof window !== "undefined" && !(window as unknown as { __cbProbe?: Probe }).__cbProbe) {
+  (window as unknown as { __cbProbe?: Probe }).__cbProbe = probe;
+  try {
+    const md = navigator.mediaDevices;
+    const orig = md.getUserMedia.bind(md);
+    md.getUserMedia = async (c?: MediaStreamConstraints) => { const s = await orig(c); probe.streams.push(s); return s; };
+  } catch { /* нет mediaDevices */ }
+  try {
+    const AC = window.AudioContext;
+    if (AC) {
+      (window as unknown as { AudioContext: typeof AudioContext }).AudioContext = class extends AC {
+        constructor(o?: AudioContextOptions) { super(o); probe.ctxs.push(this); }
+      };
+    }
+  } catch { /* нет AudioContext */ }
+}
+/** Сколько живых микрофонных дорожек и незакрытых звуковых контекстов открыла страница */
+export function probeInfo(): string {
+  const live = probe.streams.reduce((n, s) => n + s.getAudioTracks().filter((t) => t.readyState === "live").length, 0);
+  const ctx = probe.ctxs.filter((c) => c.state !== "closed").length;
+  return "mic " + live + ", ctx " + ctx + "/" + probe.ctxs.length;
+}
+
 export const VOICE_MAX_SEC = 120;
 const VOICE_RE = /^\[voice:([a-f0-9]{20}\.(?:webm|ogg|m4a)):(\d{1,3})\]$/;
 

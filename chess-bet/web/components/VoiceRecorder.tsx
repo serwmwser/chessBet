@@ -2,14 +2,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useApp } from "@/lib/ctx";
 import { releaseAudio, resumeAudio } from "@/lib/sfx";
-import { VOICE_MAX_SEC, canRecord, encodeVoice, openMic, pickMime, uploadVoice, voiceErr } from "@/lib/voice";
+import { VOICE_MAX_SEC, canRecord, encodeVoice, openMic, pickMime, probeInfo, uploadVoice, voiceErr } from "@/lib/voice";
 
 /** Короткая диагностика для сообщения об ошибке: что ещё может занимать звук */
 function diag(): string {
   try {
     const ss = window.speechSynthesis;
     const med = Array.from(document.querySelectorAll("audio,video"));
-    return "(tts " + (ss?.speaking ? 1 : 0) + (ss?.pending ? 1 : 0) + ", media " + med.filter((m) => !(m as HTMLMediaElement).paused).length + "/" + med.length + ", " + document.visibilityState + ")";
+    return "(tts " + (ss?.speaking ? 1 : 0) + (ss?.pending ? 1 : 0) + ", media " + med.filter((m) => !(m as HTMLMediaElement).paused).length + "/" + med.length + ", " + document.visibilityState + ", " + probeInfo() + ")";
   } catch { return ""; }
 }
 
