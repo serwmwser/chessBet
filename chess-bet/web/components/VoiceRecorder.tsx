@@ -4,6 +4,15 @@ import { useApp } from "@/lib/ctx";
 import { releaseAudio, resumeAudio } from "@/lib/sfx";
 import { VOICE_MAX_SEC, canRecord, encodeVoice, openMic, pickMime, uploadVoice, voiceErr } from "@/lib/voice";
 
+/** Короткая диагностика для сообщения об ошибке: что ещё может занимать звук */
+function diag(): string {
+  try {
+    const ss = window.speechSynthesis;
+    const med = Array.from(document.querySelectorAll("audio,video"));
+    return "(tts " + (ss?.speaking ? 1 : 0) + (ss?.pending ? 1 : 0) + ", media " + med.filter((m) => !(m as HTMLMediaElement).paused).length + "/" + med.length + ", " + document.visibilityState + ")";
+  } catch { return ""; }
+}
+
 const fmt = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
 /** Кнопка 🎤: запись до 2 минут, «✕» отменяет, «➤» отправляет. onVoice получает готовый текст сообщения */
@@ -44,6 +53,8 @@ export default function VoiceRecorder({ token, disabled, onVoice }: { token: str
     try {
       release(); // закрываем прежний поток: незакрытый поток держит микрофон, и новый не запускается
       window.dispatchEvent(new Event("cb-mic-start")); // музыка выключается на время записи
+      try { window.speechSynthesis?.cancel(); } catch { /* нет озвучки */ } // озвучка фигур может держать звук Android
+      document.querySelectorAll("audio,video").forEach((m) => { try { (m as HTMLMediaElement).pause(); } catch { /* уже остановлен */ } });
       await releaseAudio(); // закрываем звуковой контекст звуков игры
       await new Promise((r) => setTimeout(r, 250));
       const st = await openMic();
@@ -78,7 +89,7 @@ export default function VoiceRecorder({ token, disabled, onVoice }: { token: str
         setSec(s);
         if (s >= VOICE_MAX_SEC) finish("send");
       }, 250);
-    } catch (e) { opening.current = false; release(); setState("idle"); toast(voiceErr(e, ru) + " [" + ((e as Error)?.name || "?") + "]", "err"); }
+    } catch (e) { opening.current = false; release(); setState("idle"); toast(voiceErr(e, ru) + " [" + ((e as Error)?.name || "?") + "] " + diag(), "err"); }
   };
 
   if (state === "rec") {
