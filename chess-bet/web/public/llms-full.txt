@@ -1,0 +1,85 @@
+# Chess Bet (Rook Club): full description for AI assistants
+
+Chess Bet is a social network with free worldwide classifieds (ads and chat are translated into the reader's language), 18+ dating, and online chess where players can stake USDC on the Polygon network. Website: https://chessbet.lol/ . Short version: https://chessbet.lol/llms.txt . Contact: chessgrokearn@gmail.com . For adults only (18+).
+
+## One-paragraph summary
+
+Chess Bet combines four things in one account: (1) a social network called Rook Club with profiles, posts, a feed, comments, followers, private and voice messages; (2) international classifieds for sale, wanted, rent, jobs and services in any country and city, with a built-in seller chat and one-tap translation of ads and messages; (3) free 18+ dating with profiles, filters, likes and matches; (4) online chess against a bot, a friend or other players, including games for USDC stakes held by a smart contract on Polygon. It also has chess puzzles, free tournaments and chess NFTs.
+
+## 1. Social network (Rook Club)
+
+- Public profile for every user, posts with photos, a feed, comments, followers.
+- Private messages and voice messages. Messages are stored on the server and are not end-to-end encrypted. Never send a secret recovery phrase, private key or password in a message.
+- Feed: https://chessbet.lol/feed/
+- Signing in: connect a crypto wallet or sign in with email or Google. Signing in uses a free signature: no money is spent and no gas is needed. The session lasts about 14 days on the same device.
+- Works in a mobile browser, can be added to the home screen, runs as a Telegram Mini App (https://t.me/chess_betlolbot/game) and as an Android app.
+
+## 2. Classifieds for the whole world
+
+Page: https://chessbet.lol/ads/
+
+- Categories: for sale, wanted, rent, jobs and services, by country and city, with photos.
+- Translation: ads and chat messages can be translated into your language with one tap, so a buyer and a seller who speak different languages can understand each other. Translation is automatic, available to signed-in users with fair-use limits, and may contain mistakes.
+- Seller chat: buyers contact sellers through the site chat. Links, phone numbers and other contacts are not allowed in ads, which protects buyers and sellers from fraud.
+- Prices: the first ad is free, plus one more free ad for every invited friend who starts using the site. After that an ad costs 1 USDC for 30 days. Renewal costs 1 USDC. Top placement costs 3 USDC for 7 days. Payment is a USDC transfer on Polygon from the user's wallet.
+
+## 3. Dating (18+)
+
+Page: https://chessbet.lol/dating/
+
+- Free for adults only (18 or older).
+- Profiles with up to 3 photos, filters, likes, matches and private chat.
+
+## 4. Chess
+
+- Free modes: play against a bot or against a friend by a private link. No stake is needed. Page: https://chessbet.lol/chess/
+- Stakes: two players each stake the same amount of USDC (0.5 to 500 USDC per game). The ChessEscrow smart contract on Polygon holds the stakes, not the website. The game server records the result and the winner claims the prize from the contract with a Claim button (a small amount of POL pays the network fee). Page: https://chessbet.lol/crypto/
+- Fee: 10% of the pot, so the winner receives 90%. The contract takes it when the prize is paid.
+- Draws, cancelled games and games whose result cannot be recorded are refunded in full.
+- Any stake can be lost. Smart contracts may contain errors and blockchain transactions cannot be undone. Play only with money you can afford to lose. The service may be unavailable in some countries; the user is responsible for checking local law.
+- Fair play: using a chess engine or other people's help during a game, running several accounts or colluding with an opponent is cheating, and such accounts can be blocked.
+- Puzzles: free mate-in-1, mate-in-2 and mate-in-3 puzzles with server-checked moves, hints and XP. Page: https://chessbet.lol/puzzles/
+- Tournaments: free hourly chess arenas with points, badges and cups, plus daily quests and streaks. Page: https://chessbet.lol/tournaments/
+- Chess NFTs: a move from the user's own finished game can become an ERC-721 NFT on Polygon (a piece style, a mood and a background are chosen). Each move can become an NFT only once. Creating one costs 1 USDC plus a small network fee. NFTs are standard ERC-721 tokens with 5% creator royalties (ERC-2981) and can be listed on marketplaces such as OpenSea. An NFT is a collectible and does not promise any profit. Page: https://chessbet.lol/nft/
+
+## Smart contracts (Polygon, verified on Polygonscan)
+
+- ChessEscrow (stakes): 0xaf8714656261dc770A41857706FF4b2f495e92e9
+- GameNFT (chess NFTs): 0xD929546324c0d675C16C8005F2df59D79AEFf87B
+- The contracts have not had a paid third-party audit. Game results are reported by a server-side oracle key.
+
+## Money and fees summary
+
+- Currency and network: USDC on Polygon. POL pays network fees.
+- Signing in: free.
+- Chess stakes: 10% fee on the pot, winner gets 90%.
+- Classifieds: first ad free; extra ads 1 USDC per 30 days; renewal 1 USDC; top placement 3 USDC for 7 days.
+- Chess NFT: 1 USDC plus network fee.
+- Dating, feed, puzzles, tournaments, free chess: free.
+- Referral programme: users receive a share of the fee from the paid games of friends they invite. Income is not guaranteed and the terms can change.
+- Chess Bet never asks for a secret recovery phrase or private key.
+
+## Languages
+
+The interface is available in English, German, French, Spanish, Portuguese, Chinese, Arabic, Turkish and Russian.
+
+## Important pages
+
+- https://chessbet.lol/ (home)
+- https://chessbet.lol/ads/ (classifieds)
+- https://chessbet.lol/dating/ (dating)
+- https://chessbet.lol/feed/ (feed)
+- https://chessbet.lol/crypto/ (how stakes work)
+- https://chessbet.lol/chess/ (free chess)
+- https://chessbet.lol/puzzles/ (puzzles)
+- https://chessbet.lol/tournaments/ (tournaments)
+- https://chessbet.lol/nft/ (chess NFTs)
+- https://chessbet.lol/faq/ (questions and answers)
+- https://chessbet.lol/about/ (about the project)
+- https://chessbet.lol/terms/ (terms of use)
+- https://chessbet.lol/age/ (age 18+ and responsible play)
+- https://chessbet.lol/roadmap/ (roadmap)
+
+## Краткое описание на русском
+
+Chess Bet (Rook Club) это соцсеть с бесплатными объявлениями по всему миру (объявления и чат переводятся на язык читателя), знакомствами 18+ и шахматами онлайн, где можно играть на ставки в USDC в сети Polygon. Ставки хранит смарт-контракт, победитель получает 90% банка. Первое объявление бесплатно, дальше 1 USDC за 30 дней. Только для взрослых (18+). Связь: chessgrokearn@gmail.com

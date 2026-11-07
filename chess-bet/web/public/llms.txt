@@ -27,6 +27,7 @@
 - [Terms of use](https://chessbet.lol/terms/): age limit, stakes, fees, refunds, classifieds options, responsible play.
 - [Age 18+ and responsible play](https://chessbet.lol/age/)
 - [Roadmap](https://chessbet.lol/roadmap/)
+- [Full description for AI assistants](https://chessbet.lol/llms-full.txt)
 
 ## Key facts
 
