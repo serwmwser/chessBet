@@ -1,7 +1,12 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Chess } from "chess.js";
+import { useActiveAccount } from "thirdweb/react";
 import { useApp } from "@/lib/ctx";
+import VoiceBubble from "./VoiceBubble";
+import VoiceRecorder from "./VoiceRecorder";
+import { parseVoice } from "@/lib/voice";
+import { tokenFor } from "@/lib/social";
 import { Color, removeMyRoom, roomLink, useRoom } from "@/lib/room";
 import { inTelegram, tgRoomLink } from "@/lib/telegram";
 import { usePT } from "@/lib/pauseTxt";
@@ -42,6 +47,8 @@ export default function FriendGame({ roomId, color = "r", minutes = 60, onExit, 
   const [intro, setIntro] = useState(true);
   const [msg, setMsg] = useState("");
   const chatBox = useRef<HTMLDivElement>(null);
+  const account = useActiveAccount();
+  const voiceTok = tokenFor(account?.address); // голос можно отправить только после входа
   const chatLen = st?.chat?.length ?? 0;
   useEffect(() => { const el = chatBox.current; if (el) el.scrollTop = el.scrollHeight; }, [chatLen]);
 
@@ -257,12 +264,13 @@ export default function FriendGame({ roomId, color = "r", minutes = 60, onExit, 
             {st.chat.length === 0 && <div className="opacity-50 text-xs">{ru ? "Чат партии: его видите только вы и друг" : "Game chat: only you and your friend can see it"}</div>}
             {st.chat.map((c, i) => (
               <div key={i} className={c.from === seat ? "text-end" : ""}>
-                <span className={"inline-block rounded-2xl px-3 py-1 " + (c.from === seat ? "bg-emerald-500/20" : "bg-black/5 dark:bg-white/10")}>{c.text}</span>
+                <span className={"inline-block rounded-2xl px-3 py-1 " + (c.from === seat ? "bg-emerald-500/20" : "bg-black/5 dark:bg-white/10")}>{(() => { const v = parseVoice(c.text); return v ? <VoiceBubble path={v.path} sec={v.sec} /> : c.text; })()}</span>
               </div>
             ))}
           </div>
           <form className="flex gap-2" onSubmit={(e) => { e.preventDefault(); const text = msg.trim(); if (!text) return; room.chat(text); setMsg(""); }}>
             <input value={msg} onChange={(e) => setMsg(e.target.value.slice(0, 200))} maxLength={200} placeholder={ru ? "Сообщение…" : "Message…"} className="flex-1 rounded-xl bg-black/5 dark:bg-white/10 px-3 py-2 text-sm" />
+            {voiceTok && <VoiceRecorder token={voiceTok} onVoice={async (v) => { room.chat(v); }} />}
             <button className="btn btn-primary !py-2" type="submit">{ru ? "Отправить" : "Send"}</button>
           </form>
         </div>
