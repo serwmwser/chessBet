@@ -1,31 +1,43 @@
-# Chess Bet
+# Chess Bet (Rook Club)
 
-> Chess Bet is an online chess game. You can play against a bot or a friend for free, or play other players for USDC stakes on the Polygon network. A smart contract holds the stakes and the winner receives 90% of the pot. For adults only (18+). Stakes carry the risk of losing and the service may be unavailable in some countries.
+> Chess Bet is a social network with free worldwide classifieds (with built-in translation of ads and chat), 18+ dating, and online chess where players can stake USDC on the Polygon network. It also has free chess puzzles, free tournaments and chess NFTs. A smart contract holds chess stakes and the winner receives 90% of the pot. For adults only (18+). Stakes carry the risk of losing and some features may be unavailable in some countries.
+
+## What you can do on the site
+
+- Social network (Rook Club): public profiles, posts with photos, a feed, comments, followers, private messages and voice messages.
+- Classifieds for the whole world: ads for sale, wanted, rent, jobs and services by country and city. Ads and chat messages are translated into the reader's language, and a built-in chat connects buyer and seller. The first ad is free; extra ads cost 1 USDC for 30 days; optional paid options (renewal, top placement) are paid in USDC.
+- Dating (18+): free profiles with 3 photos, filters, likes, matches and private chat.
+- Chess for stakes: two players each stake USDC (0.5 to 500 USDC per game) and the ChessEscrow smart contract on Polygon holds the money. The winner receives 90% of the pot.
+- Free chess: play against a bot or a friend by private link, no stake needed.
+- Chess puzzles, free hourly tournaments with points, badges and cups, daily quests, and chess NFTs (a move from your own finished game as an ERC-721 NFT on Polygon).
 
 ## Main pages
 
-- [Play chess online free](https://chessbet.lol/chess/): practise against a bot or a friend by private link, no stakes needed.
+- [Home](https://chessbet.lol/): start page with all sections.
+- [Classifieds](https://chessbet.lol/ads/): international classifieds with translation of ads and chat, by country and city.
+- [Dating](https://chessbet.lol/dating/): free 18+ dating: profiles with 3 photos, filters, likes and matches.
+- [Feed](https://chessbet.lol/feed/): posts and photos from the Rook Club community.
 - [Crypto chess game](https://chessbet.lol/crypto/): how USDC stakes on Polygon work, who holds the money, fees and risks.
-- [FAQ](https://chessbet.lol/faq/): answers about stakes, fees, payouts, age, fair play, chess NFTs and the community.
-- [About](https://chessbet.lol/about/): what Chess Bet is, how it works and how to contact the project.
-- [Dating](https://chessbet.lol/dating/): free 18+ dating for everyone in the Rook Club community: profiles with 3 photos, filters, likes and matches.
+- [Play chess online free](https://chessbet.lol/chess/): practise against a bot or a friend by private link.
 - [Chess puzzles](https://chessbet.lol/puzzles/): free mate-in-1, mate-in-2 and mate-in-3 puzzles with server-checked moves, hints and XP.
-- [Classifieds](https://chessbet.lol/ads/): international classifieds in the Rook Club community with built-in translation of ads and chat: for sale, wanted, rent, jobs and services by country and city, with a seller chat. The first ad is free; extra ads cost 1 USDC for 30 days.
-- [Tournaments](https://chessbet.lol/tournaments/): free hourly chess arenas with points, badges and cups; daily quests and streaks.
+- [Tournaments](https://chessbet.lol/tournaments/): free hourly chess arenas with points, badges and cups.
 - [Chess NFTs](https://chessbet.lol/nft/): turn a move from your own finished game into an ERC-721 NFT on Polygon.
-- [Terms of use](https://chessbet.lol/terms/): age limit, stakes, fees, refunds, responsible play.
+- [FAQ](https://chessbet.lol/faq/): answers about stakes, fees, payouts, age, fair play, classifieds, dating and the community.
+- [About](https://chessbet.lol/about/): what Chess Bet is, how it works and how to contact the project.
+- [Terms of use](https://chessbet.lol/terms/): age limit, stakes, fees, refunds, classifieds options, responsible play.
 - [Age 18+ and responsible play](https://chessbet.lol/age/)
 - [Roadmap](https://chessbet.lol/roadmap/)
 
 ## Key facts
 
-- Currency and network: USDC on Polygon. A small amount of POL pays network fees.
-- Fee: 10% of the pot, so the winner receives 90%. Draws, cancelled games and games whose result cannot be recorded are refunded in full.
-- Stakes are held by a smart contract (ChessEscrow, 0xaf8714656261dc770A41857706FF4b2f495e92e9), verified on Polygonscan. The winner claims the prize with a Claim button.
-- Free modes: games against a bot and private games with a friend need no stake.
-- Also available as a Telegram Mini App: https://t.me/chess_betlolbot/game
-- Rook Club is the Chess Bet community: public profiles, posts with photos, a feed, comments, private and voice messages.
+- Currency and network: USDC on Polygon. A small amount of POL pays network fees. Signing in is free: one wallet signature, no gas.
+- Chess fee: 10% of the pot, so the winner receives 90%. Draws, cancelled games and games whose result cannot be recorded are refunded in full.
+- Stakes are held by a smart contract (ChessEscrow, 0xaf8714656261dc770A41857706FF4b2f495e92e9), verified on Polygonscan. The winner claims the prize with a Claim button. The chess NFT contract (GameNFT, 0xD929546324c0d675C16C8005F2df59D79AEFf87B) is also verified on Polygonscan.
+- The contracts have not had a paid third-party audit. Game results are reported by a server-side oracle key.
+- Free modes: games against a bot and private games with a friend need no stake. Classifieds, the feed, dating and puzzles are free to use (only extra ads and optional classifieds options cost USDC).
+- Also available as a Telegram Mini App: https://t.me/chess_betlolbot/game and as an Android app.
 - Private messages are stored on the server and are not end-to-end encrypted. Chess Bet never asks for a secret recovery phrase or private key.
+- Contact: chessgrokearn@gmail.com
 
 ## Languages
 
