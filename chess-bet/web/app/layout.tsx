@@ -12,15 +12,18 @@ const inter = Inter({ subsets: ["latin", "cyrillic"], variable: "--font-inter" }
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 const SITE = "https://chessbet.lol";
-const TITLE = "Chess Bet: Play Chess Online for USDC | Skill-Based Chess Stakes";
-const DESC = "Play online chess against real players for USDC on Polygon. Winner takes 90% of the pot, paid by a smart contract. Free practice vs bot, cartoon pieces, chess NFTs, Telegram Mini App.";
+const TITLE = "Chess Bet: Social Network, Classifieds, Dating & Chess for USDC";
+const DESC = "Social network with free worldwide classifieds and chat translation, 18+ dating and online chess for USDC stakes on Polygon. Winner gets 90% via smart contract.";
 
 const JSON_LD = JSON.stringify({
   "@context": "https://schema.org",
   "@graph": [
-    { "@type": "WebSite", "@id": SITE + "/#site", url: SITE, name: "Chess Bet", description: DESC, inLanguage: ["en", "de", "fr", "es", "pt", "zh", "ar", "tr", "ru"] },
-    { "@type": "WebApplication", "@id": SITE + "/#app", name: "Chess Bet", url: SITE, applicationCategory: "GameApplication", genre: "Chess", operatingSystem: "Any (web browser, Android, Telegram Mini App)", description: DESC, offers: { "@type": "Offer", price: "0", priceCurrency: "USD", description: "Free to open and practise; stakes are optional" } },
+    { "@type": "WebSite", "@id": SITE + "/#site", url: SITE, name: "Chess Bet", publisher: { "@id": SITE + "/#org" }, description: DESC, inLanguage: ["en", "de", "fr", "es", "pt", "zh", "ar", "tr", "ru"] },
+    { "@type": "Organization", "@id": SITE + "/#org", name: "Chess Bet", alternateName: "Rook Club", url: SITE, logo: SITE + "/icon-512.png", email: "chessgrokearn@gmail.com", sameAs: ["https://t.me/chess_betlolbot"] },
+    { "@type": "WebApplication", "@id": SITE + "/#app", name: "Chess Bet", url: SITE, applicationCategory: "SocialNetworkingApplication", applicationSubCategory: "Social network, worldwide classifieds, dating, chess", featureList: ["Social network with profiles, posts, feed and private and voice messages", "Free worldwide classifieds with translation of ads and chat", "Free 18+ dating with profiles, likes and matches", "Online chess for USDC stakes on Polygon held by a smart contract", "Free chess against a bot or a friend, puzzles and tournaments", "Chess NFTs on Polygon"], operatingSystem: "Any (web browser, Android, Telegram Mini App)", description: DESC, offers: { "@type": "Offer", price: "0", priceCurrency: "USD", description: "Free to open and practise; stakes are optional" } },
     { "@type": "FAQPage", mainEntity: [
+      { "@type": "Question", name: "What is Chess Bet (Rook Club)?", acceptedAnswer: { "@type": "Answer", text: "Chess Bet is a social network with free worldwide classifieds (ads and chat are translated into your language), 18+ dating, and online chess where players can stake USDC on Polygon. It also has free chess puzzles, tournaments and chess NFTs." } },
+      { "@type": "Question", name: "Is there dating on Chess Bet?", acceptedAnswer: { "@type": "Answer", text: "Yes. Dating is free and for adults only (18+): profiles with up to 3 photos, filters, likes, matches and private chat." } },
       { "@type": "Question", name: "Which currency and network does Chess Bet use?", acceptedAnswer: { "@type": "Answer", text: "USDC on the Polygon network, plus a small amount of POL for network fees." } },
       { "@type": "Question", name: "What is the fee?", acceptedAnswer: { "@type": "Answer", text: "The fee is 10% of the pot, so the winner receives 90%. Draws and cancelled games are refunded in full." } },
       { "@type": "Question", name: "Who holds the stakes?", acceptedAnswer: { "@type": "Answer", text: "A smart contract holds the stakes, and the winner claims the prize from it." } },
@@ -38,7 +41,7 @@ export const metadata: Metadata = {
   title: { default: TITLE, template: "%s | Chess Bet" },
   description: DESC,
   applicationName: "Chess Bet",
-  keywords: ["chess online", "play chess for money", "chess betting", "chess USDC", "crypto chess", "chess stakes", "play chess vs bot", "chess NFT", "chess NFT collection", "NFT chess game", "chess NFT OpenSea", "mint chess move NFT", "play to earn chess", "crypto chess game", "USDC chess game", "blockchain chess", "Polygon chess game", "web3 chess", "chess Telegram mini app", "chess tournaments", "online chess with friends", "free chess practice"],
+  keywords: ["social network", "worldwide classifieds", "classifieds with chat translation", "free classifieds", "online dating 18+", "chess online", "play chess for money", "chess betting", "chess USDC", "crypto chess", "chess stakes", "play chess vs bot", "chess NFT", "chess NFT collection", "NFT chess game", "chess NFT OpenSea", "mint chess move NFT", "play to earn chess", "crypto chess game", "USDC chess game", "blockchain chess", "Polygon chess game", "web3 chess", "chess Telegram mini app", "chess tournaments", "online chess with friends", "free chess practice"],
   alternates: { canonical: "/" },
   authors: [{ name: "Chess Bet" }],
   creator: "Chess Bet",
@@ -47,7 +50,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website", url: SITE, siteName: "Chess Bet", locale: "en_US",
     title: TITLE, description: DESC,
-    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Chess Bet: play chess for USDC" }],
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Chess Bet: social network, classifieds, dating and chess for USDC" }],
   },
   twitter: { card: "summary_large_image", title: TITLE, description: DESC, images: ["/og.png"] },
   formatDetection: { telephone: false },
