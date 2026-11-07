@@ -60,14 +60,20 @@ export async function openMic(): Promise<MediaStream> {
   throw last;
 }
 
+function micHelp(ru: boolean): string {
+  return ru
+    ? "Микрофон не запускается. Разрешите его приложению, в котором открыт сайт (Bitget Wallet, Chrome или другое): Настройки телефона → Приложения → название приложения → Разрешения → Микрофон → Разрешить. Затем закройте приложение полностью и откройте заново. Если не помогло, закройте другие приложения с микрофоном (звонки, запись экрана, видео)"
+    : "The microphone cannot start. Allow it for the app that opens the site (Bitget Wallet, Chrome or another): phone Settings → Apps → the app → Permissions → Microphone → Allow. Then close the app completely and reopen it. If that does not help, close other apps that use the microphone (calls, screen recording, video)";
+}
+
 export function voiceErr(e: unknown, ru: boolean): string {
   const m = (e as Error)?.message;
   if (m === "bad_audio") return ru ? "Не удалось обработать запись" : "Could not process the recording";
   if (m === "too_big") return ru ? "Запись слишком большая" : "The recording is too large";
-  if (m === "NotAllowedError" || (e as Error)?.name === "NotAllowedError") return ru ? "Нет доступа к микрофону. Разрешите его в настройках браузера" : "No microphone access. Allow it in your browser settings";
+  if (m === "NotAllowedError" || (e as Error)?.name === "NotAllowedError") return micHelp(ru);
   if ((e as Error)?.name === "NotFoundError") return ru ? "Микрофон не найден" : "No microphone found";
   if ((e as Error)?.name === "NotReadableError" || /audio source/i.test(String((e as Error)?.message || ""))) {
-    return ru ? "Микрофон занят или не запускается. Закройте приложение полностью, откройте заново и попробуйте снова. Если не помогло, закройте другие приложения с микрофоном (звонки, запись экрана, видео)" : "The microphone is busy or cannot start. Close the app completely, reopen it and try again. If that does not help, close other apps that use the microphone (calls, screen recording, video)";
+    return micHelp(ru);
   }
   return errText(e, ru);
 }

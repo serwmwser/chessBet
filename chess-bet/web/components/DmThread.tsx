@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useApp } from "@/lib/ctx";
-import { BASE, profileUrl } from "@/lib/urls";
+import { profileUrl } from "@/lib/urls";
 import { dmBlock, dmDelete, dmErr, dmReport, dmSend, dmThread, type DmMsg, type DmThread as Thread } from "@/lib/dm";
 import Avatar from "./Avatar";
 import { useSocial } from "@/lib/social";
@@ -162,18 +162,25 @@ export default function DmThread({ name, token, onBack, onChanged, draft }: { na
       </div>
 
       {info.canSend ? (
+        <>
         <div className="flex items-end gap-2 p-2 border-t border-black/10 dark:border-white/10">
           <textarea value={text} rows={2} maxLength={MAX} onChange={(e) => setText(e.target.value.slice(0, MAX))}
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
             placeholder={ru ? "Сообщение…" : "Message…"} aria-label={ru ? "Текст сообщения" : "Message text"}
             className="flex-1 rounded-xl border px-3 py-2 bg-transparent outline-none resize-none text-sm" />
           <VoiceRecorder token={token} onVoice={sendVoice} />
-          <a href={`${BASE}/rec.html?to=${encodeURIComponent(name)}`} className="btn btn-ghost shrink-0 !px-2 !py-1.5 text-xs" title={ru ? "Запись голосового на отдельной странице" : "Record a voice message on a separate page"}>{ru ? "🎙 Запись" : "🎙 Record"}</a>
           <div className="flex flex-col items-end gap-1">
             <span className="text-[10px] opacity-50">{MAX - text.length}</span>
             <button type="button" className="btn btn-primary !py-2" disabled={busy || !text.trim()} onClick={send}>{busy ? "…" : ru ? "Отправить" : "Send"}</button>
           </div>
         </div>
+        <details className="px-3 pb-2 text-xs opacity-70">
+          <summary className="cursor-pointer">{ru ? "🎤 Голосовое не записывается?" : "🎤 Voice message not recording?"}</summary>
+          <p className="mt-1 leading-relaxed">{ru
+            ? "Разрешите микрофон приложению, в котором открыт сайт (Bitget Wallet, Chrome или другое): Настройки телефона → Приложения → название приложения → Разрешения → Микрофон → Разрешить. Затем закройте приложение полностью и откройте заново. Голосовое можно записать и с компьютера."
+            : "Allow the microphone for the app that opens the site (Bitget Wallet, Chrome or another): phone Settings → Apps → the app → Permissions → Microphone → Allow. Then close the app completely and reopen it. You can also record voice messages on a computer."}</p>
+        </details>
+        </>
       ) : (
         <p className="text-center text-sm opacity-70 p-3 border-t border-black/10 dark:border-white/10">
           {info.blockedByMe ? (ru ? "Вы заблокировали этого игрока. Разблокируйте, чтобы написать." : "You blocked this player. Unblock to write.") : ru ? "Этот игрок не принимает ваши сообщения." : "This player does not accept your messages."}

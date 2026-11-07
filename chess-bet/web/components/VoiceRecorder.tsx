@@ -92,7 +92,7 @@ export default function VoiceRecorder({ token, disabled, onVoice }: { token: str
     );
   }
   return (
-    <button type="button" className="btn btn-ghost shrink-0 !rounded-full" style={{ padding: 7, minHeight: 0, lineHeight: 0 }} disabled={disabled || state === "up"} onClick={start} aria-label={ru ? "Записать голосовое сообщение" : "Record a voice message"} title={ru ? "Голосовое сообщение" : "Voice message"}>
+    <button type="button" className="btn btn-ghost shrink-0 !rounded-full" style={{ padding: 7, minHeight: 0, lineHeight: 0 }} disabled={disabled || state === "up"} onClick={start} aria-label={ru ? "Записать голосовое сообщение" : "Record a voice message"} title={ru ? "Голосовое сообщение. Не записывается? Разрешите микрофон приложению в настройках телефона" : "Voice message. Not recording? Allow the microphone for the app in phone settings"}>
       {state === "up" ? "…" : (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <rect x="9" y="2" width="6" height="12" rx="3" />
