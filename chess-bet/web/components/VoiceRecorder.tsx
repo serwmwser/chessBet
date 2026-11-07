@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useApp } from "@/lib/ctx";
+import { releaseAudio, resumeAudio } from "@/lib/sfx";
 import { VOICE_MAX_SEC, canRecord, encodeVoice, pickMime, uploadVoice, voiceErr } from "@/lib/voice";
 
 const fmt = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
@@ -25,6 +26,8 @@ export default function VoiceRecorder({ token, disabled, onVoice }: { token: str
     stream.current?.getTracks().forEach((t) => t.stop());
     stream.current = null;
     rec.current = null;
+    resumeAudio();
+    try { window.dispatchEvent(new Event("cb-mic-stop")); } catch { /* вне браузера */ } // музыка может вернуться
   };
   useEffect(() => () => { act.current = "cancel"; try { rec.current?.stop(); } catch { /* уже остановлена */ } release(); }, []);
 
@@ -40,6 +43,9 @@ export default function VoiceRecorder({ token, disabled, onVoice }: { token: str
     setState("up"); // пока микрофон открывается, кнопка неактивна
     try {
       release(); // закрываем прежний поток: незакрытый поток держит микрофон, и новый не запускается
+      window.dispatchEvent(new Event("cb-mic-start")); // музыка выключается на время записи
+      await releaseAudio(); // закрываем звуковой контекст звуков игры
+      await new Promise((r) => setTimeout(r, 250));
       const st = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.current = st;
       const mime = pickMime();
