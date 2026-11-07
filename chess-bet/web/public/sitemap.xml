@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://chessbet.lol/</loc>
-    <lastmod>2026-11-01</lastmod>
+    <lastmod>2026-11-08</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -20,7 +20,7 @@
   </url>
   <url>
     <loc>https://chessbet.lol/faq/</loc>
-    <lastmod>2026-11-01</lastmod>
+    <lastmod>2026-11-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -56,13 +56,13 @@
 </url>
 <url>
 <loc>https://chessbet.lol/about/</loc>
-<lastmod>2026-11-01</lastmod>
+<lastmod>2026-11-08</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.6</priority>
 </url>
 <url>
 <loc>https://chessbet.lol/dating/</loc>
-<lastmod>2026-11-02</lastmod>
+<lastmod>2026-11-08</lastmod>
 <changefreq>weekly</changefreq>
 <priority>0.6</priority>
 </url>
@@ -74,7 +74,13 @@
 </url>
 <url>
 <loc>https://chessbet.lol/ads/</loc>
-<lastmod>2026-11-04</lastmod>
+<lastmod>2026-11-08</lastmod>
+<changefreq>daily</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://chessbet.lol/feed/</loc>
+<lastmod>2026-11-08</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.7</priority>
 </url>
