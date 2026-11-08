@@ -291,9 +291,9 @@ export default function FriendGame({ roomId, color = "r", minutes = 60, onExit, 
             ))}
           </div>
           <form className="flex gap-2" onSubmit={(e) => { e.preventDefault(); const text = msg.trim(); if (!text) return; room.chat(text); setMsg(""); }}>
-            <input value={msg} onChange={(e) => setMsg(e.target.value.slice(0, 200))} maxLength={200} placeholder={ru ? "Сообщение…" : "Message…"} className="flex-1 rounded-xl bg-black/5 dark:bg-white/10 px-3 py-2 text-sm" />
+            <input value={msg} onChange={(e) => setMsg(e.target.value.slice(0, 200))} maxLength={200} placeholder={ru ? "Сообщение…" : "Message…"} className="flex-1 min-w-0 rounded-xl bg-black/5 dark:bg-white/10 px-3 py-2 text-sm" />
             {voiceTok && <VoiceRecorder token={voiceTok} onVoice={async (v) => { room.chat(v); }} />}
-            <button className="btn btn-primary !py-2" type="submit">{ru ? "Отправить" : "Send"}</button>
+            <button className="btn btn-primary shrink-0 !rounded-full" style={{ padding: 7, minHeight: 0, lineHeight: 0 }} type="submit" aria-label={ru ? "Отправить" : "Send"} title={ru ? "Отправить" : "Send"}><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M2 21l21-9L2 3v7l15 2-15 2z" /></svg></button>
           </form>
         </div>
       )}
