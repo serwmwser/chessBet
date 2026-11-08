@@ -1,6 +1,14 @@
 // Тексты и цифры страницы /token/ (RU/EN). Токен TCH пока в проекте, не выпущен: страница честно это говорит.
 // Распределение: сумма всех долей = TOTAL. Остаток от округления отдан резерву наград.
 export const TOTAL = 888_888_888;
+export const POLYGONSCAN = "https://polygonscan.com/address/";
+export const CONTRACTS: { id: string; en: string; ru: string; addr: string }[] = [
+  { id: "token", en: "TCH token", ru: "Токен TCH", addr: "0x14818b99E86fD4654Cb55BE57367d1BfaA2b0F82" },
+  { id: "pool", en: "Rewards reserve (RewardPool)", ru: "Резерв наград (RewardPool)", addr: "0xE0A3309E1e36fEfEadF87c25767Ff5380afe35f5" },
+  { id: "owner", en: "Owner lock (vesting)", ru: "Заморозка доли владельца", addr: "0xd4C725c183E25d27D8Aa38e0e7423Ab2b0B08e1C" },
+  { id: "team", en: "Team lock (vesting)", ru: "Заморозка доли команды", addr: "0xF37D4f0E3674F206cf0C716c9a871ee95732F1Fa" },
+  { id: "cex", en: "Exchange reserve lock", ru: "Заморозка резерва для биржи", addr: "0x6F3987a2fe5045cF8BE561Dd02De5210bcA78b48" },
+];
 
 export type Slice = { id: string; pct: number; amount: number; en: string; ru: string; noteEn: string; noteRu: string };
 
@@ -37,9 +45,9 @@ export type Content = {
 
 export const EN: Content = {
   title: "TCH token (ChessTalk Token)",
-  intro: "TCH is the planned in-app token of Chess Bet: you earn it for calls and activity, and spend it inside the app.",
+  intro: "TCH is the in-app token of Chess Bet: you earn it for calls and activity, and spend it inside the app.",
   crumb: "Token",
-  status: "Status: in development. The token is not issued yet and is not for sale. Nothing here is investment advice or a promise of price growth.",
+  status: "Status: the token was issued on Polygon on 8 November 2026. Rewards for activity are not live yet, and TCH is not listed on any exchange or DEX. Nothing here is investment advice or a promise of price growth.",
   factsH: "Key facts",
   facts: [
     ["Name / ticker", "ChessTalk Token / TCH"],
@@ -76,7 +84,7 @@ export const EN: Content = {
   road: [
     ["Stage 1", "Calls between profiles without tokens."],
     ["Stage 2", "TCH points on the site: balance, history, limits, anti-abuse."],
-    ["Stage 3", "TCH and RewardPool contracts on Polygon, withdrawals."],
+    ["Stage 3", "Done on 8 November 2026: TCH, RewardPool and lock contracts issued on Polygon. Next: withdrawals of rewards."],
     ["Stage 4", "Payments in TCH with burning, staking, tournament fees."],
     ["Stage 5", "TCH/USDC pool on a DEX (not earlier than 3 months after issue). A centralized exchange is considered about a year later, with a community of 50 000 people."],
   ],
@@ -92,9 +100,9 @@ export const EN: Content = {
 
 export const RU: Content = {
   title: "Токен TCH (ChessTalk Token)",
-  intro: "TCH — планируемый внутренний токен Chess Bet: его зарабатывают за звонки и активность и тратят внутри приложения.",
+  intro: "TCH — внутренний токен Chess Bet: его зарабатывают за звонки и активность и тратят внутри приложения.",
   crumb: "Токен",
-  status: "Статус: в разработке. Токен ещё не выпущен и не продаётся. Ничего здесь не является инвестиционным советом или обещанием роста цены.",
+  status: "Статус: токен выпущен в сети Polygon 8 ноября 2026 года. Награды за активность пока не включены, TCH не торгуется ни на одной бирже и DEX. Ничего здесь не является инвестиционным советом или обещанием роста цены.",
   factsH: "Главное",
   facts: [
     ["Название / тикер", "ChessTalk Token / TCH"],
@@ -131,7 +139,7 @@ export const RU: Content = {
   road: [
     ["Этап 1", "Звонки между профилями без токенов."],
     ["Этап 2", "Очки TCH на сайте: баланс, история, лимиты, защита от накрутки."],
-    ["Этап 3", "Контракты TCH и RewardPool на Polygon, вывод наград."],
+    ["Этап 3", "Сделано 8 ноября 2026: контракты TCH, RewardPool и заморозок выпущены в Polygon. Дальше: вывод наград."],
     ["Этап 4", "Оплата в TCH со сжиганием, стейкинг, взносы в турниры."],
     ["Этап 5", "Пул TCH/USDC на DEX (не раньше чем через 3 месяца после выпуска). Централизованная биржа рассматривается примерно через год при сообществе в 50 000 человек."],
   ],

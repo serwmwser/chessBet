@@ -3,7 +3,7 @@ import Link from "next/link";
 import PageShell from "@/components/PageShell";
 import { useApp } from "@/lib/ctx";
 import { BASE, ROUTES } from "@/lib/urls";
-import { EN, RU, SLICES, TOTAL } from "./content";
+import { CONTRACTS, EN, POLYGONSCAN, RU, SLICES, TOTAL } from "./content";
 
 const COLORS = ["#d4a017", "#10b981", "#0ea5e9", "#8b5cf6", "#f97316", "#ec4899", "#64748b", "#14b8a6"];
 const fmt = (n: number) => n.toLocaleString("ru-RU").replace(/ /g, " ");
@@ -45,6 +45,19 @@ export default function TokenPage() {
             </div>
           ))}
         </dl>
+      </section>
+
+      <section className="card space-y-3">
+        <h2 className="text-lg font-bold">{ru ? "Контракты в сети Polygon" : "Contracts on Polygon"}</h2>
+        <ul className="space-y-2 text-sm">
+          {CONTRACTS.map((k) => (
+            <li key={k.id} className="flex flex-wrap justify-between gap-x-3 gap-y-0.5">
+              <span className="opacity-80">{ru ? k.ru : k.en}</span>
+              <a className="underline break-all" href={POLYGONSCAN + k.addr} target="_blank" rel="noopener noreferrer">{k.addr}</a>
+            </li>
+          ))}
+        </ul>
+        <p className="text-xs opacity-70">{ru ? "Исходный код контрактов пока не опубликован на Polygonscan." : "The source code of the contracts is not published on Polygonscan yet."}</p>
       </section>
 
       <section className="card space-y-3">

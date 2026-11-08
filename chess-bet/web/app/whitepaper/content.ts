@@ -74,17 +74,18 @@ export const TOKEN: Doc = {
   id: "token",
   tab: "TCH token",
   title: "TCH (ChessTalk Token): Whitepaper",
-  version: "Version 0.2 · 8 November 2026 · https://chessbet.lol/token/",
-  note: "Status: in development. The token is not issued yet and is not for sale. This is not an investment offer, advice or a promise of price growth.",
+  version: "Version 0.3 · 8 November 2026 · https://chessbet.lol/token/",
+  note: "Status: the token was issued on Polygon on 8 November 2026. Rewards for activity are not live yet, and TCH is not listed on any exchange or DEX. This is not an investment offer, advice or a promise of price growth.",
   sections: [
     { h: "1. Purpose", p: [
-      "TCH (ChessTalk Token) is a planned in-app unit of Chess Bet. Members earn it for communication and activity, such as calls between profiles, and spend it on paid options. It is not money and not a share in a company.",
+      "TCH (ChessTalk Token) is an in-app unit of Chess Bet. Members earn it for communication and activity, such as calls between profiles, and spend it on paid options. It is not money and not a share in a company.",
     ] },
     { h: "2. Parameters", ul: [
       "Name and ticker: ChessTalk Token, TCH.",
       "Network and standard: Polygon, ERC-20, 18 decimals.",
       "Total supply: 888,888,888 TCH, created once when the contract is deployed. There is no mint function and no owner of the token, so supply can never increase.",
       "Burning: any holder can destroy their own tokens; part of every payment in TCH is burned.",
+      "Contracts on Polygon (issued 8 November 2026): token 0x14818b99E86fD4654Cb55BE57367d1BfaA2b0F82; RewardPool 0xE0A3309E1e36fEfEadF87c25767Ff5380afe35f5; owner lock 0xd4C725c183E25d27D8Aa38e0e7423Ab2b0B08e1C; team lock 0xF37D4f0E3674F206cf0C716c9a871ee95732F1Fa; exchange reserve lock 0x6F3987a2fe5045cF8BE561Dd02De5210bcA78b48. The source code is not published on Polygonscan yet.",
     ] },
     { h: "3. Distribution", head: ["Allocation", "Share", "Tokens (TCH)"], rows: [
       ["Rewards reserve", "58%", "515,555,559"],
