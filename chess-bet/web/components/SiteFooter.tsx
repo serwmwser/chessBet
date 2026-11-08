@@ -30,6 +30,7 @@ export default function SiteFooter() {
     [ru ? "Условия использования" : "Terms of use", `${BASE}/terms/`, false],
     [ru ? "Возраст 18+ и ответственная игра" : "Age 18+ and responsible play", `${BASE}/age/`, false],
     [ru ? "Дорожная карта" : "Roadmap", `${BASE}/roadmap/`, false],
+    [ru ? "Токен TCH" : "TCH token", `${BASE}/token/`, false],
     [ru ? "Chess Bet в Telegram" : "Chess Bet on Telegram", TG_BOT_URL, true],
   ];
   return (

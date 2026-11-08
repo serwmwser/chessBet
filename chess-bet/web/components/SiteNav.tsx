@@ -13,6 +13,7 @@ const ITEMS: Item[] = [
   { href: ROUTES.chess, ru: "Шахматы", en: "Chess", icon: "♟" },
   { href: ROUTES.crypto, ru: "Крипто", en: "Crypto", icon: "🪙" },
   { href: ROUTES.nft, ru: "NFT", en: "NFT", icon: "🎨" },
+  { href: ROUTES.token, ru: "Токен TCH", en: "TCH token", icon: "💎" },
   { href: ROUTES.tournaments, ru: "Турниры", en: "Tournaments", icon: "🏆" },
   { href: ROUTES.dating, ru: "Знакомства", en: "Dating", icon: "💞" },
   { href: ROUTES.puzzles, ru: "Задачи", en: "Puzzles", icon: "♟" },
