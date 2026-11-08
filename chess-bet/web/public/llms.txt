@@ -24,7 +24,7 @@
 - [Chess NFTs](https://chessbet.lol/nft/): turn a move from your own finished game into an ERC-721 NFT on Polygon.
 - [FAQ](https://chessbet.lol/faq/): answers about stakes, fees, payouts, age, fair play, classifieds, dating and the community.
 - [About](https://chessbet.lol/about/): what Chess Bet is, how it works and how to contact the project.
-- [TCH token](https://chessbet.lol/token/): planned in-app token (not issued yet): 888,888,888 fixed supply on Polygon, earned for calls and activity, tokenomics, roadmap, risks. Whitepaper: https://chessbet.lol/whitepaper-tch.md
+- [TCH token](https://chessbet.lol/token/): planned in-app token (not issued yet): 888,888,888 fixed supply on Polygon, earned for calls and activity, tokenomics, roadmap, risks. Whitepapers (English): https://chessbet.lol/whitepaper/
 - [Terms of use](https://chessbet.lol/terms/): age limit, stakes, fees, refunds, classifieds options, responsible play.
 - [Age 18+ and responsible play](https://chessbet.lol/age/)
 - [Roadmap](https://chessbet.lol/roadmap/)

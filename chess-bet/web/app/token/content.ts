@@ -55,7 +55,8 @@ export const EN: Content = {
     "Calls between profiles: reward for call time, split 50/50 between the two people.",
     "Games, posts, puzzles and invitations: smaller rewards.",
     "Anti-abuse: a minimum call length, daily limits, wallet confirmation and checks for suspicious pairs.",
-    "Release speed: no more than 40 000 000 TCH from the reserve in year 1, then halving every year.",
+    "Release speed: the reserve opens linearly over 10 years, up to about 51.5 million TCH per year, with a daily limit enforced by the contract.",
+    "Invite friends (Eternal Gambit): you get a bonus of 10% of the TCH your friends earn, 20% once you have 21 friends and 30% from 101 friends. The bonus comes from the rewards reserve and is not taken from your friend.",
   ],
   spendH: "How to spend TCH",
   spend: [
@@ -83,7 +84,7 @@ export const EN: Content = {
   risks: [
     "Crypto assets can lose all their value. Play and trade only with money you can afford to lose.",
     "Rules for tokens differ between countries. Check the rules of your country before buying or trading.",
-    "The token contracts have not been independently audited and may contain errors.",
+    "The token contracts have not been audited by a security firm and may contain errors. They had an AI-assisted review on 8 November 2026 (see the whitepaper), which is not a guarantee.",
   ],
   wp: "Read the whitepaper",
   back: "Home",
@@ -109,7 +110,8 @@ export const RU: Content = {
     "Звонки между профилями: награда за время разговора, делится 50/50 между двумя участниками.",
     "Игры, посты, головоломки и приглашения: награды поменьше.",
     "Защита от накрутки: минимальная длительность звонка, дневные лимиты, подтверждение кошелька, проверка подозрительных пар.",
-    "Скорость выдачи: из резерва не более 40 000 000 TCH в 1-й год, дальше каждый год вдвое меньше.",
+    "Скорость выдачи: резерв открывается линейно 10 лет, примерно до 51,5 млн TCH в год, плюс дневной лимит в контракте.",
+    "Приглашайте друзей («Вечный гамбит»): бонус 10% от TCH, которые зарабатывают друзья, 20% с 21 друга и 30% со 101 друга. Бонус берётся из резерва наград и не вычитается у вашего друга.",
   ],
   spendH: "Как потратить TCH",
   spend: [
@@ -137,7 +139,7 @@ export const RU: Content = {
   risks: [
     "Криптоактивы могут полностью обесцениться. Играйте и торгуйте только теми деньгами, которые не жалко потерять.",
     "Правила для токенов отличаются в разных странах. Проверьте правила своей страны до покупки и торговли.",
-    "Контракты токена не проходили независимый аудит и могут содержать ошибки.",
+    "Контракты токена не проходили аудит в специализированной компании и могут содержать ошибки. 8 ноября 2026 года их проверил ИИ (см. белую книгу), это не гарантия.",
   ],
   wp: "Читать белую книгу",
   back: "На главную",

@@ -44,7 +44,7 @@ Page: https://chessbet.lol/dating/
 
 ## 5. TCH token (planned, not issued yet)
 
-TCH (ChessTalk Token) is the planned in-app token of Chess Bet on Polygon (ERC-20). Total supply is fixed at 888,888,888 TCH, created once, with no mint function afterwards. Distribution: 58% rewards reserve (paid out gradually for calls and activity, no more than 40,000,000 TCH in year 1, halving each following year), 1% DEX liquidity (with 1,000 USDC, no earlier than 3 months after issue, LP locked 12 months), 4% exchange reserve (locked 12 months), 5% app owner (6-month lock, then 24 months linear), 10% team, 12% treasury, 5% early users, 5% partners. TCH is meant to be spent on paid options (ad boosts, VIP profile, tournament fees, staking); part of every payment in TCH is burned. The token is not issued, not for sale, not an investment, its price is not guaranteed, and the contracts have not been independently audited. Page: https://chessbet.lol/token/ . Whitepaper: https://chessbet.lol/whitepaper-tch.md
+TCH (ChessTalk Token) is the planned in-app token of Chess Bet on Polygon (ERC-20). Total supply is fixed at 888,888,888 TCH, created once, with no mint function afterwards. Distribution: 58% rewards reserve (paid out gradually for calls and activity, opening linearly over 10 years, up to about 51.5 million TCH per year), 1% DEX liquidity (with 1,000 USDC, no earlier than 3 months after issue, LP locked 12 months), 4% exchange reserve (locked 12 months), 5% app owner (6-month lock, then 24 months linear), 10% team, 12% treasury, 5% early users, 5% partners. TCH is meant to be spent on paid options (ad boosts, VIP profile, tournament fees, staking); part of every payment in TCH is burned. The token is not issued, not for sale, not an investment, its price is not guaranteed, and the contracts have not been independently audited. Page: https://chessbet.lol/token/ . Whitepapers (English): https://chessbet.lol/whitepaper/
 
 ## Smart contracts (Polygon, verified on Polygonscan)
 
@@ -84,7 +84,7 @@ The interface is available in English, German, French, Spanish, Portuguese, Chin
 - https://chessbet.lol/age/ (age 18+ and responsible play)
 - https://chessbet.lol/roadmap/ (roadmap)
 - https://chessbet.lol/token/ (TCH token: tokenomics, roadmap, risks)
-- https://chessbet.lol/whitepaper-tch.md (TCH whitepaper)
+- https://chessbet.lol/whitepaper/ (whitepapers of the Chess Bet app and the TCH token, in English)
 
 ## Краткое описание на русском
 

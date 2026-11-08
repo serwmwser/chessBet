@@ -88,7 +88,7 @@ export default function TokenPage() {
       {list(c.risksH, c.risks)}
 
       <div className="flex flex-wrap gap-2">
-        <a className="btn btn-primary" href={`${BASE}/whitepaper-tch.md`} target="_blank" rel="noopener noreferrer">{c.wp}</a>
+        <a className="btn btn-primary" href={`${BASE}/whitepaper/#token`}>{c.wp}</a>
         <Link className="btn btn-ghost" href={ROUTES.home}>{c.back}</Link>
       </div>
     </PageShell>

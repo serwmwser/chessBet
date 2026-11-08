@@ -22,6 +22,7 @@ export const ROUTES = {
   about: `${BASE}/about/`,
   tournaments: `${BASE}/tournaments/`,
   token: `${BASE}/token/`,
+  whitepaper: `${BASE}/whitepaper/`,
 } as const;
 
 /** Профиль игрока: пока адрес с параметром, потом можно заменить на /u/имя/ */

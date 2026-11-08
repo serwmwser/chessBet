@@ -27,6 +27,7 @@ export const APP: Doc = {
       "Chess: free games against a bot or a friend, and games for USDC stakes.",
       "Puzzles and tournaments: free mate-in-1, mate-in-2 and mate-in-3 puzzles with XP, and free hourly arenas with points, badges and cups.",
       "Chess NFTs: a move from your own finished game can become an ERC-721 NFT on Polygon.",
+      "Referral programme Eternal Gambit: invite friends with your personal link and receive a share of the fee from their paid games: 10%, 20% once you have 21 friends and 30% from 101 friends. A friend counts after their first paid game; income is not guaranteed.",
       "Languages: the interface is available in English and Russian; more languages are planned.",
     ] },
     { h: "4. How a staked game works", ul: [
@@ -133,13 +134,28 @@ export const TOKEN: Doc = {
     ] },
     { h: "9. Risks", ul: [
       "Crypto assets can lose all their value. Use only money you can afford to lose.",
-      "The token contracts have not been independently audited and cannot be changed after issue, so an error may be permanent.",
+      "The token contracts have not been audited by a security firm and cannot be changed after issue, so an error may be permanent. An AI-assisted review is described in section 11; it is not a substitute for a professional audit.",
       "Rules for tokens differ by country. Check the rules of your country before buying or trading.",
       "Liquidity may be low and the price may move sharply.",
       "The project may miss its goals for community size and listings.",
       "The app owner holds 5% of supply, locked by the schedule above.",
     ] },
-    { h: "10. Contact", p: [CONTACT] },
+    { h: "10. Referral program (Eternal Gambit for TCH)", p: [
+      "TCH uses the same personal link and the same lifetime tie between friends as the Eternal Gambit programme of the app.",
+    ], ul: [
+      "A friend who joins through your link is tied to your wallet for life.",
+      "A friend counts after their first TCH reward.",
+      "Your bonus: 10% of every TCH reward your friends earn; 20% once you have 21 counted friends; 30% from 101 counted friends.",
+      "The bonus is paid from the rewards reserve on top of the friend's reward; nothing is deducted from the friend.",
+      "Bonuses obey the same release schedule and daily limits as other rewards, so they never increase the total release.",
+      "Anti-abuse: no bonus for self-referral or linked wallets, and bonuses for rewards cancelled as abuse are cancelled too.",
+      "Bonuses are claimed like other rewards. Income is not guaranteed and the terms can change.",
+    ] },
+    { h: "11. Security review (AI-assisted, not a third-party audit)", p: [
+      "The TCH contracts (TCHToken, TCHRewardPool, TCHVesting) were written with Claude Sonnet 5.5 (Anthropic) and independently reviewed by a separate AI reviewer on 8 November 2026. The review found no critical or high-severity issues. Medium and low findings were fixed: a daily payout limit, disabled renounce of ownership, two-step ownership transfer and stricter deploy-script checks. 12 automated tests pass.",
+      "This is not a professional audit by a security firm and does not guarantee the absence of errors. The contracts cannot be changed after deployment.",
+    ] },
+    { h: "12. Contact", p: [CONTACT] },
   ],
 };
 
