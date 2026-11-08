@@ -57,7 +57,7 @@ export default function TokenPage() {
             </li>
           ))}
         </ul>
-        <p className="text-xs opacity-70">{ru ? "Исходный код контрактов пока не опубликован на Polygonscan." : "The source code of the contracts is not published on Polygonscan yet."}</p>
+        <p className="text-xs opacity-70">{ru ? "Исходный код всех контрактов опубликован и подтверждён на Polygonscan (вкладка Contract)." : "The source code of all contracts is published and verified on Polygonscan (Contract tab)."}</p>
       </section>
 
       <section className="card space-y-3">
