@@ -32,6 +32,7 @@ export default function SiteFooter() {
     [ru ? "Дорожная карта" : "Roadmap", `${BASE}/roadmap/`, false],
     [ru ? "Токен TCH" : "TCH token", `${BASE}/token/`, false],
     [ru ? "Белые книги" : "Whitepapers", `${BASE}/whitepaper/`, false],
+    [ru ? "Прозрачность контракта" : "Contract transparency", `${BASE}/transparency/`, false],
     [ru ? "Chess Bet в Telegram" : "Chess Bet on Telegram", TG_BOT_URL, true],
   ];
   return (

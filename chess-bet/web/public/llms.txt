@@ -25,6 +25,7 @@
 - [FAQ](https://chessbet.lol/faq/): answers about stakes, fees, payouts, age, fair play, classifieds, dating and the community.
 - [About](https://chessbet.lol/about/): what Chess Bet is, how it works and how to contact the project.
 - [TCH token](https://chessbet.lol/token/): in-app token issued on Polygon on 8 November 2026 (0x14818b99E86fD4654Cb55BE57367d1BfaA2b0F82; rewards not live yet, not listed on exchanges): 888,888,888 fixed supply, earned for calls and activity, tokenomics, roadmap, risks. Whitepapers (English): https://chessbet.lol/whitepaper/
+- [Transparency](https://chessbet.lol/transparency/): live state of the ChessEscrow betting contract on Polygon read from the blockchain (USDC held, games, bet cap, fee, owner, oracle), what is fixed in code, who can do what, honest risks (no paid audit).
 - [Terms of use](https://chessbet.lol/terms/): age limit, stakes, fees, refunds, classifieds options, responsible play.
 - [Age 18+ and responsible play](https://chessbet.lol/age/)
 - [Roadmap](https://chessbet.lol/roadmap/)
