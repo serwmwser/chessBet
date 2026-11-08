@@ -1,17 +1,17 @@
 // Ссылки «поделиться» для соцсетей и «черновик» для отправки ссылки личным сообщением внутри Rook Club.
-export type ShareNet = { name: string; icon: string; href: string };
+export type ShareNet = { name: string; icon: string; href: string; color: string; glyph: string };
 
 export function shareNets(url: string, text: string): ShareNet[] {
   const u = encodeURIComponent(url), t = encodeURIComponent(text), both = encodeURIComponent(`${text} ${url}`);
   return [
-    { name: "Telegram", icon: "✈️", href: `https://t.me/share/url?url=${u}&text=${t}` },
-    { name: "WhatsApp", icon: "💬", href: `https://wa.me/?text=${both}` },
-    { name: "X (Twitter)", icon: "𝕏", href: `https://twitter.com/intent/tweet?text=${t}&url=${u}` },
-    { name: "Facebook", icon: "📘", href: `https://www.facebook.com/sharer/sharer.php?u=${u}` },
-    { name: "VK", icon: "🔵", href: `https://vk.com/share.php?url=${u}&title=${t}` },
-    { name: "Reddit", icon: "👽", href: `https://www.reddit.com/submit?url=${u}&title=${t}` },
-    { name: "LinkedIn", icon: "💼", href: `https://www.linkedin.com/sharing/share-offsite/?url=${u}` },
-    { name: "Email", icon: "✉️", href: `mailto:?subject=${t}&body=${both}` },
+    { name: "Telegram", icon: "✈️", glyph: "✈", color: "#229ED9", href: `https://t.me/share/url?url=${u}&text=${t}` },
+    { name: "WhatsApp", icon: "💬", glyph: "✆", color: "#25D366", href: `https://wa.me/?text=${both}` },
+    { name: "X (Twitter)", icon: "𝕏", glyph: "𝕏", color: "#111111", href: `https://twitter.com/intent/tweet?text=${t}&url=${u}` },
+    { name: "Facebook", icon: "📘", glyph: "f", color: "#1877F2", href: `https://www.facebook.com/sharer/sharer.php?u=${u}` },
+    { name: "VK", icon: "🔵", glyph: "VK", color: "#0077FF", href: `https://vk.com/share.php?url=${u}&title=${t}` },
+    { name: "Reddit", icon: "👽", glyph: "r/", color: "#FF4500", href: `https://www.reddit.com/submit?url=${u}&title=${t}` },
+    { name: "LinkedIn", icon: "💼", glyph: "in", color: "#0A66C2", href: `https://www.linkedin.com/sharing/share-offsite/?url=${u}` },
+    { name: "Email", icon: "✉️", glyph: "✉", color: "#6B7280", href: `mailto:?subject=${t}&body=${both}` },
   ];
 }
 
