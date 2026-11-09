@@ -14,7 +14,7 @@ const ITEMS: Item[] = [
   { href: ROUTES.messages, ru: "Общение", en: "Chat", icon: "💬", also: [ROUTES.feed, ROUTES.join] },
   { href: ROUTES.profile, ru: "Профиль", en: "Profile", icon: "👤" },
   { href: ROUTES.token, ru: "Заработать", en: "Earn", icon: "💰", also: [ROUTES.nft, ROUTES.roadmap, ROUTES.whitepaper] },
-  { href: ROUTES.home, ru: "Играть", en: "Play", icon: "♞", also: [ROUTES.chess, ROUTES.crypto, ROUTES.puzzles, ROUTES.tournaments] },
+  { href: ROUTES.home + "#games", ru: "Играть", en: "Play", icon: "♞", also: [ROUTES.chess, ROUTES.crypto, ROUTES.puzzles, ROUTES.tournaments] },
 ];
 
 const norm = (p: string) => (p.endsWith("/") ? p : p + "/");
@@ -37,7 +37,7 @@ export default function SiteNav() {
     <nav aria-label={ru ? "Разделы сайта" : "Site sections"} className="mx-auto max-w-3xl px-3 pt-2">
       <ul className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] md:flex-wrap md:overflow-visible">
         {ITEMS.map((it) => {
-          const on = [it.href, ...(it.also ?? [])].some((h) => (norm(h) === norm(ROUTES.home) ? path === norm(h) : path.startsWith(norm(h))));
+          const on = [it.href, ...(it.also ?? [])].map((h) => norm(h.split("#")[0])).some((h) => (h === norm(ROUTES.home) ? path === h : path.startsWith(h)));
           return (
             <li key={it.href} className="shrink-0">
               <a

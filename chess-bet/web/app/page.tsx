@@ -22,6 +22,7 @@ import SiteNav from "@/components/SiteNav";
 import Earn from "@/components/Earn";
 import FaucetBar from "@/components/FaucetBar";
 import Hero from "@/components/Hero";
+import HomeTiles from "@/components/HomeTiles";
 import Invite from "@/components/Invite";
 import Lobby from "@/components/Lobby";
 import OnlineGame from "@/components/OnlineGame";
@@ -64,6 +65,19 @@ export default function Home() {
   useEffect(() => { setNotifPerm("Notification" in window ? Notification.permission : "unsupported"); }, []);
   const account = useActiveAccount();
   const [tab, setTab] = useState<Tab>("lobby");
+  const [gamesOpen, setGamesOpen] = useState(false); // блок «Играть в шахматы»
+  const [betsOpen, setBetsOpen] = useState(false); // блок «Ставки в USDC»
+  const [moreOpen, setMoreOpen] = useState(false); // блок «Ещё»
+  const openGames = () => {
+    setGamesOpen(true);
+    setTimeout(() => document.getElementById("games")?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
+  };
+  useEffect(() => {
+    const h = () => { if (location.hash === "#games") openGames(); };
+    h();
+    window.addEventListener("hashchange", h);
+    return () => window.removeEventListener("hashchange", h);
+  }, []);
   const [gid, setGid] = useState<number | null>(null);
   const [openCount, setOpenCount] = useState(0);
   const [cartMode, setCartMode] = useState<"bot" | "arena">("bot");
@@ -132,7 +146,40 @@ export default function Home() {
           </div>
         )}
         {inviteId !== null && <Invite id={inviteId} onClose={() => setInviteId(null)} />}
-        {tab === "lobby" && <div className="space-y-4"><Hero onBot={() => setTab("bot")} onEarn={() => setTab("earn")} /><Lobby /><AdsPromo /><AppDownload /><FriendCard onStart={(c, mins) => { setFriend((f) => ({ room: null, color: c, minutes: mins, n: (f?.n ?? 0) + 1 })); setTab("friend"); }} /><MyFriendRooms onOpen={openRoom} /><RefBanner onEarn={() => setTab("earn")} /><LobbyLinks onArena={() => { setCartMode("arena"); setTab("cartoon"); }} /><button type="button" onClick={() => setTab("nft")} className="w-full rounded-2xl px-4 py-3 text-start shadow-glow" style={{ background: "linear-gradient(90deg,#ff5a1f,#ff4fa3,#8b4dff)", color: "#fff" }}><div className="text-base font-extrabold">🎨 {ru ? "Студия NFT" : "NFT Studio"}</div><div className="text-xs font-medium opacity-90">{ru ? "Выберите ход из своей партии и мультяшную фигуру: получится картинка-NFT" : "Pick a move from your game and a cartoon piece to make an NFT picture"}</div></button><TelegramCard /><SeoAbout /><SiteFooter /></div>}
+        {tab === "lobby" && (
+          <div className="space-y-4">
+            <HomeTiles onEarn={() => setTab("earn")} onPlay={openGames} />
+
+            <details id="games" open={gamesOpen} onToggle={(e) => setGamesOpen((e.currentTarget as HTMLDetailsElement).open)} className="card">
+              <summary className="cursor-pointer select-none text-lg font-extrabold" style={{ color: "#d4a017" }}>♞ {ru ? "Играть в шахматы" : "Play chess"}</summary>
+              <div className="space-y-4 pt-4">
+                <Hero onBot={() => setTab("bot")} onEarn={() => setTab("earn")} />
+                <FriendCard onStart={(c, mins) => { setFriend((f) => ({ room: null, color: c, minutes: mins, n: (f?.n ?? 0) + 1 })); setTab("friend"); }} />
+                <MyFriendRooms onOpen={openRoom} />
+                <details open={betsOpen} onToggle={(e) => setBetsOpen((e.currentTarget as HTMLDetailsElement).open)} className="rounded-2xl border border-black/10 dark:border-white/10 p-3">
+                  <summary className="cursor-pointer select-none font-bold">💰 {ru ? "Ставки в USDC (только 18+)" : "USDC stakes (18+ only)"}</summary>
+                  <p className="text-xs opacity-70 pt-2">{ru ? "Результат зависит от вашего мастерства, но выигрыш не гарантирован. Играйте только теми суммами, потерю которых можете себе позволить." : "The result depends on your skill, but winning is not guaranteed. Only play with amounts you can afford to lose."}</p>
+                  <div className="pt-3"><Lobby /></div>
+                </details>
+                <LobbyLinks onArena={() => { setCartMode("arena"); setTab("cartoon"); }} />
+              </div>
+            </details>
+
+            <details open={moreOpen} onToggle={(e) => setMoreOpen((e.currentTarget as HTMLDetailsElement).open)} className="card">
+              <summary className="cursor-pointer select-none text-lg font-extrabold" style={{ color: "#d4a017" }}>✨ {ru ? "Ещё" : "More"}</summary>
+              <div className="space-y-4 pt-4">
+                <AdsPromo />
+                <AppDownload />
+                <RefBanner onEarn={() => setTab("earn")} />
+                <button type="button" onClick={() => setTab("nft")} className="w-full rounded-2xl px-4 py-3 text-start shadow-glow" style={{ background: "linear-gradient(90deg,#ff5a1f,#ff4fa3,#8b4dff)", color: "#fff" }}><div className="text-base font-extrabold">🎨 {ru ? "Студия NFT" : "NFT Studio"}</div><div className="text-xs font-medium opacity-90">{ru ? "Выберите ход из своей партии и мультяшную фигуру: получится картинка-NFT" : "Pick a move from your game and a cartoon piece to make an NFT picture"}</div></button>
+                <TelegramCard />
+              </div>
+            </details>
+
+            <SeoAbout />
+            <SiteFooter />
+          </div>
+        )}
         {tab === "play" && (gid !== null
           ? <OnlineGame id={gid} onExit={() => { setGid(null); setTab("lobby"); }} />
           : openCount ? <WaitingSplash /> : <div className="card text-center space-y-1 py-10"><div className="text-4xl">♞</div><div className="font-medium">{t("noActive")}</div></div>)}

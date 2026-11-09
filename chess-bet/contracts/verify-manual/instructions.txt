@@ -1,0 +1,34 @@
+Ручная публикация на Polygonscan: https://polygonscan.com/verifyContract
+Compiler type: Solidity (Standard-Json-Input) | Compiler version: v0.8.24 | License: MIT
+Файл для загрузки: verify-manual/standard-input.json (один и тот же для всех пяти контрактов)
+
+=== TCHToken ===
+Адрес: 0x14818b99E86fD4654Cb55BE57367d1BfaA2b0F82
+Контракт (если спросит): contracts/TCHToken.sol:TCHToken
+Constructor Arguments (ABI-encoded, без 0x):
+00000000000000000000000050c7bbb744c9453b2983670e280eff3ff2e2c24a
+
+=== TCHRewardPool ===
+Адрес: 0xE0A3309E1e36fEfEadF87c25767Ff5380afe35f5
+Контракт (если спросит): contracts/TCHRewardPool.sol:TCHRewardPool
+Constructor Arguments (ABI-encoded, без 0x):
+00000000000000000000000014818b99e86fd4654cb55be57367d1bfaa2b0f820000000000000000000000007caa27bcc46a2da7a48f9a191b7737b9ef9c162800000000000000000000000050c7bbb744c9453b2983670e280eff3ff2e2c24a000000000000000000000000000000000000000001aa7522daf0f04f0b3c0000
+
+=== TCHVesting (владелец) ===
+Адрес: 0xd4C725c183E25d27D8Aa38e0e7423Ab2b0B08e1C
+Контракт (если спросит): contracts/TCHVesting.sol:TCHVesting
+Constructor Arguments (ABI-encoded, без 0x):
+00000000000000000000000050c7bbb744c9453b2983670e280eff3ff2e2c24a000000000000000000000000000000000000000000000000000000006bddc0a10000000000000000000000000000000000000000000000000000000003b53800
+
+=== TCHVesting (команда) ===
+Адрес: 0xF37D4f0E3674F206cf0C716c9a871ee95732F1Fa
+Контракт (если спросит): contracts/TCHVesting.sol:TCHVesting
+Constructor Arguments (ABI-encoded, без 0x):
+00000000000000000000000050c7bbb744c9453b2983670e280eff3ff2e2c24a000000000000000000000000000000000000000000000000000000006ccb0ea10000000000000000000000000000000000000000000000000000000003b53800
+
+=== TCHVesting (резерв биржи) ===
+Адрес: 0x6F3987a2fe5045cF8BE561Dd02De5210bcA78b48
+Контракт (если спросит): contracts/TCHVesting.sol:TCHVesting
+Constructor Arguments (ABI-encoded, без 0x):
+00000000000000000000000050c7bbb744c9453b2983670e280eff3ff2e2c24a000000000000000000000000000000000000000000000000000000006ccb0ea10000000000000000000000000000000000000000000000000000000000000001
+
