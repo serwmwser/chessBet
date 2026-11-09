@@ -8,6 +8,7 @@
 - Classifieds for the whole world: ads for sale, wanted, rent, jobs and services by country and city. Ads and chat messages are translated into the reader's language, and a built-in chat connects buyer and seller. The first ad is free; extra ads cost 1 USDC for 30 days; optional paid options (renewal, top placement) are paid in USDC.
 - Dating (18+): free profiles with 3 photos, filters, likes, matches and private chat.
 - Chess for stakes: two players each stake USDC (0.5 to 500 USDC per game) and the ChessEscrow smart contract on Polygon holds the money. The winner receives 90% of the pot.
+- HiMeet Mail: every member has an internal mail address (name@himeet). Letters with a subject and long text go between HiMeet members only, with inbox, sent, starred and trash folders. It is not connected to regular email.
 - Free chess: play against a bot or a friend by private link, no stake needed.
 - Chess puzzles, free hourly tournaments with points, badges and cups, daily quests, and chess NFTs (a move from your own finished game as an ERC-721 NFT on Polygon).
 

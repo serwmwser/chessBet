@@ -11,8 +11,8 @@ type Card = { icon: string; href: string; ru: [string, string, string]; en: [str
 const CARDS: Card[] = [
   {
     icon: "💬", href: ROUTES.messages,
-    ru: ["Бесплатные звонки и сообщения", "Пишите и звоните из профиля любому участнику. В чате включается автоматический перевод, поэтому можно общаться на разных языках.", "Открыть сообщения"],
-    en: ["Free calls and messages", "Message and call any member from their profile. Chats have automatic translation, so you can talk across languages.", "Open messages"],
+    ru: ["Бесплатные звонки и сообщения", "Пишите и звоните из профиля любому участнику. В чате включается автоматический перевод, поэтому можно общаться на разных языках. Есть и своя почта HiMeet Mail: адрес ник@himeet, входящие, отправленные и избранное.", "Открыть сообщения"],
+    en: ["Free calls and messages", "Message and call any member from their profile. Chats have automatic translation, so you can talk across languages. You also get HiMeet Mail: an address like name@himeet with inbox, sent and starred folders.", "Open messages"],
   },
   {
     icon: "🛍", href: ROUTES.ads,

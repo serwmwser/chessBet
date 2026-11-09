@@ -15,7 +15,7 @@ type Tile = {
 const TILES: Tile[] = [
   { id: "ads", icon: "🛍", href: ROUTES.ads, ru: ["Объявления", "Купить, продать, найти работу и услуги. Первое объявление бесплатно"], en: ["Classifieds", "Buy, sell, find jobs and services. Your first ad is free"] },
   { id: "dating", icon: "💞", href: ROUTES.dating, ru: ["Знакомства", "Анкеты для взрослых (18+) и общение через шахматы"], en: ["Dating", "Profiles for adults (18+) and chess-based chat"] },
-  { id: "messages", icon: "💬", href: ROUTES.messages, ru: ["Общение", "Бесплатные сообщения и звонки с переводом чата, лента Rook Club"], en: ["Chat", "Free messages and calls with chat translation, Rook Club feed"] },
+  { id: "messages", icon: "💬", href: ROUTES.messages, ru: ["Общение", "Бесплатные сообщения и звонки с переводом чата, почта HiMeet Mail, лента Rook Club"], en: ["Chat", "Free messages and calls with chat translation, HiMeet Mail, Rook Club feed"] },
   { id: "profile", icon: "👤", href: ROUTES.profile, ru: ["Профиль", "Ваша страница, друзья, партии и объявления"], en: ["Profile", "Your page, friends, games and ads"] },
   { id: "earn", icon: "💰", ru: ["Заработать", "Токен TCH, NFT, приглашения друзей и дорожная карта"], en: ["Earn", "TCH token, NFT, friend invites and the roadmap"] },
   { id: "play", icon: "♞", ru: ["Играть", "Шахматы с ботом, другом или онлайн, задачи и турниры"], en: ["Play", "Chess against a bot, a friend or online, puzzles and tournaments"] },
