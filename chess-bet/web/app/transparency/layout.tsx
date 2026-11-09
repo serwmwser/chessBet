@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-const SITE = "https://chessbet.lol";
+const SITE = "https://serwmwser.github.io";
 const TITLE = "Transparency: ChessEscrow betting contract on Polygon | Chess Bet";
 const DESC = "Live state of the Chess Bet betting contract on Polygon, read straight from the blockchain: USDC held, games created, bet cap, fee, owner and oracle. What is fixed in code, who can do what, and honest risks.";
 

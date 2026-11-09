@@ -5,7 +5,7 @@ Disallow: /preview/
 Disallow: /messages/
 Disallow: /admin/
 
-# AI assistants and AI search: welcome to read public pages (see https://chessbet.lol/llms.txt)
+# AI assistants and AI search: welcome to read public pages (see https://serwmwser.github.io/llms.txt)
 User-agent: GPTBot
 User-agent: OAI-SearchBot
 User-agent: ChatGPT-User
@@ -27,4 +27,4 @@ Disallow: /preview/
 Disallow: /messages/
 Disallow: /admin/
 
-Sitemap: https://chessbet.lol/sitemap.xml
+Sitemap: https://serwmwser.github.io/sitemap.xml

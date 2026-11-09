@@ -22,7 +22,7 @@ import { callsWss, handleCalls } from "./calls.js";
 import { handleAds, setPayVerifier, setRefSource } from "./ads.js";
 import { handleTranslate } from "./translate.js";
 
-const SITE_URL = process.env.SITE_URL || "https://chessbet.lol";
+const SITE_URL = process.env.SITE_URL || "https://serwmwser.github.io";
 
 // ROOMFIX: одна неожиданная ошибка не должна останавливать весь сервер и обрывать все партии
 process.on("uncaughtException", (e) => console.error("uncaughtException", e));

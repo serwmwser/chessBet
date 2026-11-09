@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: "A post on Rook Club, the community for chess, crypto and NFT fans by Chess Bet.",
   alternates: { canonical: "/post/" },
   robots: { index: false, follow: true },
-  openGraph: { title: "Post on Rook Club", description: "Chess, crypto and NFT community by Chess Bet.", url: "https://chessbet.lol/post/", siteName: "Chess Bet", type: "article" },
+  openGraph: { title: "Post on Rook Club", description: "Chess, crypto and NFT community by Chess Bet.", url: "https://serwmwser.github.io/post/", siteName: "Chess Bet", type: "article" },
 };
 
 export default function PostLayout({ children }: { children: React.ReactNode }) {

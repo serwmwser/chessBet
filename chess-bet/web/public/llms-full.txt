@@ -1,6 +1,6 @@
 # Chess Bet (Rook Club): full description for AI assistants
 
-Chess Bet is a social network with free worldwide classifieds (ads and chat are translated into the reader's language), 18+ dating, and online chess where players can stake USDC on the Polygon network. Website: https://chessbet.lol/ . Short version: https://chessbet.lol/llms.txt . Contact: chessgrokearn@gmail.com . For adults only (18+).
+Chess Bet is a social network with free worldwide classifieds (ads and chat are translated into the reader's language), 18+ dating, and online chess where players can stake USDC on the Polygon network. Website: https://serwmwser.github.io/ . Short version: https://serwmwser.github.io/llms.txt . Contact: chessgrokearn@gmail.com . For adults only (18+).
 
 ## One-paragraph summary
 
@@ -10,13 +10,13 @@ Chess Bet combines four things in one account: (1) a social network called Rook 
 
 - Public profile for every user, posts with photos, a feed, comments, followers.
 - Private messages and voice messages. Messages are stored on the server and are not end-to-end encrypted. Never send a secret recovery phrase, private key or password in a message.
-- Feed: https://chessbet.lol/feed/
+- Feed: https://serwmwser.github.io/feed/
 - Signing in: connect a crypto wallet or sign in with email or Google. Signing in uses a free signature: no money is spent and no gas is needed. The session lasts about 14 days on the same device.
 - Works in a mobile browser, can be added to the home screen, runs as a Telegram Mini App (https://t.me/chess_betlolbot/game) and as an Android app.
 
 ## 2. Classifieds for the whole world
 
-Page: https://chessbet.lol/ads/
+Page: https://serwmwser.github.io/ads/
 
 - Categories: for sale, wanted, rent, jobs and services, by country and city, with photos.
 - Translation: ads and chat messages can be translated into your language with one tap, so a buyer and a seller who speak different languages can understand each other. Translation is automatic, available to signed-in users with fair-use limits, and may contain mistakes.
@@ -25,26 +25,26 @@ Page: https://chessbet.lol/ads/
 
 ## 3. Dating (18+)
 
-Page: https://chessbet.lol/dating/
+Page: https://serwmwser.github.io/dating/
 
 - Free for adults only (18 or older).
 - Profiles with up to 3 photos, filters, likes, matches and private chat.
 
 ## 4. Chess
 
-- Free modes: play against a bot or against a friend by a private link. No stake is needed. Page: https://chessbet.lol/chess/
-- Stakes: two players each stake the same amount of USDC (0.5 to 500 USDC per game). The ChessEscrow smart contract on Polygon holds the stakes, not the website. The game server records the result and the winner claims the prize from the contract with a Claim button (a small amount of POL pays the network fee). Page: https://chessbet.lol/crypto/
+- Free modes: play against a bot or against a friend by a private link. No stake is needed. Page: https://serwmwser.github.io/chess/
+- Stakes: two players each stake the same amount of USDC (0.5 to 500 USDC per game). The ChessEscrow smart contract on Polygon holds the stakes, not the website. The game server records the result and the winner claims the prize from the contract with a Claim button (a small amount of POL pays the network fee). Page: https://serwmwser.github.io/crypto/
 - Fee: 10% of the pot, so the winner receives 90%. The contract takes it when the prize is paid.
 - Draws, cancelled games and games whose result cannot be recorded are refunded in full.
 - Any stake can be lost. Smart contracts may contain errors and blockchain transactions cannot be undone. Play only with money you can afford to lose. The service may be unavailable in some countries; the user is responsible for checking local law.
 - Fair play: using a chess engine or other people's help during a game, running several accounts or colluding with an opponent is cheating, and such accounts can be blocked.
-- Puzzles: free mate-in-1, mate-in-2 and mate-in-3 puzzles with server-checked moves, hints and XP. Page: https://chessbet.lol/puzzles/
-- Tournaments: free hourly chess arenas with points, badges and cups, plus daily quests and streaks. Page: https://chessbet.lol/tournaments/
-- Chess NFTs: a move from the user's own finished game can become an ERC-721 NFT on Polygon (a piece style, a mood and a background are chosen). Each move can become an NFT only once. Creating one costs 1 USDC plus a small network fee. NFTs are standard ERC-721 tokens with 5% creator royalties (ERC-2981) and can be listed on marketplaces such as OpenSea. An NFT is a collectible and does not promise any profit. Page: https://chessbet.lol/nft/
+- Puzzles: free mate-in-1, mate-in-2 and mate-in-3 puzzles with server-checked moves, hints and XP. Page: https://serwmwser.github.io/puzzles/
+- Tournaments: free hourly chess arenas with points, badges and cups, plus daily quests and streaks. Page: https://serwmwser.github.io/tournaments/
+- Chess NFTs: a move from the user's own finished game can become an ERC-721 NFT on Polygon (a piece style, a mood and a background are chosen). Each move can become an NFT only once. Creating one costs 1 USDC plus a small network fee. NFTs are standard ERC-721 tokens with 5% creator royalties (ERC-2981) and can be listed on marketplaces such as OpenSea. An NFT is a collectible and does not promise any profit. Page: https://serwmwser.github.io/nft/
 
 ## 5. TCH token (issued on Polygon, rewards not live yet)
 
-TCH (ChessTalk Token) is the in-app token of Chess Bet on Polygon (ERC-20), issued on 8 November 2026 at 0x14818b99E86fD4654Cb55BE57367d1BfaA2b0F82. Total supply is fixed at 888,888,888 TCH, created once, with no mint function afterwards. Distribution: 58% rewards reserve (paid out gradually for calls and activity, opening linearly over 10 years, up to about 51.5 million TCH per year), 1% DEX liquidity (with 1,000 USDC, no earlier than 3 months after issue, LP locked 12 months), 4% exchange reserve (locked 12 months), 5% app owner (6-month lock, then 24 months linear), 10% team, 12% treasury, 5% early users, 5% partners. TCH is meant to be spent on paid options (ad boosts, VIP profile, tournament fees, staking); part of every payment in TCH is burned. Rewards are not live yet and TCH is not listed on any exchange or DEX. It is not an investment, its price is not guaranteed, and the contracts have not been independently audited. Page: https://chessbet.lol/token/ . Whitepapers (English): https://chessbet.lol/whitepaper/
+TCH (ChessTalk Token) is the in-app token of Chess Bet on Polygon (ERC-20), issued on 8 November 2026 at 0x14818b99E86fD4654Cb55BE57367d1BfaA2b0F82. Total supply is fixed at 888,888,888 TCH, created once, with no mint function afterwards. Distribution: 58% rewards reserve (paid out gradually for calls and activity, opening linearly over 10 years, up to about 51.5 million TCH per year), 1% DEX liquidity (with 1,000 USDC, no earlier than 3 months after issue, LP locked 12 months), 4% exchange reserve (locked 12 months), 5% app owner (6-month lock, then 24 months linear), 10% team, 12% treasury, 5% early users, 5% partners. TCH is meant to be spent on paid options (ad boosts, VIP profile, tournament fees, staking); part of every payment in TCH is burned. Rewards are not live yet and TCH is not listed on any exchange or DEX. It is not an investment, its price is not guaranteed, and the contracts have not been independently audited. Page: https://serwmwser.github.io/token/ . Whitepapers (English): https://serwmwser.github.io/whitepaper/
 
 ## Smart contracts (Polygon, verified on Polygonscan)
 
@@ -69,25 +69,25 @@ The interface is available in English, German, French, Spanish, Portuguese, Chin
 
 ## Important pages
 
-- https://chessbet.lol/ (home)
-- https://chessbet.lol/ads/ (classifieds)
-- https://chessbet.lol/dating/ (dating)
-- https://chessbet.lol/feed/ (feed)
-- https://chessbet.lol/crypto/ (how stakes work)
-- https://chessbet.lol/chess/ (free chess)
-- https://chessbet.lol/puzzles/ (puzzles)
-- https://chessbet.lol/tournaments/ (tournaments)
-- https://chessbet.lol/nft/ (chess NFTs)
-- https://chessbet.lol/faq/ (questions and answers)
-- https://chessbet.lol/about/ (about the project)
-- https://chessbet.lol/terms/ (terms of use)
-- https://chessbet.lol/age/ (age 18+ and responsible play)
-- https://chessbet.lol/roadmap/ (roadmap)
-- https://chessbet.lol/token/ (TCH token: tokenomics, roadmap, risks)
-- https://chessbet.lol/whitepaper/ (whitepapers of the Chess Bet app and the TCH token, in English)
+- https://serwmwser.github.io/ (home)
+- https://serwmwser.github.io/ads/ (classifieds)
+- https://serwmwser.github.io/dating/ (dating)
+- https://serwmwser.github.io/feed/ (feed)
+- https://serwmwser.github.io/crypto/ (how stakes work)
+- https://serwmwser.github.io/chess/ (free chess)
+- https://serwmwser.github.io/puzzles/ (puzzles)
+- https://serwmwser.github.io/tournaments/ (tournaments)
+- https://serwmwser.github.io/nft/ (chess NFTs)
+- https://serwmwser.github.io/faq/ (questions and answers)
+- https://serwmwser.github.io/about/ (about the project)
+- https://serwmwser.github.io/terms/ (terms of use)
+- https://serwmwser.github.io/age/ (age 18+ and responsible play)
+- https://serwmwser.github.io/roadmap/ (roadmap)
+- https://serwmwser.github.io/token/ (TCH token: tokenomics, roadmap, risks)
+- https://serwmwser.github.io/whitepaper/ (whitepapers of the Chess Bet app and the TCH token, in English)
 
 ## Краткое описание на русском
 
 Chess Bet (Rook Club) это соцсеть с бесплатными объявлениями по всему миру (объявления и чат переводятся на язык читателя), знакомствами 18+ и шахматами онлайн, где можно играть на ставки в USDC в сети Polygon. Ставки хранит смарт-контракт, победитель получает 90% банка. Первое объявление бесплатно, дальше 1 USDC за 30 дней. Только для взрослых (18+). Связь: chessgrokearn@gmail.com
 
-Токен TCH (ChessTalk Token) внутренний токен Chess Bet на Polygon, выпущен 8 ноября 2026 (0x14818b99E86fD4654Cb55BE57367d1BfaA2b0F82), награды пока не включены, на биржах не торгуется: эмиссия 888 888 888 TCH фиксированная, награды за звонки и активность выдаются постепенно из резерва (58%), тратятся на платные опции с частичным сжиганием. Это не инвестиция, цена не гарантируется, контракты не проходили независимый аудит. Страница: https://chessbet.lol/token/
+Токен TCH (ChessTalk Token) внутренний токен Chess Bet на Polygon, выпущен 8 ноября 2026 (0x14818b99E86fD4654Cb55BE57367d1BfaA2b0F82), награды пока не включены, на биржах не торгуется: эмиссия 888 888 888 TCH фиксированная, награды за звонки и активность выдаются постепенно из резерва (58%), тратятся на платные опции с частичным сжиганием. Это не инвестиция, цена не гарантируется, контракты не проходили независимый аудит. Страница: https://serwmwser.github.io/token/

@@ -72,7 +72,7 @@ export function errText(e: unknown, ru: boolean): string {
     expired: ["Время подписи вышло, повторите", "Signature expired, try again"],
     bad_signature: ["Сервер не принял подпись этого кошелька. Попробуйте другой кошелёк или вход по почте", "The server did not accept this wallet's signature. Try another wallet or email sign-in"],
     bad_time: ["Часы на устройстве неверны: включите автоматическое время и повторите", "Your device clock is wrong: turn on automatic time and try again"],
-    origin: ["Сайт открыт с неразрешённого адреса. Откройте https://chessbet.lol", "The site is opened from a disallowed address. Open https://chessbet.lol"],
+    origin: ["Сайт открыт с неразрешённого адреса. Откройте https://serwmwser.github.io", "The site is opened from a disallowed address. Open https://serwmwser.github.io"],
     network: ["Нет связи с сервером. Проверьте интернет и повторите", "Cannot reach the server. Check your connection and try again"],
   };
   return t[m] ? t[m][ru ? 0 : 1] : m.slice(0, 120);

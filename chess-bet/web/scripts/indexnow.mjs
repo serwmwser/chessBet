@@ -6,7 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const HOST = "chessbet.lol";
+const HOST = "serwmwser.github.io";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const pub = path.join(here, "..", "public");
 const keyFile = fs.readdirSync(pub).find((f) => /^[a-f0-9]{32}\.txt$/.test(f));

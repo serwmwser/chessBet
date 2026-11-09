@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { EN } from "./content";
 
-const SITE = "https://chessbet.lol";
+const SITE = "https://serwmwser.github.io";
 const TITLE = "Play Chess Online Free vs Bot or Friend";
 const DESC = "Play chess online for free against a bot or a friend by private link. No stakes needed. When you are ready, play for USDC on Polygon.";
 

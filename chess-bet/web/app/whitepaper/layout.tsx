@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-const SITE = "https://chessbet.lol";
+const SITE = "https://serwmwser.github.io";
 const TITLE = "Chess Bet Whitepaper & TCH Token Whitepaper | Chess Bet";
 const DESC = "Read the Chess Bet whitepaper (social network, classifieds, dating and chess for USDC on Polygon) and the TCH token whitepaper: tokenomics, release schedule, roadmap and risks. In English, translatable in your browser.";
 

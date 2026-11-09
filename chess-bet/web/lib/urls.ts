@@ -1,7 +1,7 @@
 /** Все адреса страниц сайта в одном месте. Позже, при переезде на хостинг с динамическими страницами,
  *  достаточно поменять profileUrl и postUrl, остальной код трогать не нужно. */
 export const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
-export const SITE_URL = "https://chessbet.lol";
+export const SITE_URL = "https://serwmwser.github.io";
 
 export const ROUTES = {
   home: `${BASE}/`,

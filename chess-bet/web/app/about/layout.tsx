@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { CONTACT_EMAIL } from "./content";
 
-const SITE = "https://chessbet.lol";
+const SITE = "https://serwmwser.github.io";
 const TITLE = "About Chess Bet: Chess for USDC on Polygon & Rook Club";
 const DESC = "Chess Bet is a chess platform where skill decides the game. Play free, or play for USDC with stakes held by an open smart contract on Polygon. Meet chess and crypto fans in Rook Club.";
 

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-const SITE = "https://chessbet.lol";
+const SITE = "https://serwmwser.github.io";
 const TITLE = "Join Chess Bet: free messenger with calls, classifieds, dating and chess";
 const DESC = "Chess Bet is a free messenger with calls and chat translation, worldwide classifieds (first ad free), dating through chess and chess games. Choose where to start and sign in with a wallet in a minute. 18+.";
 

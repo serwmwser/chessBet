@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { EN } from "./content";
 
-const SITE = "https://chessbet.lol";
+const SITE = "https://serwmwser.github.io";
 
 export const metadata: Metadata = {
   title: EN.seoTitle,

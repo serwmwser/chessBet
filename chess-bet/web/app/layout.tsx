@@ -11,7 +11,7 @@ import AutoLogin from "@/components/AutoLogin";
 const inter = Inter({ subsets: ["latin", "cyrillic"], variable: "--font-inter" });
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
-const SITE = "https://chessbet.lol";
+const SITE = "https://serwmwser.github.io";
 const TITLE = "Chess Bet: Social Network, Classifieds, Dating & Chess for USDC";
 const DESC = "Social network with free worldwide classifieds and chat translation, 18+ dating and online chess for USDC stakes on Polygon. Winner gets 90% via smart contract.";
 

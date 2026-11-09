@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { EN } from "./content";
 
-const SITE = "https://chessbet.lol";
+const SITE = "https://serwmwser.github.io";
 const TITLE = "Chess Bet FAQ: Stakes, Fees, Safety, Fair Play";
 const DESC = "Answers about Chess Bet: how USDC stakes work, the 10% fee, payouts, age 18+, fair play, chess NFTs and the Rook Club community.";
 

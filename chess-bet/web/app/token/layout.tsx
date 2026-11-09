@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-const SITE = "https://chessbet.lol";
+const SITE = "https://serwmwser.github.io";
 const TITLE = "TCH Token (ChessTalk Token): Tokenomics, Roadmap & Whitepaper | Chess Bet";
 const DESC = "TCH is the in-app token of Chess Bet on Polygon (issued 8 November 2026): 888,888,888 fixed supply, earned for calls and activity from a rewards reserve, spent on paid options with burning. Tokenomics, roadmap, risks.";
 
