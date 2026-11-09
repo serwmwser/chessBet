@@ -71,7 +71,7 @@ export function viewerOf(req: http.IncomingMessage): string {
 // Вызовы входа (одноразовые тексты для подписи)
 const challenges = new Map<string, { addr: string; exp: number }>();
 const loginText = (addr: string, nonce: string) =>
-  `Chess Bet: вход в соцсеть\nКошелёк: ${addr}\nКод: ${nonce}\nПодпись бесплатна и не тратит деньги.`;
+  `HiMeet: вход в соцсеть\nКошелёк: ${addr}\nКод: ${nonce}\nПодпись бесплатна и не тратит деньги.`;
 
 // Ограничение частоты действий
 const hits = new Map<string, number[]>();

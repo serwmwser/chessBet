@@ -1,6 +1,6 @@
 {
-  "name": "Chess Bet: Social Network, Classifieds, Dating & Chess for USDC",
-  "short_name": "Chess Bet",
+  "name": "HiMeet: Social Network, Classifieds, Dating & Chess for USDC",
+  "short_name": "HiMeet",
   "description": "Social network with free worldwide classifieds and chat translation, 18+ dating and online chess for USDC stakes on Polygon.",
   "start_url": "./",
   "scope": "./",

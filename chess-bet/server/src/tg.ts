@@ -33,7 +33,7 @@ const sweep = () => {
   for (const [k, v] of codes) if (v.exp < now) codes.delete(k);
 };
 const textFor = (addr: string, action: string, nonce: string) =>
-  `Chess Bet: ${action === "link" ? "включить" : "выключить"} уведомления в Telegram\nКошелёк: ${addr}\nКод: ${nonce}\nПодпись бесплатна и не тратит деньги.`;
+  `HiMeet: ${action === "link" ? "включить" : "выключить"} уведомления в Telegram\nКошелёк: ${addr}\nКод: ${nonce}\nПодпись бесплатна и не тратит деньги.`;
 
 /** Шаг 1: сайт просит текст для подписи */
 export function tgChallenge(addrIn: string, action: "link" | "unlink") {
@@ -111,7 +111,7 @@ async function handle(m: any) {
     save();
     await say("Уведомления отключены.", "Notifications are off.");
   } else if (text.startsWith("/start")) {
-    await say("Это бот Chess Bet. Чтобы получать уведомления «ваш ход», откройте сайт → Профиль → «Уведомления в Telegram».", "This is the Chess Bet bot. To get your-move notifications open the site → Profile → Telegram notifications.");
+    await say("Это бот HiMeet. Чтобы получать уведомления «ваш ход», откройте сайт → Профиль → «Уведомления в Telegram».", "This is the HiMeet bot. To get your-move notifications open the site → Profile → Telegram notifications.");
   }
 }
 

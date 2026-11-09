@@ -163,7 +163,7 @@ export default function Hero({ onBot, onEarn }: { onBot: () => void; onEarn?: ()
   const { connect } = useConnectModal();
   const reduce = useReducedMotion();
   const x = D[lang] ?? D.en;
-  const start = () => { void connect({ client, chain, wallets, theme: dark ? "dark" : "light", size: "compact", title: "Chess Bet" }); };
+  const start = () => { void connect({ client, chain, wallets, theme: dark ? "dark" : "light", size: "compact", title: "HiMeet" }); };
 
   // Уже вошедшему игроку показываем только короткий мотивирующий слоган
   if (account) {

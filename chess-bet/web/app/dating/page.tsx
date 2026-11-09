@@ -61,7 +61,7 @@ export default function DatingPage() {
   return (
     <PageShell title={c.title} intro={c.intro}>
       <nav aria-label="Breadcrumb" className="text-xs opacity-70">
-        <Link href={ROUTES.home} className="underline">Chess Bet</Link> › <span>{c.crumb}</span>
+        <Link href={ROUTES.home} className="underline">HiMeet</Link> › <span>{c.crumb}</span>
       </nav>
 
       {!token && <LoginPrompt text={ru ? "Чтобы смотреть анкеты и создать свою, подключите кошелёк. Знакомства доступны только пользователям 18+." : "Connect your wallet to browse profiles and create yours. Dating is available to users 18+ only."} />}

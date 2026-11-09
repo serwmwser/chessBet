@@ -12,7 +12,7 @@ export const RU: PuzzlesText = {
   crumb: "Шахматные задачи",
   title: "Шахматные задачи: мат в 1, 2 и 3 хода",
   intro: "Решайте задачи на мат прямо на сайте: сервер проверяет каждый ход, соперник отвечает сам, а за честное решение вы получаете XP для вашего уровня на сайте. Бесплатно.",
-  seoTitle: "Шахматные задачи онлайн: мат в 1, 2 и 3 хода | Chess Bet",
+  seoTitle: "Шахматные задачи онлайн: мат в 1, 2 и 3 хода | HiMeet",
   seoDesc: "Бесплатные шахматные задачи на мат в 1, 2 и 3 хода: проверка ходов, подсказки, XP и уровни в сообществе Rook Club. Тренируйте тактику и видение мата.",
   why: {
     h: "Зачем решать шахматные задачи",
@@ -56,7 +56,7 @@ export const EN: PuzzlesText = {
   crumb: "Chess puzzles",
   title: "Chess puzzles: mate in 1, 2 and 3",
   intro: "Solve checkmate puzzles right on the site: the server checks every move, the opponent replies by itself, and an honest solution earns XP toward your level on the site. Free.",
-  seoTitle: "Online Chess Puzzles: Mate in 1, 2 and 3 | Chess Bet",
+  seoTitle: "Online Chess Puzzles: Mate in 1, 2 and 3 | HiMeet",
   seoDesc: "Free chess puzzles — mate in 1, 2 and 3 moves: move checking, hints, XP and levels in the Rook Club community. Train tactics and your eye for checkmate.",
   why: {
     h: "Why solve chess puzzles",

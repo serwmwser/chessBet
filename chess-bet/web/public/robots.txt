@@ -1,4 +1,4 @@
-# Chess Bet: social network, worldwide classifieds, dating and chess stakes
+# HiMeet: social network, worldwide classifieds, dating and chess stakes
 User-agent: *
 Allow: /
 Disallow: /preview/

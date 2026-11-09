@@ -33,7 +33,7 @@ export default function CallButton({ name, className = "" }: { name: string; cla
   // гость: кошелёк не подключён — открываем подключение; подключён, но нет входа — просим подпись
   if (!token) {
     const login = () => {
-      if (!addr) { void connect({ client, chain, wallets, theme: dark ? "dark" : "light", size: "compact", title: "Chess Bet" }); return; }
+      if (!addr) { void connect({ client, chain, wallets, theme: dark ? "dark" : "light", size: "compact", title: "HiMeet" }); return; }
       void signIn().catch(() => toast(ru ? "Не удалось войти. Подпишите сообщение в кошельке" : "Could not sign in. Sign the message in your wallet", "err"));
     };
     return (

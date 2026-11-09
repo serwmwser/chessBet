@@ -114,7 +114,7 @@ export default function Earn() {
   const owed = Number(rs?.owed ?? 0);
 
   const link = account ? refLink(account.address) : "";
-  const login = () => { void connect({ client, chain, wallets, theme: dark ? "dark" : "light", size: "compact", title: "Chess Bet" }); };
+  const login = () => { void connect({ client, chain, wallets, theme: dark ? "dark" : "light", size: "compact", title: "HiMeet" }); };
   const copy = async (s: string, k: string) => {
     try { await navigator.clipboard.writeText(s); setDone(k); setTimeout(() => setDone(""), 1800); }
     catch { window.prompt("", s); }

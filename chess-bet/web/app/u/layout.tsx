@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Rook Club Profile | Chess Bet",
-  description: "Rook Club by Chess Bet: a community for chess, crypto and NFT fans. Profiles with posts, photos, followers and NFTs.",
+  title: "Rook Club Profile | HiMeet",
+  description: "Rook Club by HiMeet: a community for chess, crypto and NFT fans. Profiles with posts, photos, followers and NFTs.",
   alternates: { canonical: "/u/" },
   robots: { index: false, follow: true },
 };

@@ -11,7 +11,7 @@ export default function RoadmapPage() {
   return (
     <main className="mx-auto max-w-2xl px-4 py-8 space-y-5">
       <a className="text-sm underline" href={BASE + "/"}>← {ru ? "На главную" : "Home"}</a>
-      <h1 className="text-2xl font-bold">🗺 {ru ? "Дорожная карта ChessBet" : "ChessBet roadmap"}</h1>
+      <h1 className="text-2xl font-bold">🗺 {ru ? "Дорожная карта HiMeet" : "HiMeet roadmap"}</h1>
       <p className="text-sm opacity-80">
         {ru ? "Здесь наши планы до III квартала 2027 года." : "Here are our plans until Q3 2027."}
       </p>

@@ -32,7 +32,7 @@ export default function AdItemPage() {
   // название вкладки и микроразметка товара/вакансии для поисковиков
   useEffect(() => {
     if (!ad) return;
-    document.title = `${ad.title} — ${[ad.city, ad.country].filter(Boolean).join(", ")} | Chess Bet`;
+    document.title = `${ad.title} — ${[ad.city, ad.country].filter(Boolean).join(", ")} | HiMeet`;
     const el = document.createElement("script");
     el.type = "application/ld+json";
     const url = absoluteUrl(`/ads/item/?id=${ad.id}`);
@@ -58,7 +58,7 @@ export default function AdItemPage() {
 
   const crumbs = (
     <nav aria-label="Breadcrumb" className="text-xs opacity-70">
-      <Link href={ROUTES.home} className="underline">Chess Bet</Link> › <Link href="/ads/" className="underline">{ru ? "Объявления" : "Classifieds"}</Link>
+      <Link href={ROUTES.home} className="underline">HiMeet</Link> › <Link href="/ads/" className="underline">{ru ? "Объявления" : "Classifieds"}</Link>
       {ad && <> › <span>{KIND_LABEL[ad.kind][ru ? 0 : 1]}</span></>}
     </nav>
   );

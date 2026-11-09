@@ -39,7 +39,7 @@ export default function AppDownload() {
       <div className="flex items-center gap-3">
         <div className="text-3xl" aria-hidden="true">📲</div>
         <div className="flex-1 min-w-0">
-          <div className="font-bold">{ru ? "Приложение Chess Bet" : "Chess Bet app"}</div>
+          <div className="font-bold">{ru ? "Приложение HiMeet" : "HiMeet app"}</div>
           <div className="text-xs opacity-70">{ru ? "Значок на экране, запуск без адресной строки." : "Home-screen icon, opens without the address bar."}</div>
         </div>
       </div>

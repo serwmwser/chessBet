@@ -12,7 +12,7 @@ export const RU: AdsText = {
   crumb: "Объявления",
   title: "Международная доска объявлений",
   intro: "Купить и продать, снять и сдать, найти работу и услуги в любой стране и городе. Бесплатные объявления, общение в чате сайта с автоматическим переводом.",
-  seoTitle: "Доска объявлений: купить, продать, аренда, работа по странам и городам | Chess Bet",
+  seoTitle: "Доска объявлений: купить, продать, аренда, работа по странам и городам | HiMeet",
   seoDesc: "Международная доска объявлений Rook Club: продажа, покупка, аренда, работа и услуги в любой стране и городе. Бесплатное размещение, фото, чат с продавцом и перевод сообщений. Без ссылок и телефонов в тексте для вашей безопасности.",
   kindsH: "Разделы",
   kinds: {
@@ -61,7 +61,7 @@ export const EN: AdsText = {
   crumb: "Classifieds",
   title: "International classifieds",
   intro: "Buy and sell, rent, find a job or services in any country and city. Free ads, chat on the site with automatic translation.",
-  seoTitle: "Classifieds: buy, sell, rent, jobs by country and city | Chess Bet",
+  seoTitle: "Classifieds: buy, sell, rent, jobs by country and city | HiMeet",
   seoDesc: "International classifieds in Rook Club: for sale, wanted, rent, jobs and services in any country and city. Free posting, photos, chat with the seller and message translation. No links or phone numbers in ads for your safety.",
   kindsH: "Categories",
   kinds: {

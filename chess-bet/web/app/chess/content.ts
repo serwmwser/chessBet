@@ -4,7 +4,7 @@ export type Content = { title: string; intro: string; secs: Sec[]; faq: [string,
 
 export const EN: Content = {
   title: "Play Chess Online Free: vs Bot or a Friend",
-  intro: "Practise on Chess Bet without risking a cent. Play against a bot, or send a private link to a friend and play right in your browser. Stakes are optional and never required.",
+  intro: "Practise on HiMeet without risking a cent. Play against a bot, or send a private link to a friend and play right in your browser. Stakes are optional and never required.",
   crumb: "Play chess free",
   cta: "Play chess now",
   tg: "Open in Telegram",
@@ -17,7 +17,7 @@ export const EN: Content = {
       "Create a free private game and send the link in any messenger. Your friend opens it in the browser and the game begins. Free games carry no stake and are not written to the blockchain.",
     ] },
     { h: "Chess in Telegram and on your phone", p: [
-      "Chess Bet also runs as a Telegram Mini App, so you can play from a chat on your phone. The website can be added to your home screen like an app.",
+      "HiMeet also runs as a Telegram Mini App, so you can play from a chat on your phone. The website can be added to your home screen like an app.",
     ] },
     { h: "Cartoon chess pieces", p: [
       "Prefer something lighter than the classic set? Switch to playful cartoon pieces and play with the same rules of chess.",
@@ -28,9 +28,9 @@ export const EN: Content = {
     ] },
   ],
   faq: [
-    ["Is Chess Bet free to play?", "Yes. Games against a bot and free games with a friend need no stake. Playing for USDC is optional."],
+    ["Is HiMeet free to play?", "Yes. Games against a bot and free games with a friend need no stake. Playing for USDC is optional."],
     ["Can I play chess with a friend online?", "Yes. Create a free private game and send the link to your friend. They open it in the browser and you can start playing."],
-    ["Do I need to install an app?", "No. Chess Bet works in your browser, can be added to your home screen, and also runs as a Telegram Mini App."],
+    ["Do I need to install an app?", "No. HiMeet works in your browser, can be added to your home screen, and also runs as a Telegram Mini App."],
     ["What is the difference between a free game and a game with a stake?", "A free game has no money involved and is not recorded on the blockchain. In a game with a stake, both players put USDC into a smart contract on Polygon, and the winner claims 90% of the pot."],
     ["Is playing for stakes safe?", "The stakes are held by a smart contract rather than by the website, but any stake can be lost. Play responsibly, only with money you can afford to lose, and only if it is legal in your country."],
   ],
@@ -38,7 +38,7 @@ export const EN: Content = {
 
 export const RU: Content = {
   title: "Играть в шахматы онлайн бесплатно: с ботом или другом",
-  intro: "Тренируйтесь на Chess Bet без риска. Играйте с ботом или отправьте другу личную ссылку и играйте прямо в браузере. Ставки по желанию, они никогда не обязательны.",
+  intro: "Тренируйтесь на HiMeet без риска. Играйте с ботом или отправьте другу личную ссылку и играйте прямо в браузере. Ставки по желанию, они никогда не обязательны.",
   crumb: "Шахматы бесплатно",
   cta: "Играть в шахматы",
   tg: "Открыть в Telegram",
@@ -51,7 +51,7 @@ export const RU: Content = {
       "Создайте бесплатную личную партию и отправьте ссылку в любом мессенджере. Друг откроет её в браузере, и можно играть. Бесплатные партии без ставки и не записываются в блокчейн.",
     ] },
     { h: "Шахматы в Telegram и на телефоне", p: [
-      "Chess Bet работает и как мини-приложение Telegram: играйте прямо из чата на телефоне. Сайт можно добавить на главный экран, как обычное приложение.",
+      "HiMeet работает и как мини-приложение Telegram: играйте прямо из чата на телефоне. Сайт можно добавить на главный экран, как обычное приложение.",
     ] },
     { h: "Мультяшные шахматные фигуры", p: [
       "Хочется чего-то повеселее классики? Переключитесь на мультяшные фигуры, правила шахмат остаются теми же.",
@@ -62,9 +62,9 @@ export const RU: Content = {
     ] },
   ],
   faq: [
-    ["Chess Bet бесплатный?", "Да. Партии с ботом и бесплатные партии с другом проходят без ставок. Игра на USDC необязательна."],
+    ["HiMeet бесплатный?", "Да. Партии с ботом и бесплатные партии с другом проходят без ставок. Игра на USDC необязательна."],
     ["Можно ли играть в шахматы с другом онлайн?", "Да. Создайте бесплатную личную партию и отправьте другу ссылку. Он откроет её в браузере, и вы сможете играть."],
-    ["Нужно ли устанавливать приложение?", "Нет. Chess Bet работает в браузере, добавляется на главный экран и запускается как мини-приложение Telegram."],
+    ["Нужно ли устанавливать приложение?", "Нет. HiMeet работает в браузере, добавляется на главный экран и запускается как мини-приложение Telegram."],
     ["Чем бесплатная партия отличается от партии со ставкой?", "В бесплатной партии нет денег, и она не записывается в блокчейн. В партии со ставкой оба игрока вносят USDC в смарт-контракт в сети Polygon, победитель забирает 90% банка."],
     ["Безопасно ли играть на ставки?", "Ставки хранит смарт-контракт, а не сайт, но любую ставку можно проиграть. Играйте ответственно, только деньгами, которые не жалко потерять, и только если это законно в вашей стране."],
   ],

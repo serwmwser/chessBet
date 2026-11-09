@@ -10,7 +10,7 @@ const RU: Sec[] = [
     "Вы сами отвечаете за то, что игра на деньги и работа с криптовалютой разрешены в вашей стране. Сервис может быть недоступен в отдельных странах, и мы вправе ограничить доступ.",
   ]],
   ["2. Что это за сервис", [
-    "ChessBet: шахматные партии, в которых игроки по желанию ставят USDC в сети Polygon. Ставки хранит смарт-контракт, а не мы. Результат партии определяет игровой сервер по правилам шахмат.",
+    "HiMeet: шахматные партии, в которых игроки по желанию ставят USDC в сети Polygon. Ставки хранит смарт-контракт, а не мы. Результат партии определяет игровой сервер по правилам шахмат.",
     "Результат зависит от вашего мастерства, но выигрыш не гарантирован: вы можете проиграть всю ставку. Ставьте только то, что готовы потерять.",
   ]],
   ["3. Ставки и комиссия", [
@@ -75,7 +75,7 @@ const EN: Sec[] = [
     "You are responsible for making sure that playing for money and using cryptocurrency are legal where you live. The service may be unavailable in some countries, and we may restrict access.",
   ]],
   ["2. What the service is", [
-    "ChessBet: chess games in which players may stake USDC on the Polygon network. Stakes are held by a smart contract, not by us. The result is determined by the game server according to the rules of chess.",
+    "HiMeet: chess games in which players may stake USDC on the Polygon network. Stakes are held by a smart contract, not by us. The result is determined by the game server according to the rules of chess.",
     "The result depends on your skill, but winning is not guaranteed: you can lose your whole stake. Only stake what you can afford to lose.",
   ]],
   ["3. Stakes and fee", [

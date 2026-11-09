@@ -45,7 +45,7 @@ export type Content = {
 
 export const EN: Content = {
   title: "TCH token (ChessTalk Token)",
-  intro: "TCH is the in-app token of Chess Bet: you earn it for calls and activity, and spend it inside the app.",
+  intro: "TCH is the in-app token of HiMeet: you earn it for calls and activity, and spend it inside the app.",
   crumb: "Token",
   status: "Status: the token was issued on Polygon on 8 November 2026. Rewards for activity are not live yet, and TCH is not listed on any exchange or DEX. Nothing here is investment advice or a promise of price growth.",
   factsH: "Key facts",
@@ -100,7 +100,7 @@ export const EN: Content = {
 
 export const RU: Content = {
   title: "Токен TCH (ChessTalk Token)",
-  intro: "TCH — внутренний токен Chess Bet: его зарабатывают за звонки и активность и тратят внутри приложения.",
+  intro: "TCH — внутренний токен HiMeet: его зарабатывают за звонки и активность и тратят внутри приложения.",
   crumb: "Токен",
   status: "Статус: токен выпущен в сети Polygon 8 ноября 2026 года. Награды за активность пока не включены, TCH не торгуется ни на одной бирже и DEX. Ничего здесь не является инвестиционным советом или обещанием роста цены.",
   factsH: "Главное",

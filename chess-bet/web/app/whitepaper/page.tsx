@@ -26,10 +26,10 @@ export default function WhitepaperPage() {
   return (
     <PageShell
       title={ru ? "Белые книги" : "Whitepapers"}
-      intro={ru ? "Белая книга приложения Chess Bet и белая книга токена TCH. Тексты на английском; их можно перевести переводчиком браузера." : "The Chess Bet app whitepaper and the TCH token whitepaper."}
+      intro={ru ? "Белая книга приложения HiMeet и белая книга токена TCH. Тексты на английском; их можно перевести переводчиком браузера." : "The HiMeet app whitepaper and the TCH token whitepaper."}
     >
       <nav aria-label="Breadcrumb" className="text-xs opacity-70">
-        <Link href={ROUTES.home} className="underline">Chess Bet</Link> › <span>{ru ? "Белые книги" : "Whitepapers"}</span>
+        <Link href={ROUTES.home} className="underline">HiMeet</Link> › <span>{ru ? "Белые книги" : "Whitepapers"}</span>
       </nav>
 
       <div role="tablist" className="flex flex-wrap gap-2">

@@ -2,15 +2,15 @@ import type { Metadata } from "next";
 import { EN } from "./content";
 
 const SITE = "https://serwmwser.github.io";
-const TITLE = "Chess Bet FAQ: Stakes, Fees, Safety, Fair Play";
-const DESC = "Answers about Chess Bet: how USDC stakes work, the 10% fee, payouts, age 18+, fair play, chess NFTs and the Rook Club community.";
+const TITLE = "HiMeet FAQ: Stakes, Fees, Safety, Fair Play";
+const DESC = "Answers about HiMeet: how USDC stakes work, the 10% fee, payouts, age 18+, fair play, chess NFTs and the Rook Club community.";
 
 export const metadata: Metadata = {
   title: TITLE,
   description: DESC,
   alternates: { canonical: "/faq/" },
-  openGraph: { type: "website", url: SITE + "/faq/", title: TITLE + " | Chess Bet", description: DESC, images: ["/og.png"] },
-  twitter: { card: "summary_large_image", title: TITLE + " | Chess Bet", description: DESC, images: ["/og.png"] },
+  openGraph: { type: "website", url: SITE + "/faq/", title: TITLE + " | HiMeet", description: DESC, images: ["/og.png"] },
+  twitter: { card: "summary_large_image", title: TITLE + " | HiMeet", description: DESC, images: ["/og.png"] },
 };
 
 const JSON_LD = JSON.stringify({
@@ -18,7 +18,7 @@ const JSON_LD = JSON.stringify({
   "@graph": [
     { "@type": "WebPage", "@id": SITE + "/faq/#page", url: SITE + "/faq/", name: TITLE, description: DESC, isPartOf: { "@id": SITE + "/#site" }, inLanguage: "en" },
     { "@type": "BreadcrumbList", itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Chess Bet", item: SITE + "/" },
+      { "@type": "ListItem", position: 1, name: "HiMeet", item: SITE + "/" },
       { "@type": "ListItem", position: 2, name: EN.crumb, item: SITE + "/faq/" },
     ] },
     { "@type": "FAQPage", mainEntity: EN.groups.flatMap((g) => g.items).map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) },

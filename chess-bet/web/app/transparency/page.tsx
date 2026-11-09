@@ -181,7 +181,7 @@ export default function TransparencyPage() {
   return (
     <PageShell title={t.title} intro={t.intro}>
       <nav aria-label="Breadcrumb" className="text-xs opacity-70">
-        <Link href={ROUTES.home} className="underline">Chess Bet</Link> › <span>{t.crumb}</span>
+        <Link href={ROUTES.home} className="underline">HiMeet</Link> › <span>{t.crumb}</span>
       </nav>
 
       <section className="card space-y-3">

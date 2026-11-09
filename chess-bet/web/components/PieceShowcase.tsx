@@ -46,7 +46,7 @@ export default function PieceShowcase() {
       <details className="text-sm">
         <summary className="cursor-pointer opacity-80">{ru ? "Показать друзьям" : "Show your friends"}</summary>
         <div className="mt-2">
-          <Share url={url} text={ru ? "Новые фигуры «Рыцари» в Chess Bet: играй с мультяшными рыцарями!" : "New “Knights” pieces in Chess Bet: play with toy knights!"} />
+          <Share url={url} text={ru ? "Новые фигуры «Рыцари» в HiMeet: играй с мультяшными рыцарями!" : "New “Knights” pieces in HiMeet: play with toy knights!"} />
         </div>
       </details>
       <p className="text-[11px] opacity-60">{ru ? "Выбор виден только вам: соперник играет со своим набором." : "Only you see your choice: your opponent plays with their own set."}</p>

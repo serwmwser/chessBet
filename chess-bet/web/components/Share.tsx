@@ -34,7 +34,7 @@ export default function Share({ url, text }: { url: string; text: string }) {
     <div className="space-y-2">
       <div className="flex flex-wrap items-center gap-2">
         {native && (
-          <button type="button" className={pill + " chip-on"} onClick={() => navigator.share({ title: "Chess Bet", text, url }).catch(() => {})}>↗ {t("share")}</button>
+          <button type="button" className={pill + " chip-on"} onClick={() => navigator.share({ title: "HiMeet", text, url }).catch(() => {})}>↗ {t("share")}</button>
         )}
         <button type="button" className={pill} onClick={inApp}>♜ {ru ? "В Rook Club" : "Rook Club"}</button>
         <button type="button" className={pill} onClick={copy} aria-live="polite">{copied ? "✓ " + (ru ? "Скопировано" : "Copied") : "🔗 " + t("copyLink")}</button>

@@ -26,7 +26,7 @@ export default function Header() {
         <div className="flex items-center gap-2 font-bold text-lg tracking-tight me-auto">
           <span className="grid place-items-center w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-violet text-white text-xl">♞</span>
           <span className="hidden sm:block leading-tight">
-            <span className="block">Chess Bet</span>
+            <span className="block">HiMeet</span>
             <span className="block text-[11px] font-medium opacity-70 max-w-[16rem]">{ru ? "Соцсеть, объявления, знакомства и шахматы на USDC" : "Social Network, Classifieds, Dating & Chess for USDC"}</span>
           </span>
         </div>
@@ -48,7 +48,7 @@ export default function Header() {
           theme={dark ? "dark" : "light"}
           connectButton={{ style: { borderRadius: 14, height: 40, minWidth: 0, padding: "0 14px", fontSize: 14 } }}
           detailsButton={{ style: { borderRadius: 14, height: 40, minWidth: 0, padding: "0 10px", fontSize: 13 } }}
-          connectModal={{ size: "compact", title: "Chess Bet" }}
+          connectModal={{ size: "compact", title: "HiMeet" }}
         />
       </div>
     </header>

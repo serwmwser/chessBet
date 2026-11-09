@@ -73,7 +73,7 @@ export default function AdsPage() {
   };
 
   const login = () => {
-    if (!addr) { void connect({ client, chain, wallets, theme: dark ? "dark" : "light", size: "compact", title: "Chess Bet" }); return; }
+    if (!addr) { void connect({ client, chain, wallets, theme: dark ? "dark" : "light", size: "compact", title: "HiMeet" }); return; }
     void signIn().catch(() => toast(ru ? "Не удалось войти. Подпишите сообщение в кошельке" : "Could not sign in. Sign the message in your wallet", "err"));
   };
 
@@ -120,7 +120,7 @@ export default function AdsPage() {
   return (
     <PageShell title={c.title} intro={c.intro}>
       <nav aria-label="Breadcrumb" className="text-xs opacity-70">
-        <Link href={ROUTES.home} className="underline">Chess Bet</Link> › <span>{c.crumb}</span>
+        <Link href={ROUTES.home} className="underline">HiMeet</Link> › <span>{c.crumb}</span>
       </nav>
 
       <div role="tablist" className="flex gap-2 flex-wrap">

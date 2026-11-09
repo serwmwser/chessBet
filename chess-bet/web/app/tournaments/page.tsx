@@ -207,7 +207,7 @@ function Content() {
       intro={ru ? "Бесплатные арены каждый час: играйте, набирайте очки, получайте значки и кубки." : "Free arenas every hour: play, score points, earn badges and cups."}
     >
       <nav aria-label="Breadcrumb" className="text-xs opacity-70">
-        <Link href={ROUTES.home} className="underline">Chess Bet</Link> › <span>{ru ? "Турниры" : "Tournaments"}</span>
+        <Link href={ROUTES.home} className="underline">HiMeet</Link> › <span>{ru ? "Турниры" : "Tournaments"}</span>
       </nav>
       {id ? <DetailView id={id} token={s.token} signIn={s.signIn} /> : <ListView token={s.token} signIn={s.signIn} />}
     </PageShell>

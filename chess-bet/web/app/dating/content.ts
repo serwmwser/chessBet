@@ -11,7 +11,7 @@ export const RU: DatingText = {
   crumb: "Знакомства",
   title: "Знакомства для всех",
   intro: "Находите новых людей рядом и по всему миру: анкета с тремя фото, лента с фильтрами, лайки и совпадения. Бесплатно, только для 18+.",
-  seoTitle: "Знакомства 18+ для всех — Rook Club | Chess Bet",
+  seoTitle: "Знакомства 18+ для всех — Rook Club | HiMeet",
   seoDesc: "Бесплатные знакомства для всех в сообществе Rook Club: анкета с 3 фото, фильтры по возрасту и стране, лайки, совпадения и личные сообщения. Только 18+, без ссылок и контактов в анкете.",
   why: {
     h: "Почему знакомства в Rook Club",
@@ -50,7 +50,7 @@ export const EN: DatingText = {
   crumb: "Dating",
   title: "Dating for everyone",
   intro: "Meet new people near you and around the world: a profile with three photos, a filtered feed, likes and matches. Free, 18+ only.",
-  seoTitle: "Dating 18+ for Everyone — Rook Club | Chess Bet",
+  seoTitle: "Dating 18+ for Everyone — Rook Club | HiMeet",
   seoDesc: "Free dating for everyone in the Rook Club community: a profile with 3 photos, age and country filters, likes, matches and private messages. 18+ only, no links or contacts in profiles.",
   why: {
     h: "Why dating in Rook Club",

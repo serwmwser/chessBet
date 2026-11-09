@@ -30,7 +30,7 @@ export default function TokenPage() {
   return (
     <PageShell title={c.title} intro={c.intro}>
       <nav aria-label="Breadcrumb" className="text-xs opacity-70">
-        <Link href={ROUTES.home} className="underline">Chess Bet</Link> › <span>{c.crumb}</span>
+        <Link href={ROUTES.home} className="underline">HiMeet</Link> › <span>{c.crumb}</span>
       </nav>
 
       <div className="rounded-xl bg-amber-400/15 px-3 py-2 text-sm font-semibold text-amber-600 dark:text-amber-400">{c.status}</div>

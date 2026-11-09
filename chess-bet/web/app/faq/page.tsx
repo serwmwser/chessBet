@@ -11,7 +11,7 @@ export default function FaqPage() {
   return (
     <PageShell title={c.title} intro={c.intro}>
       <nav aria-label="Breadcrumb" className="text-xs opacity-70">
-        <Link href={ROUTES.home} className="underline">Chess Bet</Link> › <span>{c.crumb}</span>
+        <Link href={ROUTES.home} className="underline">HiMeet</Link> › <span>{c.crumb}</span>
       </nav>
 
       {c.groups.map((g) => (

@@ -1,5 +1,5 @@
 // Белые книги на английском (для чтения на сайте и перевода переводчиком браузера):
-// 1) приложение Chess Bet / Rook Club, 2) токен TCH. Только проверяемые факты, без обещаний дохода.
+// 1) приложение HiMeet / Rook Club, 2) токен TCH. Только проверяемые факты, без обещаний дохода.
 export type Section = { h: string; p?: string[]; ul?: string[]; rows?: [string, string, string][]; head?: [string, string, string] };
 export type Doc = { id: "app" | "token"; tab: string; title: string; version: string; note: string; sections: Section[] };
 
@@ -7,13 +7,13 @@ export const CONTACT = "chessgrokearn@gmail.com";
 
 export const APP: Doc = {
   id: "app",
-  tab: "Chess Bet",
-  title: "Chess Bet (Rook Club): Whitepaper",
+  tab: "HiMeet",
+  title: "HiMeet (Rook Club): Whitepaper",
   version: "Version 0.1 · 8 November 2026 · https://serwmwser.github.io",
   note: "This document describes the project as it works today and what is planned. It is not investment advice and does not promise any income.",
   sections: [
     { h: "1. Summary", p: [
-      "Chess Bet is a social platform for chess players and their friends. It combines a social network called Rook Club, free classifieds for the whole world with chat translation, 18+ dating, puzzles, tournaments and online chess where players can put USDC stakes on the Polygon network.",
+      "HiMeet is a social platform for chess players and their friends. It combines a social network called Rook Club, free classifieds for the whole world with chat translation, 18+ dating, puzzles, tournaments and online chess where players can put USDC stakes on the Polygon network.",
       "Stakes are held by an open smart contract, not by the website. The winner of a staked game receives 90% of the pot and the fee is 10%.",
     ] },
     { h: "2. The problem", ul: [
@@ -78,7 +78,7 @@ export const TOKEN: Doc = {
   note: "Status: the token was issued on Polygon on 8 November 2026. Rewards for activity are not live yet, and TCH is not listed on any exchange or DEX. This is not an investment offer, advice or a promise of price growth.",
   sections: [
     { h: "1. Purpose", p: [
-      "TCH (ChessTalk Token) is an in-app unit of Chess Bet. Members earn it for communication and activity, such as calls between profiles, and spend it on paid options. It is not money and not a share in a company.",
+      "TCH (ChessTalk Token) is an in-app unit of HiMeet. Members earn it for communication and activity, such as calls between profiles, and spend it on paid options. It is not money and not a share in a company.",
     ] },
     { h: "2. Parameters", ul: [
       "Name and ticker: ChessTalk Token, TCH.",

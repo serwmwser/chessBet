@@ -13,7 +13,7 @@ export default function RefBanner({ onEarn }: { onEarn: () => void }) {
   const { connect } = useConnectModal();
   const ru = lang === "ru";
   if (!REF_ENABLED) return null;
-  const login = () => { void connect({ client, chain, wallets, theme: dark ? "dark" : "light", size: "compact", title: "Chess Bet" }); };
+  const login = () => { void connect({ client, chain, wallets, theme: dark ? "dark" : "light", size: "compact", title: "HiMeet" }); };
   const steps = ru
     ? ["Поделитесь своей ссылкой с другом", "Друг входит по ней и играет на USDC", "Вы получаете долю комиссии с каждой его платной партии. Пожизненно"]
     : ["Share your link with a friend", "Your friend joins through it and plays for USDC", "You get a share of the fee from each of their paid games. For life"];

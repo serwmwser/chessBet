@@ -9,7 +9,7 @@ export type Content = {
 
 export const EN: Content = {
   title: "Crypto Chess Game: Play Chess for USDC on Polygon",
-  intro: "Chess Bet is a crypto chess game where two players put USDC on the line and a smart contract on Polygon holds the pot. The winner claims 90%. Stakes are optional, so you can practise for free first.",
+  intro: "HiMeet is a crypto chess game where two players put USDC on the line and a smart contract on Polygon holds the pot. The winner claims 90%. Stakes are optional, so you can practise for free first.",
   crumb: "Crypto chess",
   cta: "Play chess now",
   practice: "Practise for free",
@@ -40,11 +40,11 @@ export const EN: Content = {
     ] },
     { h: "Risks, honestly", p: [
       "You can lose your stake. Blockchain transactions cannot be undone, so check amounts and addresses in your wallet before you confirm. Smart contracts may contain errors despite checks. Cryptocurrency prices and rules differ by country, and you are responsible for following the laws of yours.",
-      "Chess Bet is for adults (18+) and may be unavailable in some countries. Play only with money you can afford to lose, and take a break if it stops being fun.",
+      "HiMeet is for adults (18+) and may be unavailable in some countries. Play only with money you can afford to lose, and take a break if it stops being fun.",
     ] },
   ],
   faq: [
-    ["Which cryptocurrency does Chess Bet use?", "Stakes are paid in USDC on the Polygon network. You also need a small amount of POL to pay network fees."],
+    ["Which cryptocurrency does HiMeet use?", "Stakes are paid in USDC on the Polygon network. You also need a small amount of POL to pay network fees."],
     ["How do I get USDC on Polygon?", "Buy USDC on an exchange or in your wallet and send it to your wallet address on the Polygon network. Always choose the Polygon network when you withdraw, otherwise the funds may be lost."],
     ["Who decides the winner of a crypto chess game?", "The game server applies the rules of chess and records the result in the smart contract. A draw or a cancelled game is refunded in full."],
     ["How much does the winner receive?", "The winner receives 90% of the pot. The fee is 10% and is taken by the contract when the prize is paid."],
@@ -56,7 +56,7 @@ export const EN: Content = {
 
 export const RU: Content = {
   title: "Крипто шахматы: играйте на USDC в сети Polygon",
-  intro: "Chess Bet: крипто шахматы, где двое игроков ставят USDC, а смарт-контракт в сети Polygon хранит банк. Победитель забирает 90%. Ставки по желанию, сначала можно потренироваться бесплатно.",
+  intro: "HiMeet: крипто шахматы, где двое игроков ставят USDC, а смарт-контракт в сети Polygon хранит банк. Победитель забирает 90%. Ставки по желанию, сначала можно потренироваться бесплатно.",
   crumb: "Крипто шахматы",
   cta: "Играть в шахматы",
   practice: "Потренироваться бесплатно",
@@ -87,11 +87,11 @@ export const RU: Content = {
     ] },
     { h: "О рисках честно", p: [
       "Ставку можно проиграть. Операции в блокчейне необратимы, поэтому проверяйте суммы и адреса в кошельке перед подтверждением. Смарт-контракты могут содержать ошибки, несмотря на проверки. Правила для криптовалют различаются по странам, и соблюдать законы своей страны должны вы.",
-      "Chess Bet только для совершеннолетних (18+) и может быть недоступен в некоторых странах. Играйте только деньгами, которые не жалко потерять, и делайте паузу, если игра перестала радовать.",
+      "HiMeet только для совершеннолетних (18+) и может быть недоступен в некоторых странах. Играйте только деньгами, которые не жалко потерять, и делайте паузу, если игра перестала радовать.",
     ] },
   ],
   faq: [
-    ["Какая криптовалюта используется в Chess Bet?", "Ставки делаются в USDC в сети Polygon. Ещё нужно немного POL для оплаты комиссий сети."],
+    ["Какая криптовалюта используется в HiMeet?", "Ставки делаются в USDC в сети Polygon. Ещё нужно немного POL для оплаты комиссий сети."],
     ["Как получить USDC в сети Polygon?", "Купите USDC на бирже или в кошельке и отправьте на адрес своего кошелька в сети Polygon. При выводе всегда выбирайте сеть Polygon, иначе деньги можно потерять."],
     ["Кто определяет победителя в крипто шахматах?", "Игровой сервер применяет правила шахмат и записывает результат в смарт-контракт. При ничьей или отмене партии ставки возвращаются полностью."],
     ["Сколько получает победитель?", "Победитель получает 90% банка. Комиссия 10%, её удерживает контракт при выплате выигрыша."],

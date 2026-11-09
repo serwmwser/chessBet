@@ -1,6 +1,6 @@
-# Chess Bet (Rook Club)
+# HiMeet (Rook Club)
 
-> Chess Bet is a social network with free worldwide classifieds (with built-in translation of ads and chat), 18+ dating, and online chess where players can stake USDC on the Polygon network. It also has free chess puzzles, free tournaments and chess NFTs. A smart contract holds chess stakes and the winner receives 90% of the pot. For adults only (18+). Stakes carry the risk of losing and some features may be unavailable in some countries.
+> HiMeet is a social network with free worldwide classifieds (with built-in translation of ads and chat), 18+ dating, and online chess where players can stake USDC on the Polygon network. It also has free chess puzzles, free tournaments and chess NFTs. A smart contract holds chess stakes and the winner receives 90% of the pot. For adults only (18+). Stakes carry the risk of losing and some features may be unavailable in some countries.
 
 ## What you can do on the site
 
@@ -23,7 +23,7 @@
 - [Tournaments](https://serwmwser.github.io/tournaments/): free hourly chess arenas with points, badges and cups.
 - [Chess NFTs](https://serwmwser.github.io/nft/): turn a move from your own finished game into an ERC-721 NFT on Polygon.
 - [FAQ](https://serwmwser.github.io/faq/): answers about stakes, fees, payouts, age, fair play, classifieds, dating and the community.
-- [About](https://serwmwser.github.io/about/): what Chess Bet is, how it works and how to contact the project.
+- [About](https://serwmwser.github.io/about/): what HiMeet is, how it works and how to contact the project.
 - [TCH token](https://serwmwser.github.io/token/): in-app token issued on Polygon on 8 November 2026 (0x14818b99E86fD4654Cb55BE57367d1BfaA2b0F82; rewards not live yet, not listed on exchanges): 888,888,888 fixed supply, earned for calls and activity, tokenomics, roadmap, risks. Whitepapers (English): https://serwmwser.github.io/whitepaper/
 - [Transparency](https://serwmwser.github.io/transparency/): live state of the ChessEscrow betting contract on Polygon read from the blockchain (USDC held, games, bet cap, fee, owner, oracle), what is fixed in code, who can do what, honest risks (no paid audit).
 - [Terms of use](https://serwmwser.github.io/terms/): age limit, stakes, fees, refunds, classifieds options, responsible play.
@@ -39,7 +39,7 @@
 - The contracts have not had a paid third-party audit. Game results are reported by a server-side oracle key.
 - Free modes: games against a bot and private games with a friend need no stake. Classifieds, the feed, dating and puzzles are free to use (only extra ads and optional classifieds options cost USDC).
 - Also available as a Telegram Mini App: https://t.me/chess_betlolbot/game and as an Android app.
-- Private messages are stored on the server and are not end-to-end encrypted. Chess Bet never asks for a secret recovery phrase or private key.
+- Private messages are stored on the server and are not end-to-end encrypted. HiMeet never asks for a secret recovery phrase or private key.
 - Contact: chessgrokearn@gmail.com
 
 ## Languages

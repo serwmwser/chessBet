@@ -35,7 +35,7 @@ export default function LoginPrompt({ text }: { text?: string }) {
 
   const click = async () => {
     if (!addr) {
-      try { await connect({ client, chain, wallets, theme: dark ? "dark" : "light", size: "compact", title: "Chess Bet" }); } catch { /* окно закрыли */ }
+      try { await connect({ client, chain, wallets, theme: dark ? "dark" : "light", size: "compact", title: "HiMeet" }); } catch { /* окно закрыли */ }
       return;
     }
     try { await signIn(); } catch (e) { toast(errText(e, ru), "err"); }

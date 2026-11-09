@@ -12,12 +12,12 @@ export type Content = {
 };
 
 export const EN: Content = {
-  title: "About Chess Bet",
-  intro: "Chess Bet is a chess platform where skill decides the game. Play for free, or put USDC on the line on the Polygon network, meet other chess and crypto fans in the Rook Club community, and use its international classifieds board with built-in translation.",
+  title: "About HiMeet",
+  intro: "HiMeet is a chess platform where skill decides the game. Play for free, or put USDC on the line on the Polygon network, meet other chess and crypto fans in the Rook Club community, and use its international classifieds board with built-in translation.",
   crumb: "About",
   missionH: "Our mission",
   mission: [
-    "Chess Bet was built for chess players who want a bit more than a casual game. Chess is a game of pure skill, with no dice and no luck, so a stronger player should be able to back their play with a stake if they choose to.",
+    "HiMeet was built for chess players who want a bit more than a casual game. Chess is a game of pure skill, with no dice and no luck, so a stronger player should be able to back their play with a stake if they choose to.",
     "You can play for free against a bot or a friend, or play for USDC against another player. Stakes are held by a smart contract on Polygon, not by the website, and the winner claims the pot directly to their own wallet.",
   ],
   howH: "How it works",
@@ -27,7 +27,7 @@ export const EN: Content = {
     ["Play", "Play chess in your browser or in the Telegram Mini App, with clocks, draw offers and a game chat."],
     ["Get your result", "The winner claims 90% of the pot from the contract. A draw or a cancelled game is refunded."],
   ],
-  whyH: "Why Chess Bet",
+  whyH: "Why HiMeet",
   why: [
     "A game of skill: chess has no hidden information and no chance element.",
     "Stakes are held by an open smart contract on Polygon, verified on Polygonscan.",
@@ -40,7 +40,7 @@ export const EN: Content = {
     "For adults only (18+). Play responsibly and only with money you can afford to lose.",
   ],
   projectH: "Project details",
-  projectP: "Chess Bet is an independent project. We keep the service simple and open: the contract that holds stakes is public, and the rules and fees are written in the Terms of use.",
+  projectP: "HiMeet is an independent project. We keep the service simple and open: the contract that holds stakes is public, and the rules and fees are written in the Terms of use.",
   contactLabel: "Contact",
   contractLabel: "Smart contract",
   contractLink: "View on Polygonscan",
@@ -52,12 +52,12 @@ export const EN: Content = {
 };
 
 export const RU: Content = {
-  title: "О Chess Bet",
-  intro: "Chess Bet — шахматная платформа, где результат решает мастерство. Играйте бесплатно или ставьте USDC в сети Polygon и общайтесь с любителями шахмат и крипты в сообществе Rook Club.",
+  title: "О HiMeet",
+  intro: "HiMeet — шахматная платформа, где результат решает мастерство. Играйте бесплатно или ставьте USDC в сети Polygon и общайтесь с любителями шахмат и крипты в сообществе Rook Club.",
   crumb: "О нас",
   missionH: "Наша миссия",
   mission: [
-    "Chess Bet создан для шахматистов, которым нужно чуть больше, чем обычная партия. Шахматы — игра чистого мастерства: в ней нет кубиков и удачи, и сильный игрок вправе подкрепить свою игру ставкой, если захочет.",
+    "HiMeet создан для шахматистов, которым нужно чуть больше, чем обычная партия. Шахматы — игра чистого мастерства: в ней нет кубиков и удачи, и сильный игрок вправе подкрепить свою игру ставкой, если захочет.",
     "Можно играть бесплатно с ботом или другом, а можно на USDC против другого игрока. Ставки хранит смарт-контракт в сети Polygon, а не сайт, и победитель забирает банк сразу на свой кошелёк.",
   ],
   howH: "Как это работает",
@@ -67,7 +67,7 @@ export const RU: Content = {
     ["Играйте", "Шахматы в браузере или в Telegram Mini App: часы, предложение ничьей, чат партии."],
     ["Получите результат", "Победитель забирает 90% банка из контракта. Ничья или отменённая партия возвращаются."],
   ],
-  whyH: "Почему Chess Bet",
+  whyH: "Почему HiMeet",
   why: [
     "Игра на мастерство: в шахматах нет скрытой информации и случайности.",
     "Ставки хранит открытый смарт-контракт в сети Polygon, он проверен на Polygonscan.",
@@ -80,7 +80,7 @@ export const RU: Content = {
     "Только для совершеннолетних (18+). Играйте ответственно и только теми деньгами, которые не жалко потерять.",
   ],
   projectH: "Сведения о проекте",
-  projectP: "Chess Bet — независимый проект. Мы делаем сервис простым и открытым: контракт со ставками публичный, а правила и комиссии написаны в Условиях использования.",
+  projectP: "HiMeet — независимый проект. Мы делаем сервис простым и открытым: контракт со ставками публичный, а правила и комиссии написаны в Условиях использования.",
   contactLabel: "Связь",
   contractLabel: "Смарт-контракт",
   contractLink: "Открыть на Polygonscan",

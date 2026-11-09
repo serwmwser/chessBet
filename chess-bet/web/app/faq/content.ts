@@ -3,8 +3,8 @@ export type Group = { h: string; items: [string, string][] };
 export type Content = { title: string; intro: string; crumb: string; groups: Group[]; cta: string; chess: string; crypto: string; terms: string; note: string };
 
 export const EN: Content = {
-  title: "Chess Bet FAQ: Stakes, Fees, Safety and Fair Play",
-  intro: "Short answers to the most common questions about Chess Bet: how USDC stakes work, the fee, payouts, age limits, fair play, chess NFTs and the Rook Club community.",
+  title: "HiMeet FAQ: Stakes, Fees, Safety and Fair Play",
+  intro: "Short answers to the most common questions about HiMeet: how USDC stakes work, the fee, payouts, age limits, fair play, chess NFTs and the Rook Club community.",
   crumb: "FAQ",
   cta: "Play chess now",
   chess: "Practise for free",
@@ -13,7 +13,7 @@ export const EN: Content = {
   note: "18+ · Stakes carry the risk of losing. Play responsibly.",
   groups: [
     { h: "Basics", items: [
-      ["What is Chess Bet?", "Chess Bet is an online chess game where you can play against a bot, against a friend by private link, or against other players for USDC stakes on the Polygon network."],
+      ["What is HiMeet?", "HiMeet is an online chess game where you can play against a bot, against a friend by private link, or against other players for USDC stakes on the Polygon network."],
       ["Is it free?", "Opening the site and playing against a bot or a friend is free. Stakes are optional."],
       ["How do I sign in?", "You can connect a crypto wallet or sign in with email or Google. Signing in uses a free signature. No money is spent and no gas is needed. The session lasts about 14 days on the same device."],
       ["Does it work on a phone?", "Yes. It works in the mobile browser, can be added to the home screen and also runs as a Telegram Mini App."],
@@ -24,7 +24,7 @@ export const EN: Content = {
       ["What happens on a draw or a cancelled game?", "Stakes are refunded in full on a draw, on a cancellation, and if the result cannot be recorded."],
       ["How do I receive my winnings?", "Press Claim after the game. This is a blockchain transaction, so you need a small amount of POL to pay the network fee."],
       ["Who holds the money?", "A smart contract holds the stakes, not the website. The contract source code is verified and public on Polygonscan."],
-      ["Do you ask for my secret phrase or private key?", "Never. Nobody from Chess Bet will ever ask for your secret recovery phrase or private key. Do not share it with anyone, including in messages."],
+      ["Do you ask for my secret phrase or private key?", "Never. Nobody from HiMeet will ever ask for your secret recovery phrase or private key. Do not share it with anyone, including in messages."],
     ] },
     { h: "Safety, age and the law", items: [
       ["Who can play?", "Only adults: 18 or older, or older if the law in your country requires a higher age."],
@@ -42,13 +42,13 @@ export const EN: Content = {
       ["Can I sell it?", "NFTs are standard ERC-721 tokens with 5% creator royalties, so they can be listed on marketplaces such as OpenSea. An NFT is a collectible and does not promise any profit."],
     ] },
     { h: "Classifieds and translation", items: [
-      ["What are Chess Bet classifieds?", "A free-to-start international classifieds board in the Rook Club community: for sale, wanted, rent, jobs and services in any country and city, with photos and a seller chat."],
+      ["What are HiMeet classifieds?", "A free-to-start international classifieds board in the Rook Club community: for sale, wanted, rent, jobs and services in any country and city, with photos and a seller chat."],
       ["Are ads and chats translated?", "Yes. Ads and chat messages can be translated into your language with one tap, so a buyer and a seller who speak different languages can understand each other. Translation is automatic, available to signed-in users with fair-use limits, and may contain mistakes."],
       ["Is posting an ad free?", "Your first ad is free, plus one more free ad for every invited friend who starts using the site. After that an ad costs 1 USDC for 30 days. Renewal costs 1 USDC and top placement costs 3 USDC for 7 days. You pay by sending USDC on Polygon from your wallet."],
       ["Can I put my phone number or a link in an ad?", "No. Links, phone numbers and contacts are not allowed in ads: use the site chat. This protects buyers and sellers from fraud."],
     ] },
     { h: "Rook Club community", items: [
-      ["What is Rook Club?", "Rook Club is the community of Chess Bet for chess, crypto and NFT fans. You get a public profile, posts with photos, a feed, comments, private messages and voice messages."],
+      ["What is Rook Club?", "Rook Club is the community of HiMeet for chess, crypto and NFT fans. You get a public profile, posts with photos, a feed, comments, private messages and voice messages."],
       ["Are private messages encrypted?", "No. Messages are stored on the server and are not end-to-end encrypted. Never send your secret phrase, private keys or passwords in a message."],
       ["Can I earn by inviting friends?", "There is a referral programme: you receive a share of the fee from the paid games of friends you invite. Income is not guaranteed and the terms can change. See the terms of use."],
     ] },
@@ -56,8 +56,8 @@ export const EN: Content = {
 };
 
 export const RU: Content = {
-  title: "Вопросы и ответы Chess Bet: ставки, комиссия, безопасность",
-  intro: "Короткие ответы на частые вопросы о Chess Bet: как работают ставки в USDC, комиссия, выплаты, возраст, честная игра, шахматные NFT и сообщество Rook Club.",
+  title: "Вопросы и ответы HiMeet: ставки, комиссия, безопасность",
+  intro: "Короткие ответы на частые вопросы о HiMeet: как работают ставки в USDC, комиссия, выплаты, возраст, честная игра, шахматные NFT и сообщество Rook Club.",
   crumb: "Вопросы и ответы",
   cta: "Играть в шахматы",
   chess: "Потренироваться бесплатно",
@@ -66,7 +66,7 @@ export const RU: Content = {
   note: "18+ · Ставки связаны с риском проигрыша. Играйте ответственно.",
   groups: [
     { h: "Основное", items: [
-      ["Что такое Chess Bet?", "Chess Bet это шахматы онлайн: можно играть с ботом, с другом по личной ссылке или с другими игроками на ставки в USDC в сети Polygon."],
+      ["Что такое HiMeet?", "HiMeet это шахматы онлайн: можно играть с ботом, с другом по личной ссылке или с другими игроками на ставки в USDC в сети Polygon."],
       ["Это бесплатно?", "Открыть сайт и играть с ботом или с другом бесплатно. Ставки по желанию."],
       ["Как войти?", "Можно подключить криптокошелёк или войти по почте или через Google. Вход использует бесплатную подпись: деньги не списываются и газ не нужен. Сессия действует около 14 дней на одном устройстве."],
       ["Работает ли на телефоне?", "Да. Работает в мобильном браузере, добавляется на главный экран и запускается как мини-приложение Telegram."],
@@ -77,7 +77,7 @@ export const RU: Content = {
       ["Что при ничьей или отмене партии?", "При ничьей, отмене и невозможности записать результат ставки возвращаются полностью."],
       ["Как получить выигрыш?", "После партии нажмите «Забрать». Это транзакция в блокчейне, поэтому нужен небольшой запас POL на комиссию сети."],
       ["Кто хранит деньги?", "Ставки хранит смарт-контракт, а не сайт. Исходный код контракта опубликован и подтверждён на Polygonscan."],
-      ["Просите ли вы секретную фразу или приватный ключ?", "Никогда. Никто из Chess Bet не попросит вашу секретную фразу восстановления или приватный ключ. Никому их не сообщайте, в том числе в сообщениях."],
+      ["Просите ли вы секретную фразу или приватный ключ?", "Никогда. Никто из HiMeet не попросит вашу секретную фразу восстановления или приватный ключ. Никому их не сообщайте, в том числе в сообщениях."],
     ] },
     { h: "Безопасность, возраст и закон", items: [
       ["Кто может играть?", "Только совершеннолетние: 18 лет или старше, а если закон вашей страны требует больший возраст, то он."],
@@ -95,13 +95,13 @@ export const RU: Content = {
       ["Можно ли его продать?", "NFT это стандартные токены ERC-721 с 5% роялти автору, их можно выставить на площадках вроде OpenSea. NFT это коллекционный предмет, он не обещает прибыли."],
     ] },
     { h: "Объявления и перевод", items: [
-      ["Что такое объявления Chess Bet?", "Международная доска объявлений в сообществе Rook Club с бесплатным стартом: продажа, покупка, аренда, работа и услуги в любой стране и городе, с фото и чатом с продавцом."],
+      ["Что такое объявления HiMeet?", "Международная доска объявлений в сообществе Rook Club с бесплатным стартом: продажа, покупка, аренда, работа и услуги в любой стране и городе, с фото и чатом с продавцом."],
       ["Переводятся ли объявления и чаты?", "Да. Объявления и сообщения в чате можно перевести на ваш язык одним нажатием, чтобы покупатель и продавец с разными языками понимали друг друга. Перевод автоматический, доступен вошедшим пользователям с разумными лимитами и может содержать ошибки."],
       ["Размещение объявления бесплатное?", "Первое объявление бесплатно, плюс ещё одно за каждого приглашённого друга, который начал пользоваться сайтом. Дальше объявление стоит 1 USDC за 30 дней, продление 1 USDC, закрепление вверху 3 USDC за 7 дней. Оплата переводом USDC в сети Polygon из вашего кошелька."],
       ["Можно ли указать в объявлении телефон или ссылку?", "Нет. Ссылки, телефоны и контакты в объявлениях запрещены: общайтесь в чате сайта. Так покупатели и продавцы защищены от мошенничества."],
     ] },
     { h: "Сообщество Rook Club", items: [
-      ["Что такое Rook Club?", "Rook Club это сообщество Chess Bet для любителей шахмат, крипты и NFT. У вас есть публичный профиль, посты с фото, лента, комментарии, личные и голосовые сообщения."],
+      ["Что такое Rook Club?", "Rook Club это сообщество HiMeet для любителей шахмат, крипты и NFT. У вас есть публичный профиль, посты с фото, лента, комментарии, личные и голосовые сообщения."],
       ["Шифруются ли личные сообщения?", "Нет. Сообщения хранятся на сервере и не имеют сквозного шифрования. Никогда не отправляйте в сообщениях секретную фразу, приватные ключи и пароли."],
       ["Можно ли зарабатывать, приглашая друзей?", "Есть реферальная программа: вы получаете долю комиссии с платных партий приглашённых друзей. Доход не гарантирован, условия могут меняться. Подробности в условиях использования."],
     ] },

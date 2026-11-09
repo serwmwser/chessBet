@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 
 const SITE = "https://serwmwser.github.io";
-const TITLE = "Transparency: ChessEscrow betting contract on Polygon | Chess Bet";
-const DESC = "Live state of the Chess Bet betting contract on Polygon, read straight from the blockchain: USDC held, games created, bet cap, fee, owner and oracle. What is fixed in code, who can do what, and honest risks.";
+const TITLE = "Transparency: ChessEscrow betting contract on Polygon | HiMeet";
+const DESC = "Live state of the HiMeet betting contract on Polygon, read straight from the blockchain: USDC held, games created, bet cap, fee, owner and oracle. What is fixed in code, who can do what, and honest risks.";
 
 export const metadata: Metadata = {
   title: TITLE,
   description: DESC,
-  keywords: ["Chess Bet transparency", "ChessEscrow", "Polygon USDC escrow", "chess betting contract", "прозрачность контракта", "ставки в шахматах USDC"],
+  keywords: ["HiMeet transparency", "ChessEscrow", "Polygon USDC escrow", "chess betting contract", "прозрачность контракта", "ставки в шахматах USDC"],
   alternates: { canonical: "/transparency/" },
   openGraph: { type: "website", url: SITE + "/transparency/", title: TITLE, description: DESC, images: ["/og.png"] },
   twitter: { card: "summary_large_image", title: TITLE, description: DESC, images: ["/og.png"] },
@@ -18,7 +18,7 @@ const JSON_LD = JSON.stringify({
   "@graph": [
     { "@type": "WebPage", "@id": SITE + "/transparency/#page", url: SITE + "/transparency/", name: TITLE, description: DESC, isPartOf: { "@id": SITE + "/#site" }, inLanguage: ["en", "ru"], dateModified: "2026-11-09" },
     { "@type": "BreadcrumbList", itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Chess Bet", item: SITE + "/" },
+      { "@type": "ListItem", position: 1, name: "HiMeet", item: SITE + "/" },
       { "@type": "ListItem", position: 2, name: "Transparency", item: SITE + "/transparency/" },
     ] },
   ],

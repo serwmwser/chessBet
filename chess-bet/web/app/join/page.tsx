@@ -33,7 +33,7 @@ const CARDS: Card[] = [
 
 const TXT = {
   ru: {
-    title: "Присоединяйтесь к Chess Bet",
+    title: "Присоединяйтесь к HiMeet",
     crumb: "Присоединиться",
     intro: "Бесплатный мессенджер со звонками, объявления, знакомства и шахматы в одном месте. Выберите, с чего начать.",
     stepsH: "Как начать за минуту",
@@ -43,7 +43,7 @@ const TXT = {
     trans: "Прозрачность контракта",
   },
   en: {
-    title: "Join Chess Bet",
+    title: "Join HiMeet",
     crumb: "Join",
     intro: "A free messenger with calls, classifieds, dating and chess in one place. Pick where to start.",
     stepsH: "Get started in a minute",
@@ -65,7 +65,7 @@ export default function JoinPage() {
   return (
     <PageShell title={t.title} intro={t.intro}>
       <nav aria-label="Breadcrumb" className="text-xs opacity-70">
-        <Link href={ROUTES.home} className="underline">Chess Bet</Link> › <span>{t.crumb}</span>
+        <Link href={ROUTES.home} className="underline">HiMeet</Link> › <span>{t.crumb}</span>
       </nav>
 
       <div className="grid gap-3 sm:grid-cols-2">

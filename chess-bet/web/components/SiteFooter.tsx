@@ -22,7 +22,7 @@ export default function SiteFooter() {
   const links: [string, string, boolean][] = [
     [ru ? "Шахматы онлайн бесплатно" : "Play chess online free", `${BASE}/chess/`, false],
     [ru ? "Крипто шахматы на USDC" : "Crypto chess for USDC", `${BASE}/crypto/`, false],
-    [ru ? "Присоединиться" : "Join Chess Bet", `${BASE}/join/`, false],
+    [ru ? "Присоединиться" : "Join HiMeet", `${BASE}/join/`, false],
     [ru ? "Вопросы и ответы" : "FAQ", `${BASE}/faq/`, false],
     [ru ? "О нас" : "About us", `${BASE}/about/`, false],
     [ru ? "Знакомства" : "Dating", `${BASE}/dating/`, false],
@@ -35,11 +35,11 @@ export default function SiteFooter() {
     [ru ? "Токен TCH" : "TCH token", `${BASE}/token/`, false],
     [ru ? "Белые книги" : "Whitepapers", `${BASE}/whitepaper/`, false],
     [ru ? "Прозрачность контракта" : "Contract transparency", `${BASE}/transparency/`, false],
-    [ru ? "Chess Bet в Telegram" : "Chess Bet on Telegram", TG_BOT_URL, true],
+    [ru ? "HiMeet в Telegram" : "HiMeet on Telegram", TG_BOT_URL, true],
   ];
   return (
     <footer className="space-y-3">
-      <section className="card lobby-info space-y-3" aria-label={ru ? "Почему нам можно доверять" : "Why trust Chess Bet"}>
+      <section className="card lobby-info space-y-3" aria-label={ru ? "Почему нам можно доверять" : "Why trust HiMeet"}>
         <h2 className="font-extrabold" style={{ color: "#d4a017" }}>🛡 {ru ? "Прозрачные правила" : "Transparent rules"}</h2>
         <div className="grid grid-cols-2 gap-2 text-center">
           {facts.map(([n, t]) => (
@@ -67,7 +67,7 @@ export default function SiteFooter() {
         </ul>
       </nav>
       <ProductHuntCard />
-      <p className="text-xs opacity-60 text-center pb-2">© {new Date().getFullYear()} Chess Bet · 18+ · {ru ? "Играйте ответственно." : "Play responsibly."}</p>
+      <p className="text-xs opacity-60 text-center pb-2">© {new Date().getFullYear()} HiMeet · 18+ · {ru ? "Играйте ответственно." : "Play responsibly."}</p>
     </footer>
   );
 }
