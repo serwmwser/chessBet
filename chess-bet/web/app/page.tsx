@@ -172,6 +172,10 @@ export default function Home() {
                 <AppDownload />
                 <RefBanner onEarn={() => setTab("earn")} />
                 <button type="button" onClick={() => setTab("nft")} className="w-full rounded-2xl px-4 py-3 text-start shadow-glow" style={{ background: "linear-gradient(90deg,#ff5a1f,#ff4fa3,#8b4dff)", color: "#fff" }}><div className="text-base font-extrabold">🎨 {ru ? "Студия NFT" : "NFT Studio"}</div><div className="text-xs font-medium opacity-90">{ru ? "Выберите ход из своей партии и мультяшную фигуру: получится картинка-NFT" : "Pick a move from your game and a cartoon piece to make an NFT picture"}</div></button>
+                <div className="grid grid-cols-2 gap-2">
+                  <button type="button" onClick={() => { setCartMode("bot"); setTab("cartoon"); }} className="btn btn-ghost">🎭 {ru ? "Мультяшные шахматы" : "Cartoon chess"}{cartActive ? " •" : ""}</button>
+                  <button type="button" onClick={() => setTab("roadmap")} className="btn btn-ghost">🗺 {ru ? "Дорожная карта" : "Roadmap"}</button>
+                </div>
                 <TelegramCard />
               </div>
             </details>
