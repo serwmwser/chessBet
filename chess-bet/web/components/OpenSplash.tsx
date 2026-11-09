@@ -18,10 +18,10 @@ export default function OpenSplash() {
   return (
     <div aria-hidden="true" className="cb-os" onClick={() => setShow(false)}>
       <style>{`
-        .cb-os{position:fixed;inset:0;z-index:9999;background:#04101c;animation:cbosOut .5s ease 1.9s forwards}
-        .cb-os img{width:100%;height:100%;object-fit:cover;object-position:center bottom;display:block}
-        .cb-os i{position:absolute;left:18%;right:18%;bottom:max(28px,env(safe-area-inset-bottom));height:5px;border-radius:5px;background:rgba(255,255,255,.18);overflow:hidden}
-        .cb-os i b{display:block;height:100%;width:100%;background:#ffc400;border-radius:5px;transform-origin:left;animation:cbosBar 1.9s ease-out forwards}
+        .cb-os{position:fixed;inset:0;z-index:9999;background:#f4f7ff;animation:cbosOut .5s ease 1.9s forwards}
+        .cb-os img{width:100%;height:100%;object-fit:contain;object-position:center;display:block}
+        .cb-os i{position:absolute;left:18%;right:18%;bottom:max(28px,env(safe-area-inset-bottom));height:5px;border-radius:5px;background:rgba(30,42,74,.12);overflow:hidden}
+        .cb-os i b{display:block;height:100%;width:100%;background:#818cf8;border-radius:5px;transform-origin:left;animation:cbosBar 1.9s ease-out forwards}
         @keyframes cbosBar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
         @keyframes cbosOut{to{opacity:0;visibility:hidden;pointer-events:none}}
       `}</style>

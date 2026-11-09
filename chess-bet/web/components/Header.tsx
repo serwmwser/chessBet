@@ -24,22 +24,22 @@ export default function Header() {
     <header className="glass sticky top-0 z-40 border-x-0 border-t-0">
       <div className="mx-auto max-w-3xl flex items-center gap-2 px-3 py-2.5">
         <div className="flex items-center gap-2 font-bold text-lg tracking-tight me-auto">
-          <span className="grid place-items-center w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-violet text-white text-xl">♞</span>
-          <span className="hidden sm:block leading-tight">
+          <span className="grid place-items-center w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-violet text-white text-xl">👋</span>
+          <span className="leading-tight">
             <span className="block">HiMeet</span>
-            <span className="block text-[11px] font-medium opacity-70 max-w-[16rem]">{ru ? "Соцсеть, объявления, знакомства и шахматы на USDC" : "Social Network, Classifieds, Dating & Chess for USDC"}</span>
+            <span className="hidden sm:block text-[11px] font-medium opacity-70 max-w-[16rem]">{ru ? "Общение, объявления, знакомства и шахматы" : "Chat, Classifieds, Dating & Chess"}</span>
           </span>
         </div>
         <select
           aria-label="Language"
           value={lang}
           onChange={(e) => setLang(e.target.value as Lang)}
-          className="rounded-xl bg-black/5 dark:bg-white/10 px-2 py-2 text-sm outline-none max-w-[110px]"
+          className="rounded-xl bg-black/5 dark:bg-white/10 px-2 py-2 text-sm outline-none max-w-[72px] sm:max-w-[110px]"
         >
           {Object.entries(LANGS).map(([k, v]) => <option key={k} value={k} className="text-slate-900">{v}</option>)}
         </select>
         <button onClick={toggleDark} aria-label="Theme" className="w-10 h-10 rounded-xl bg-black/5 dark:bg-white/10 text-lg">{dark ? "☀" : "☾"}</button>
-        <MusicToggle />
+        <span className="hidden min-[400px]:block"><MusicToggle /></span>
         <ConnectButton
           client={client}
           chain={chain}
