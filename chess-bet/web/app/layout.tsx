@@ -12,13 +12,13 @@ const inter = Inter({ subsets: ["latin", "cyrillic"], variable: "--font-inter" }
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 const SITE = "https://serwmwser.github.io";
-const TITLE = "HiMeet: Social Network, Classifieds, Dating & Chess for USDC";
-const DESC = "Social network with free worldwide classifieds and chat translation, 18+ dating and online chess for USDC stakes on Polygon. Winner gets 90% via smart contract.";
+const TITLE = "HiMeet: Free Messenger, Classifieds, Dating & Chess";
+const DESC = "Free messenger with calls and chat translation, worldwide classifieds, 18+ dating, a social feed and online chess. Optional USDC stakes on Polygon for adults (18+), held by an open smart contract.";
 
 const JSON_LD = JSON.stringify({
   "@context": "https://schema.org",
   "@graph": [
-    { "@type": "WebSite", "@id": SITE + "/#site", url: SITE, name: "HiMeet", alternateName: "HiMeet: Social Network, Classifieds, Dating & Chess for USDC", publisher: { "@id": SITE + "/#org" }, description: DESC, inLanguage: ["en", "de", "fr", "es", "pt", "zh", "ar", "tr", "ru"] },
+    { "@type": "WebSite", "@id": SITE + "/#site", url: SITE, name: "HiMeet", alternateName: "HiMeet: Free Messenger, Classifieds, Dating & Chess", publisher: { "@id": SITE + "/#org" }, description: DESC, inLanguage: ["en", "de", "fr", "es", "pt", "zh", "ar", "tr", "ru"] },
     { "@type": "Organization", "@id": SITE + "/#org", name: "HiMeet", alternateName: "Rook Club", url: SITE, logo: SITE + "/icon-512.png", email: "chessgrokearn@gmail.com", sameAs: ["https://t.me/chess_betlolbot", "https://www.producthunt.com/products/chess-bet"] },
     { "@type": "WebApplication", "@id": SITE + "/#app", name: "HiMeet", url: SITE, applicationCategory: "SocialNetworkingApplication", applicationSubCategory: "Social network, worldwide classifieds, dating, chess", featureList: ["Social network with profiles, posts, feed and private and voice messages", "Free worldwide classifieds with translation of ads and chat", "Free 18+ dating with profiles, likes and matches", "Online chess for USDC stakes on Polygon held by a smart contract", "Free chess against a bot or a friend, puzzles and tournaments", "Chess NFTs on Polygon"], operatingSystem: "Any (web browser, Android, Telegram Mini App)", description: DESC, offers: { "@type": "Offer", price: "0", priceCurrency: "USD", description: "Free to open and practise; stakes are optional" } },
     { "@type": "FAQPage", mainEntity: [
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
   title: { default: TITLE, template: "%s | HiMeet" },
   description: DESC,
   applicationName: "HiMeet",
-  keywords: ["social network", "worldwide classifieds", "classifieds with chat translation", "free classifieds", "online dating 18+", "chess online", "play chess for money", "chess betting", "chess USDC", "crypto chess", "chess stakes", "play chess vs bot", "chess NFT", "chess NFT collection", "NFT chess game", "chess NFT OpenSea", "mint chess move NFT", "play to earn chess", "crypto chess game", "USDC chess game", "blockchain chess", "Polygon chess game", "web3 chess", "chess Telegram mini app", "chess tournaments", "online chess with friends", "free chess practice"],
+  keywords: ["social network", "worldwide classifieds", "classifieds with chat translation", "free classifieds", "online dating 18+", "chess online", "free messenger", "free video calls", "chat translator", "play chess vs bot", "chess NFT", "chess NFT collection", "NFT chess game", "chess NFT OpenSea", "mint chess move NFT", "blockchain chess", "Polygon chess game", "web3 chess", "chess Telegram mini app", "chess tournaments", "online chess with friends", "free chess practice"],
   alternates: { canonical: "/" },
   authors: [{ name: "HiMeet" }],
   creator: "HiMeet",
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website", url: SITE, siteName: "HiMeet", locale: "en_US",
     title: TITLE, description: DESC,
-    images: [{ url: "/og.png", width: 1200, height: 630, alt: "HiMeet: social network, classifieds, dating and chess for USDC" }],
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "HiMeet: free messenger, classifieds, dating and chess" }],
   },
   twitter: { card: "summary_large_image", title: TITLE, description: DESC, images: ["/og.png"] },
   formatDetection: { telephone: false },

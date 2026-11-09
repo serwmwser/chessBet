@@ -1,7 +1,7 @@
 {
-  "name": "HiMeet: Social Network, Classifieds, Dating & Chess for USDC",
+  "name": "HiMeet: Free Messenger, Classifieds, Dating & Chess",
   "short_name": "HiMeet",
-  "description": "Social network with free worldwide classifieds and chat translation, 18+ dating and online chess for USDC stakes on Polygon.",
+  "description": "Free messenger with calls and chat translation, worldwide classifieds, 18+ dating and online chess.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
