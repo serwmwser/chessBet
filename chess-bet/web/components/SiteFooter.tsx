@@ -3,6 +3,7 @@ import { BET_MAX, DEFAULT_FEE_BPS, ESCROW_ADDRESS, shortAddr } from "@/lib/confi
 import { NFT_ADDRESS } from "@/lib/nft";
 import { useApp } from "@/lib/ctx";
 import { TG_BOT_URL } from "@/lib/telegram";
+import ProductHuntCard from "./ProductHuntCard";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
 const scan = (a: string) => `https://polygonscan.com/address/${a}`;
@@ -64,6 +65,7 @@ export default function SiteFooter() {
           ))}
         </ul>
       </nav>
+      <ProductHuntCard />
       <p className="text-xs opacity-60 text-center pb-2">© {new Date().getFullYear()} Chess Bet · 18+ · {ru ? "Играйте ответственно." : "Play responsibly."}</p>
     </footer>
   );
