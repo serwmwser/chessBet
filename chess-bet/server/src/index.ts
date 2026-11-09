@@ -14,6 +14,7 @@ import { startTg, tgChallenge, tgConfirm, tgNotify, tgStatus } from "./tg.js";
 import { handleSocial, viewerOf, setLegacy, socialPublic, socialNameOwner } from "./social.js";
 import { handleMedia } from "./media.js";
 import { handleDm, setDmNotify } from "./dm.js";
+import { handleMail, setMailNotify } from "./mail.js";
 import { handleComments } from "./comments.js";
 import { handleMod } from "./mod.js";
 import { handleDating } from "./dating.js";
@@ -223,6 +224,7 @@ const publicProfile = (a: string) => {
   return p || sp ? { name: sp?.name ?? p?.name ?? "", bio: p?.bio ?? "", link: p?.link ?? "", avatar: sp?.avatar || p?.avatar || "" } : null;
 };
 setDmNotify((to, from) => { void tgNotify(to, `✉️ Новое сообщение от @${from}`, `✉️ New message from @${from}`, `dm:${from}:${Math.floor(Date.now() / 600000)}`, `${SITE_URL}/messages/?with=${encodeURIComponent(from)}`); }); // не чаще раза в 10 минут от одного отправителя
+setMailNotify((to, from) => { void tgNotify(to, `📧 Новое письмо от @${from}`, `📧 New mail from @${from}`, `mail:${from}:${Math.floor(Date.now() / 600000)}`, `${SITE_URL}/u/?tab=mail`); });
 setLegacy((a) => profiles.get(a) ?? null, (n) => nameOwner.get(n.toLowerCase()) ?? ""); // старые профили: перенос в соцсеть и занятые ники
 
 // ---------- синхронизация с контрактом ----------
@@ -557,6 +559,7 @@ const server = http.createServer((req, res) => {
   if (url.pathname.startsWith("/api/puzzles/")) { handlePuzzles(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (url.pathname.startsWith("/api/dating/")) { handleDating(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (url.pathname.startsWith("/api/dm/")) { handleDm(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
+  if (url.pathname.startsWith("/api/mail/")) { handleMail(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (parts[0] === "media" || url.pathname === "/api/upload" || url.pathname === "/api/upload-voice") { handleMedia(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (parts[0] === "api") { handleSocial(req, res, url).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (parts[0] === "tg") {
