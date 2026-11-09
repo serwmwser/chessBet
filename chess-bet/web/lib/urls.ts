@@ -22,6 +22,7 @@ export const ROUTES = {
   about: `${BASE}/about/`,
   tournaments: `${BASE}/tournaments/`,
   token: `${BASE}/token/`,
+  join: `${BASE}/join/`,
   whitepaper: `${BASE}/whitepaper/`,
   transparency: `${BASE}/transparency/`,
 } as const;

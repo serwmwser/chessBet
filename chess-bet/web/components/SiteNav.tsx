@@ -7,21 +7,14 @@ import { ROUTES } from "@/lib/urls";
 import { SESSION_EVENT, tokenFor } from "@/lib/social";
 import { useUnread } from "@/lib/dm";
 
-type Item = { href: string; ru: string; en: string; icon: string };
+type Item = { href: string; ru: string; en: string; icon: string; also?: string[] };
 const ITEMS: Item[] = [
-  { href: ROUTES.home, ru: "Играть", en: "Play", icon: "♞" },
-  { href: ROUTES.chess, ru: "Шахматы", en: "Chess", icon: "♟" },
-  { href: ROUTES.crypto, ru: "Крипто", en: "Crypto", icon: "🪙" },
-  { href: ROUTES.nft, ru: "NFT", en: "NFT", icon: "🎨" },
-  { href: ROUTES.token, ru: "Токен TCH", en: "TCH token", icon: "💎" },
-  { href: ROUTES.tournaments, ru: "Турниры", en: "Tournaments", icon: "🏆" },
-  { href: ROUTES.dating, ru: "Знакомства", en: "Dating", icon: "💞" },
-  { href: ROUTES.puzzles, ru: "Задачи", en: "Puzzles", icon: "♟" },
   { href: ROUTES.ads, ru: "Объявления", en: "Classifieds", icon: "🛍" },
-  { href: ROUTES.feed, ru: "Лента", en: "Feed", icon: "📰" },
+  { href: ROUTES.dating, ru: "Знакомства", en: "Dating", icon: "💞" },
+  { href: ROUTES.messages, ru: "Общение", en: "Chat", icon: "💬", also: [ROUTES.feed, ROUTES.join] },
   { href: ROUTES.profile, ru: "Профиль", en: "Profile", icon: "👤" },
-  { href: ROUTES.faq, ru: "FAQ", en: "FAQ", icon: "❓" },
-  // Позже: ROUTES.leaderboard
+  { href: ROUTES.token, ru: "Заработать", en: "Earn", icon: "💰", also: [ROUTES.nft, ROUTES.roadmap, ROUTES.whitepaper] },
+  { href: ROUTES.home, ru: "Играть", en: "Play", icon: "♞", also: [ROUTES.chess, ROUTES.crypto, ROUTES.puzzles, ROUTES.tournaments] },
 ];
 
 const norm = (p: string) => (p.endsWith("/") ? p : p + "/");
@@ -44,7 +37,7 @@ export default function SiteNav() {
     <nav aria-label={ru ? "Разделы сайта" : "Site sections"} className="mx-auto max-w-3xl px-3 pt-2">
       <ul className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] md:flex-wrap md:overflow-visible">
         {ITEMS.map((it) => {
-          const on = norm(it.href) === path;
+          const on = [it.href, ...(it.also ?? [])].some((h) => (norm(h) === norm(ROUTES.home) ? path === norm(h) : path.startsWith(norm(h))));
           return (
             <li key={it.href} className="shrink-0">
               <a

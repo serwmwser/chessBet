@@ -22,6 +22,7 @@ export default function SiteFooter() {
   const links: [string, string, boolean][] = [
     [ru ? "Шахматы онлайн бесплатно" : "Play chess online free", `${BASE}/chess/`, false],
     [ru ? "Крипто шахматы на USDC" : "Crypto chess for USDC", `${BASE}/crypto/`, false],
+    [ru ? "Присоединиться" : "Join Chess Bet", `${BASE}/join/`, false],
     [ru ? "Вопросы и ответы" : "FAQ", `${BASE}/faq/`, false],
     [ru ? "О нас" : "About us", `${BASE}/about/`, false],
     [ru ? "Знакомства" : "Dating", `${BASE}/dating/`, false],
