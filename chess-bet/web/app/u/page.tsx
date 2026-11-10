@@ -8,6 +8,7 @@ import Avatar, { mediaUrl } from "@/components/Avatar";
 import PostCard from "@/components/PostCard";
 import ChatPanel from "@/components/ChatPanel";
 import MailPanel from "@/components/MailPanel";
+import TchPanel from "@/components/TchPanel";
 import ReportButton from "@/components/ReportButton";
 import CallButton from "@/components/CallButton";
 import DailyQuests, { PlayerBadges } from "@/components/DailyQuests";
@@ -20,7 +21,7 @@ import { shortAddr } from "@/lib/config";
 import { absoluteUrl, profileUrl } from "@/lib/urls";
 import { errText, follow, getFeed, getPosts, getUser, saveProfile, useSocial, type SPost, type SUser } from "@/lib/social";
 
-type Tab = "posts" | "media" | "feed" | "chat" | "mail";
+type Tab = "posts" | "media" | "feed" | "chat" | "mail" | "tch";
 
 function Profile() {
   const { lang, toast } = useApp();
@@ -35,7 +36,7 @@ function Profile() {
 
   const [u, setU] = useState<SUser | null>(null);
   const [missing, setMissing] = useState(false);
-  const [tab, setTab] = useState<Tab>(sp.get("tab") === "chat" ? "chat" : sp.get("tab") === "mail" ? "mail" : "posts");
+  const [tab, setTab] = useState<Tab>(sp.get("tab") === "chat" ? "chat" : sp.get("tab") === "mail" ? "mail" : sp.get("tab") === "tch" ? "tch" : "posts");
   const [posts, setPosts] = useState<SPost[]>([]);
   const [more, setMore] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -63,7 +64,7 @@ function Profile() {
     finally { setLoading(false); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [target, tab, s.token, posts]);
-  useEffect(() => { setPosts([]); setMore(false); if (target && tab !== "chat" && tab !== "mail" && (tab !== "feed" || s.token)) load(true); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [target, tab, s.token]);
+  useEffect(() => { setPosts([]); setMore(false); if (target && tab !== "chat" && tab !== "mail" && tab !== "tch" && (tab !== "feed" || s.token)) load(true); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [target, tab, s.token]);
 
   const doFollow = async () => {
     if (!u) return;
@@ -97,7 +98,7 @@ function Profile() {
   if (!u) return <section className="card text-center opacity-70">…</section>;
 
   const shown = tab === "media" ? posts.filter((p) => p.media.length) : posts;
-  const tabs: [Tab, string][] = [["posts", ru ? "Посты" : "Posts"], ["media", ru ? "Медиа" : "Media"], ...(u.me ? ([["feed", ru ? "Лента" : "Feed"]] as [Tab, string][]) : []), ["chat", ru ? "💬 Чат" : "💬 Chat"], ...(u.me ? ([["mail", ru ? "📧 Почта" : "📧 Mail"]] as [Tab, string][]) : [])];
+  const tabs: [Tab, string][] = [["posts", ru ? "Посты" : "Posts"], ["media", ru ? "Медиа" : "Media"], ...(u.me ? ([["feed", ru ? "Лента" : "Feed"]] as [Tab, string][]) : []), ["chat", ru ? "💬 Чат" : "💬 Chat"], ...(u.me ? ([["mail", ru ? "📧 Почта" : "📧 Mail"], ["tch", "🪙 TCH"]] as [Tab, string][]) : [])];
   const banner = u.banner ? mediaUrl(u.banner) : "";
 
   return (
@@ -186,7 +187,9 @@ function Profile() {
         ))}
       </nav>
 
-      {tab === "mail" && u.me ? (
+      {tab === "tch" && u.me ? (
+        <TchPanel token={s.token} />
+      ) : tab === "mail" && u.me ? (
         <MailPanel token={s.token} myName={s.me?.name} initialTo={sp.get("to") || ""} />
       ) : tab === "chat" ? (
         <ChatPanel token={s.token} addr={s.addr} busy={s.busy} signIn={s.signIn} peer={u.me ? undefined : u.name} initial={u.me ? sp.get("with") || "" : ""} />
