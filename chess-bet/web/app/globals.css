@@ -68,3 +68,37 @@ input, textarea, select { @apply outline-none focus-visible:ring-2 focus-visible
 .lobby-gold .chip { border-color: rgba(212,160,23,.45); }
 .lobby-gold input[type="range"] { accent-color: #f5b301; }
 .lobby-info { border: 1px solid #d4a017; background-image: linear-gradient(135deg, rgba(245,179,1,.14), rgba(184,134,11,.06)); }
+
+/* HiMeet rainbow: светлая радужная тема, весёлое настроение */
+:root, :root[data-board] { --pg: #fff9fc; --edge: rgba(255,143,177,.35); --acc1: #ff5c93; --acc2: #8b5cf6; }
+:root:not(.dark) body {
+  background-color: #fffaf5;
+  background-image:
+    radial-gradient(620px 420px at 8% 4%, rgba(255,170,200,.55), transparent 65%),
+    radial-gradient(560px 400px at 95% 8%, rgba(255,226,140,.55), transparent 65%),
+    radial-gradient(640px 460px at 92% 48%, rgba(150,210,255,.50), transparent 65%),
+    radial-gradient(600px 440px at 4% 62%, rgba(165,235,205,.50), transparent 65%),
+    radial-gradient(640px 460px at 55% 100%, rgba(205,170,255,.50), transparent 65%);
+  background-attachment: fixed;
+  color: #3b1f4a;
+}
+:root:not(.dark) .card { background: rgba(255,255,255,.86); border: 2px solid rgba(255,255,255,.9); border-radius: 22px; box-shadow: 0 6px 0 rgba(192,132,252,.18), 0 12px 28px -12px rgba(255,92,147,.30); backdrop-filter: blur(8px); }
+:root:not(.dark) .glass { background: rgba(255,255,255,.8); border-color: rgba(255,143,177,.35); }
+:root:not(.dark) .btn { border-radius: 9999px; font-weight: 800; }
+:root:not(.dark) .btn-primary, :root:not(.dark) .chip-on {
+  background-image: linear-gradient(90deg, #ff5c93, #a855f7 55%, #3b82f6);
+  color: #fff; border-color: transparent;
+  box-shadow: 0 5px 0 rgba(124,58,237,.35), 0 10px 20px -8px rgba(168,85,247,.55);
+}
+:root:not(.dark) .btn-primary:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(124,58,237,.35); }
+:root:not(.dark) .chip { border-radius: 9999px; background: rgba(255,255,255,.8); }
+:root:not(.dark) input[type="range"] { accent-color: #ff5c93; }
+/* плитки главной: у каждой свой пастельный цвет */
+.tile-pop { transition: transform .15s ease; }
+.tile-pop:hover { transform: translateY(-3px) rotate(-.6deg); }
+:root:not(.dark) .tile-1 { background: linear-gradient(145deg,#ffe3ee,#fff) !important; box-shadow: 0 6px 0 #ffb3cf !important; }
+:root:not(.dark) .tile-2 { background: linear-gradient(145deg,#ffeadb,#fff) !important; box-shadow: 0 6px 0 #ffc9a0 !important; }
+:root:not(.dark) .tile-3 { background: linear-gradient(145deg,#fff6c9,#fff) !important; box-shadow: 0 6px 0 #ffe27a !important; }
+:root:not(.dark) .tile-4 { background: linear-gradient(145deg,#d9f7e8,#fff) !important; box-shadow: 0 6px 0 #9fe6c3 !important; }
+:root:not(.dark) .tile-5 { background: linear-gradient(145deg,#dcefff,#fff) !important; box-shadow: 0 6px 0 #9ccdff !important; }
+:root:not(.dark) .tile-6 { background: linear-gradient(145deg,#eee1ff,#fff) !important; box-shadow: 0 6px 0 #c9a8ff !important; }

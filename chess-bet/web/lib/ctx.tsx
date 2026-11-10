@@ -35,7 +35,7 @@ const ls = {
 
 export function Providers({ children }: { children: ReactNode }) {
   const [lang, setLangS] = useState<Lang>("en");
-  const [dark, setDark] = useState(true);
+  const [dark, setDark] = useState(false);
   const [board, setBoardS] = useState<BoardName>("emerald");
   const [agreed, setAgreedS] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -43,7 +43,7 @@ export function Providers({ children }: { children: ReactNode }) {
   useEffect(() => {
     const l = (ls.get("lang") as Lang) || detectLang();
     setLangS(l in DICT ? l : "en");
-    setDark(ls.get("dark") !== "0");
+    setDark(ls.get("dark") === "1");
     const b = ls.get("board") as BoardName;
     if (b && b in BOARDS) setBoardS(b);
     setAgreedS(ls.get("agreed") === "1");

@@ -21,7 +21,7 @@ const TILES: Tile[] = [
   { id: "play", icon: "♞", ru: ["Играть", "Шахматы с ботом, другом или онлайн, задачи и турниры"], en: ["Play", "Chess against a bot, a friend or online, puzzles and tournaments"] },
 ];
 
-const BORDER = "rgba(212,160,23,.45)";
+const BORDER = "rgba(255,255,255,.9)";
 
 /** Шесть крупных плиток главной в понятном порядке. Заработать и Играть открывают разделы внутри главной (onEarn, onPlay). */
 export default function HomeTiles({ onEarn, onPlay }: { onEarn?: () => void; onPlay?: () => void }) {
@@ -30,16 +30,16 @@ export default function HomeTiles({ onEarn, onPlay }: { onEarn?: () => void; onP
   return (
     <section aria-label={ru ? "Разделы сайта" : "Site sections"}>
       <ul className="grid grid-cols-2 gap-2.5">
-        {TILES.map((t) => {
+        {TILES.map((t, i) => {
           const [h, d] = ru ? t.ru : t.en;
           const body = (
             <>
               <span aria-hidden="true" className="text-3xl leading-none">{t.icon}</span>
-              <span className="text-base font-extrabold" style={{ color: "#d4a017" }}>{h}</span>
+              <span className="text-base font-extrabold" style={{ color: "#6d28d9" }}>{h}</span>
               <span className="text-xs opacity-75 leading-snug">{d}</span>
             </>
           );
-          const cls = "card flex h-full w-full flex-col items-start gap-1.5 text-start transition hover:opacity-90";
+          const cls = "tile-pop tile-" + (i + 1) + " card flex h-full w-full flex-col items-start gap-1.5 text-start transition hover:opacity-90";
           const style = { borderColor: BORDER } as const;
           return (
             <li key={t.id}>
