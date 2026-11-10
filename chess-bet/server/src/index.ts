@@ -19,7 +19,11 @@ import { handleComments } from "./comments.js";
 import { handleMod } from "./mod.js";
 import { handleDating } from "./dating.js";
 import { handlePuzzles } from "./puzzles.js";
-import { callsWss, handleCalls } from "./calls.js";
+import { callsWss, handleCalls, setCallHook } from "./calls.js";
+import { handleTch, tchOnCall } from "./tch.js";
+
+// после каждого разговора начисляем баллы TCH (правила и лимиты в tch.ts)
+setCallHook((c) => { const r = tchOnCall(c); if (!r.ok && r.reason !== "short") console.log("tch: без начисления", c.id, r.reason); });
 import { handleAds, setPayVerifier, setRefSource } from "./ads.js";
 import { handleTranslate } from "./translate.js";
 
@@ -554,6 +558,7 @@ const server = http.createServer((req, res) => {
   if (url.pathname === "/api/tournaments" || url.pathname.startsWith("/api/tournaments/")) { handleTournaments(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (url.pathname === "/api/report" || url.pathname.startsWith("/api/mod/")) { handleMod(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (url.pathname.startsWith("/api/calls/")) { handleCalls(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
+  if (url.pathname.startsWith("/api/tch/")) { handleTch(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (url.pathname.startsWith("/api/ads/")) { handleAds(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (url.pathname === "/api/translate") { handleTranslate(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (url.pathname.startsWith("/api/puzzles/")) { handlePuzzles(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
