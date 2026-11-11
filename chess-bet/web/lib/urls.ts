@@ -18,6 +18,8 @@ export const ROUTES = {
   age: `${BASE}/age/`,
   roadmap: `${BASE}/roadmap/`,
   puzzles: `${BASE}/puzzles/`,
+  cartoon: `${BASE}/cartoon/`,
+  exchange: `${BASE}/language-exchange/`,
   dating: `${BASE}/dating/`,
   about: `${BASE}/about/`,
   tournaments: `${BASE}/tournaments/`,

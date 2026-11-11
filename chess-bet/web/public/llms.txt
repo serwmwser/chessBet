@@ -21,6 +21,8 @@
 - [Crypto chess game](https://serwmwser.github.io/crypto/): how USDC stakes on Polygon work, who holds the money, fees and risks.
 - [Play chess online free](https://serwmwser.github.io/chess/): practise against a bot or a friend by private link.
 - [Chess puzzles](https://serwmwser.github.io/puzzles/): free mate-in-1, mate-in-2 and mate-in-3 puzzles with server-checked moves, hints and XP.
+- [Cartoon chess](https://serwmwser.github.io/cartoon/): funny character pieces, bright boards and piece voices; free against the bot.
+- [Language exchange](https://serwmwser.github.io/language-exchange/): free chat with message translation and calls, find people by language.
 - [Tournaments](https://serwmwser.github.io/tournaments/): free hourly chess arenas with points, badges and cups.
 - [Chess NFTs](https://serwmwser.github.io/nft/): turn a move from your own finished game into an ERC-721 NFT on Polygon.
 - [FAQ](https://serwmwser.github.io/faq/): answers about stakes, fees, payouts, age, fair play, classifieds, dating and the community.

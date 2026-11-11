@@ -27,6 +27,8 @@ export default function SiteFooter() {
     [ru ? "О нас" : "About us", `${BASE}/about/`, false],
     [ru ? "Знакомства" : "Dating", `${BASE}/dating/`, false],
     [ru ? "Шахматные задачи" : "Chess puzzles", `${BASE}/puzzles/`, false],
+    [ru ? "Мультяшные шахматы" : "Cartoon chess", `${BASE}/cartoon/`, false],
+    [ru ? "Языковой обмен" : "Language exchange", `${BASE}/language-exchange/`, false],
     [ru ? "Доска объявлений" : "Classifieds", `${BASE}/ads/`, false],
     [ru ? "Лента Rook Club" : "Rook Club feed", `${BASE}/feed/`, false],
     [ru ? "Условия использования" : "Terms of use", `${BASE}/terms/`, false],
