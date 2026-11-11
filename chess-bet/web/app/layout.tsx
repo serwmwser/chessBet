@@ -13,24 +13,19 @@ const inter = Inter({ subsets: ["latin", "cyrillic"], variable: "--font-inter" }
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 const SITE = "https://serwmwser.github.io";
-const TITLE = "HiMeet: Free Messenger, Classifieds, Dating & Chess";
-const DESC = "Free messenger with calls and chat translation, worldwide classifieds, 18+ dating, a social feed and online chess. Optional USDC stakes on Polygon for adults (18+), held by an open smart contract.";
+const TITLE = "HiMeet: Social Network with Free Chat, Calls and Translation";
+const DESC = "HiMeet is a social network where you can talk to people in any language: free chat and calls with message translation, a community feed, worldwide classifieds, 18+ dating and chess. Sign in with email or Google."; // HiMeet social
 
 const JSON_LD = JSON.stringify({
   "@context": "https://schema.org",
   "@graph": [
-    { "@type": "WebSite", "@id": SITE + "/#site", url: SITE, name: "HiMeet", alternateName: "HiMeet: Free Messenger, Classifieds, Dating & Chess", publisher: { "@id": SITE + "/#org" }, description: DESC, inLanguage: ["en", "de", "fr", "es", "pt", "zh", "ar", "tr", "ru"] },
+    { "@type": "WebSite", "@id": SITE + "/#site", url: SITE, name: "HiMeet", alternateName: "HiMeet: Social Network with Free Chat, Calls and Translation", publisher: { "@id": SITE + "/#org" }, description: DESC, inLanguage: ["en", "de", "fr", "es", "pt", "zh", "ar", "tr", "ru"] },
     { "@type": "Organization", "@id": SITE + "/#org", name: "HiMeet", alternateName: "Rook Club", url: SITE, logo: SITE + "/icon-512.png", email: "chessgrokearn@gmail.com", sameAs: ["https://t.me/chess_betlolbot", "https://www.producthunt.com/products/chess-bet"] },
     { "@type": "WebApplication", "@id": SITE + "/#app", name: "HiMeet", url: SITE, applicationCategory: "SocialNetworkingApplication", applicationSubCategory: "Social network, worldwide classifieds, dating, chess", featureList: ["Social network with profiles, posts, feed and private and voice messages", "Free worldwide classifieds with translation of ads and chat", "Free 18+ dating with profiles, likes and matches", "Online chess for USDC stakes on Polygon held by a smart contract", "Free chess against a bot or a friend, puzzles and tournaments", "Chess NFTs on Polygon"], operatingSystem: "Any (web browser, Android, Telegram Mini App)", description: DESC, offers: { "@type": "Offer", price: "0", priceCurrency: "USD", description: "Free to open and practise; stakes are optional" } },
     { "@type": "FAQPage", mainEntity: [
-      { "@type": "Question", name: "What is HiMeet (Rook Club)?", acceptedAnswer: { "@type": "Answer", text: "HiMeet is a social network with free worldwide classifieds (ads and chat are translated into your language), 18+ dating, and online chess where players can stake USDC on Polygon. It also has free chess puzzles, tournaments and chess NFTs." } },
+      { "@type": "Question", name: "What is HiMeet (Rook Club)?", acceptedAnswer: { "@type": "Answer", text: "HiMeet is a social network with free chat and calls with message translation, a community feed, free worldwide classifieds (ads and chat are translated into your language), 18+ dating and online chess. Adults can optionally play chess for USDC on Polygon; this is separate from the social features." } },
       { "@type": "Question", name: "Is there dating on HiMeet?", acceptedAnswer: { "@type": "Answer", text: "Yes. Dating is free and for adults only (18+): profiles with up to 3 photos, filters, likes, matches and private chat." } },
-      { "@type": "Question", name: "Which currency and network does HiMeet use?", acceptedAnswer: { "@type": "Answer", text: "USDC on the Polygon network, plus a small amount of POL for network fees." } },
-      { "@type": "Question", name: "What is the fee?", acceptedAnswer: { "@type": "Answer", text: "The fee is 10% of the pot, so the winner receives 90%. Draws and cancelled games are refunded in full." } },
-      { "@type": "Question", name: "Who holds the stakes?", acceptedAnswer: { "@type": "Answer", text: "A smart contract holds the stakes, and the winner claims the prize from it." } },
       { "@type": "Question", name: "What is a chess NFT on HiMeet?", acceptedAnswer: { "@type": "Answer", text: "In the NFT Studio you pick a move from your own finished game and combine it with a cartoon chess piece, a mood and a background. The result is an ERC-721 NFT on Polygon that shows the board position of that move. Each move of a game can become an NFT only once." } },
-      { "@type": "Question", name: "Can I sell a chess NFT on OpenSea?", acceptedAnswer: { "@type": "Answer", text: "Yes. The NFTs are standard ERC-721 tokens on Polygon with 5% creator royalties (ERC-2981), so they can be listed and traded on OpenSea." } },
-      { "@type": "Question", name: "How do I play chess for crypto?", acceptedAnswer: { "@type": "Answer", text: "Sign in or connect a wallet, get USDC and a little POL on Polygon, create a game with a stake or join one in the lobby, and play. The winner claims 90% of the pot from the smart contract." } },
       { "@type": "Question", name: "What are HiMeet classifieds and are chats translated?", acceptedAnswer: { "@type": "Answer", text: "HiMeet has an international classifieds board in the Rook Club community: for sale, wanted, rent, jobs and services in any country and city. Ads and chat messages can be translated into your language with one tap. Your first ad is free." } },
       { "@type": "Question", name: "Can I practise for free?", acceptedAnswer: { "@type": "Answer", text: "Yes. You can play chess against a bot or a friend for free without any stake." } },
     ] },
@@ -42,11 +37,11 @@ export const metadata: Metadata = {
   title: { default: TITLE, template: "%s | HiMeet" },
   description: DESC,
   applicationName: "HiMeet",
-  keywords: ["social network", "worldwide classifieds", "classifieds with chat translation", "free classifieds", "online dating 18+", "chess online", "free messenger", "free video calls", "chat translator", "play chess vs bot", "chess NFT", "chess NFT collection", "NFT chess game", "chess NFT OpenSea", "mint chess move NFT", "blockchain chess", "Polygon chess game", "web3 chess", "chess Telegram mini app", "chess tournaments", "online chess with friends", "free chess practice"],
+  keywords: ["social network", "free chat with translation", "language exchange", "free messenger", "free calls", "chat translator", "worldwide classifieds", "free classifieds", "online dating 18+", "community feed", "cartoon chess", "chess online", "play chess vs bot", "online chess with friends", "free chess practice"],
   alternates: { canonical: "/" },
   authors: [{ name: "HiMeet" }],
   creator: "HiMeet",
-  category: "games",
+  category: "social",
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 } },
   openGraph: {
     type: "website", url: SITE, siteName: "HiMeet", locale: "en_US",

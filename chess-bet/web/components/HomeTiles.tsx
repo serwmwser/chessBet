@@ -29,6 +29,7 @@ export default function HomeTiles({ onEarn, onPlay, onCartoon }: { onEarn?: () =
   const ru = lang === "ru";
   return (
     <section aria-label={ru ? "Разделы сайта" : "Site sections"}>
+      <p className="mb-3 text-center text-sm font-semibold opacity-85">{/* HiMeet social */}{ru ? "Социальная сеть без языковых барьеров: общайтесь, знакомьтесь, делитесь, играйте" : "A social network without language barriers: chat, meet people, share and play"}</p>
       {onCartoon && (
         <button type="button" onClick={onCartoon} className="tile-pop mb-2.5 flex w-full items-center gap-3 rounded-3xl px-4 py-3 text-start text-white shadow-glow" style={{ background: "linear-gradient(90deg,#ff5c93,#a855f7 55%,#3b82f6)" }}>
           <span aria-hidden="true" className="text-4xl leading-none">🎭</span>

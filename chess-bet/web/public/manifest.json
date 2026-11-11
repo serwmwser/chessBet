@@ -1,7 +1,7 @@
 {
-  "name": "HiMeet: Free Messenger, Classifieds, Dating & Chess",
+  "name": "HiMeet: Social Network with Free Chat, Calls and Translation",
   "short_name": "HiMeet",
-  "description": "Free messenger with calls and chat translation, worldwide classifieds, 18+ dating and online chess.",
+  "description": "Social network with free chat and calls with message translation, worldwide classifieds, 18+ dating and chess.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
