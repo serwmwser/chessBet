@@ -69,7 +69,7 @@ export default function SiteFooter() {
         </ul>
       </nav>
       <ProductHuntCard />
-      <p className="text-xs opacity-60 text-center pb-2">© {new Date().getFullYear()} HiMeet · 18+ · {ru ? "Играйте ответственно." : "Play responsibly."}</p>
+      <p className="text-xs opacity-60 text-center pb-2">© {new Date().getFullYear()} HiMeet · {ru ? "Все права защищены." : "All rights reserved."} · 18+ · {ru ? "Играйте ответственно." : "Play responsibly."}</p>
     </footer>
   );
 }
