@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { CONTACT_EMAIL } from "./content";
 
-const SITE = "https://serwmwser.github.io";
+const SITE = "https://himeet.online";
 const TITLE = "About HiMeet: Messenger, Classifieds, Dating & Chess";
 const DESC = "HiMeet is a chess platform where skill decides the game. Play free, or play for USDC with stakes held by an open smart contract on Polygon. Meet chess and crypto fans in Rook Club.";
 

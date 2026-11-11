@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { EN } from "./content";
 
-const SITE = "https://serwmwser.github.io";
+const SITE = "https://himeet.online";
 const TITLE = "HiMeet FAQ: Stakes, Fees, Safety, Fair Play";
 const DESC = "Answers about HiMeet: how USDC stakes work, the 10% fee, payouts, age 18+, fair play, chess NFTs and the Rook Club community.";
 

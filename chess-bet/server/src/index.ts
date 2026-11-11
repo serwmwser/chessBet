@@ -27,7 +27,7 @@ setCallHook((c) => { const r = tchOnCall(c); if (!r.ok && r.reason !== "short") 
 import { handleAds, setPayVerifier, setRefSource } from "./ads.js";
 import { handleTranslate } from "./translate.js";
 
-const SITE_URL = process.env.SITE_URL || "https://serwmwser.github.io";
+const SITE_URL = process.env.SITE_URL || "https://himeet.online";
 
 // ROOMFIX: одна неожиданная ошибка не должна останавливать весь сервер и обрывать все партии
 process.on("uncaughtException", (e) => console.error("uncaughtException", e));

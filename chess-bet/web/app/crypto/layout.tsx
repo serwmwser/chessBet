@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { EN } from "./content";
 
-const SITE = "https://serwmwser.github.io";
+const SITE = "https://himeet.online";
 const TITLE = "Crypto Chess Game: Play for USDC on Polygon";
 const DESC = "Crypto chess game on Polygon: stake USDC, a smart contract holds the pot and the winner claims 90%. Practise free first. 18+, play responsibly.";
 

@@ -14,25 +14,25 @@
 
 ## Main pages
 
-- [Home](https://serwmwser.github.io/): start page with all sections.
-- [Classifieds](https://serwmwser.github.io/ads/): international classifieds with translation of ads and chat, by country and city.
-- [Dating](https://serwmwser.github.io/dating/): free 18+ dating: profiles with 3 photos, filters, likes and matches.
-- [Feed](https://serwmwser.github.io/feed/): posts and photos from the Rook Club community.
-- [Crypto chess game](https://serwmwser.github.io/crypto/): how USDC stakes on Polygon work, who holds the money, fees and risks.
-- [Play chess online free](https://serwmwser.github.io/chess/): practise against a bot or a friend by private link.
-- [Chess puzzles](https://serwmwser.github.io/puzzles/): free mate-in-1, mate-in-2 and mate-in-3 puzzles with server-checked moves, hints and XP.
-- [Cartoon chess](https://serwmwser.github.io/cartoon/): funny character pieces, bright boards and piece voices; free against the bot.
-- [Language exchange](https://serwmwser.github.io/language-exchange/): free chat with message translation and calls, find people by language.
-- [Tournaments](https://serwmwser.github.io/tournaments/): free hourly chess arenas with points, badges and cups.
-- [Chess NFTs](https://serwmwser.github.io/nft/): turn a move from your own finished game into an ERC-721 NFT on Polygon.
-- [FAQ](https://serwmwser.github.io/faq/): answers about stakes, fees, payouts, age, fair play, classifieds, dating and the community.
-- [About](https://serwmwser.github.io/about/): what HiMeet is, how it works and how to contact the project.
-- [TCH token](https://serwmwser.github.io/token/): in-app token issued on Polygon on 8 November 2026 (0x14818b99E86fD4654Cb55BE57367d1BfaA2b0F82; rewards not live yet, not listed on exchanges): 888,888,888 fixed supply, earned for calls and activity, tokenomics, roadmap, risks. Whitepapers (English): https://serwmwser.github.io/whitepaper/
-- [Transparency](https://serwmwser.github.io/transparency/): live state of the ChessEscrow betting contract on Polygon read from the blockchain (USDC held, games, bet cap, fee, owner, oracle), what is fixed in code, who can do what, honest risks (no paid audit).
-- [Terms of use](https://serwmwser.github.io/terms/): age limit, stakes, fees, refunds, classifieds options, responsible play.
-- [Age 18+ and responsible play](https://serwmwser.github.io/age/)
-- [Roadmap](https://serwmwser.github.io/roadmap/)
-- [Full description for AI assistants](https://serwmwser.github.io/llms-full.txt)
+- [Home](https://himeet.online/): start page with all sections.
+- [Classifieds](https://himeet.online/ads/): international classifieds with translation of ads and chat, by country and city.
+- [Dating](https://himeet.online/dating/): free 18+ dating: profiles with 3 photos, filters, likes and matches.
+- [Feed](https://himeet.online/feed/): posts and photos from the Rook Club community.
+- [Crypto chess game](https://himeet.online/crypto/): how USDC stakes on Polygon work, who holds the money, fees and risks.
+- [Play chess online free](https://himeet.online/chess/): practise against a bot or a friend by private link.
+- [Chess puzzles](https://himeet.online/puzzles/): free mate-in-1, mate-in-2 and mate-in-3 puzzles with server-checked moves, hints and XP.
+- [Cartoon chess](https://himeet.online/cartoon/): funny character pieces, bright boards and piece voices; free against the bot.
+- [Language exchange](https://himeet.online/language-exchange/): free chat with message translation and calls, find people by language.
+- [Tournaments](https://himeet.online/tournaments/): free hourly chess arenas with points, badges and cups.
+- [Chess NFTs](https://himeet.online/nft/): turn a move from your own finished game into an ERC-721 NFT on Polygon.
+- [FAQ](https://himeet.online/faq/): answers about stakes, fees, payouts, age, fair play, classifieds, dating and the community.
+- [About](https://himeet.online/about/): what HiMeet is, how it works and how to contact the project.
+- [TCH token](https://himeet.online/token/): in-app token issued on Polygon on 8 November 2026 (0x14818b99E86fD4654Cb55BE57367d1BfaA2b0F82; rewards not live yet, not listed on exchanges): 888,888,888 fixed supply, earned for calls and activity, tokenomics, roadmap, risks. Whitepapers (English): https://himeet.online/whitepaper/
+- [Transparency](https://himeet.online/transparency/): live state of the ChessEscrow betting contract on Polygon read from the blockchain (USDC held, games, bet cap, fee, owner, oracle), what is fixed in code, who can do what, honest risks (no paid audit).
+- [Terms of use](https://himeet.online/terms/): age limit, stakes, fees, refunds, classifieds options, responsible play.
+- [Age 18+ and responsible play](https://himeet.online/age/)
+- [Roadmap](https://himeet.online/roadmap/)
+- [Full description for AI assistants](https://himeet.online/llms-full.txt)
 
 ## Key facts
 

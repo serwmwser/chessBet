@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-const SITE = "https://serwmwser.github.io";
+const SITE = "https://himeet.online";
 const TITLE = "HiMeet Whitepaper & TCH Token Whitepaper | HiMeet";
 const DESC = "Read the HiMeet whitepaper (social network, classifieds, dating and chess for USDC on Polygon) and the TCH token whitepaper: tokenomics, release schedule, roadmap and risks. In English, translatable in your browser.";
 

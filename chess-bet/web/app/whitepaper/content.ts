@@ -9,7 +9,7 @@ export const APP: Doc = {
   id: "app",
   tab: "HiMeet",
   title: "HiMeet (Rook Club): Whitepaper",
-  version: "Version 0.1 · 8 November 2026 · https://serwmwser.github.io",
+  version: "Version 0.1 · 8 November 2026 · https://himeet.online",
   note: "This document describes the project as it works today and what is planned. It is not investment advice and does not promise any income.",
   sections: [
     { h: "1. Summary", p: [
@@ -74,7 +74,7 @@ export const TOKEN: Doc = {
   id: "token",
   tab: "TCH token",
   title: "TCH (ChessTalk Token): Whitepaper",
-  version: "Version 0.3 · 8 November 2026 · https://serwmwser.github.io/token/",
+  version: "Version 0.3 · 8 November 2026 · https://himeet.online/token/",
   note: "Status: the token was issued on Polygon on 8 November 2026. Rewards for activity are not live yet, and TCH is not listed on any exchange or DEX. This is not an investment offer, advice or a promise of price growth.",
   sections: [
     { h: "1. Purpose", p: [

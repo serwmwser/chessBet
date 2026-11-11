@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-const SITE = "https://serwmwser.github.io";
+const SITE = "https://himeet.online";
 const TITLE = "Free Online Chess Tournaments: Hourly Arena, Prizes & Cups";
 const DESC = "Join free chess tournaments on HiMeet: a blitz arena every hour and a daily arena at 18:00 UTC. No entry fee, no wallet funds at risk. Earn points, badges and cups.";
 

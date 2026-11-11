@@ -1,4 +1,4 @@
 Contact: mailto:chessgrokearn@gmail.com
 Expires: 2027-11-09T00:00:00.000Z
 Preferred-Languages: en, ru
-Canonical: https://serwmwser.github.io/.well-known/security.txt
+Canonical: https://himeet.online/.well-known/security.txt

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-const SITE = "https://serwmwser.github.io";
+const SITE = "https://himeet.online";
 const TITLE = "Join HiMeet: free messenger with calls, classifieds, dating and chess";
 const DESC = "HiMeet is a free messenger with calls and chat translation, worldwide classifieds (first ad free), dating through chess and chess games. Choose where to start and sign in with a wallet in a minute. 18+.";
 

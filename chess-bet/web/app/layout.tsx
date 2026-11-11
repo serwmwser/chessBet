@@ -12,7 +12,7 @@ import WelcomeInvite from "@/components/WelcomeInvite";
 const inter = Inter({ subsets: ["latin", "cyrillic"], variable: "--font-inter" });
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
-const SITE = "https://serwmwser.github.io";
+const SITE = "https://himeet.online";
 const TITLE = "HiMeet: Social Network with Free Chat, Calls and Translation";
 const DESC = "HiMeet is a social network where you can talk to people in any language: free chat and calls with message translation, a community feed, worldwide classifieds, 18+ dating and chess. Sign in with email or Google."; // HiMeet social
 

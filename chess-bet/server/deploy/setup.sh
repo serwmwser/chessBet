@@ -47,7 +47,7 @@ if [ ! -f "$ENVF" ]; then
 RPC_URL=https://polygon.drpc.org
 ESCROW=0xaf8714656261dc770A41857706FF4b2f495e92e9
 PORT=8080
-ALLOWED_ORIGINS=https://serwmwser.github.io
+ALLOWED_ORIGINS=https://himeet.online
 ENV
 fi
 chown root:chess "$ENVF"

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { EN } from "./content";
 
-const SITE = "https://serwmwser.github.io";
+const SITE = "https://himeet.online";
 const PATH = "/language-exchange/";
 
 export const metadata: Metadata = {
