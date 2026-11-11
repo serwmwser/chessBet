@@ -95,6 +95,7 @@ export default function Home() {
   useEffect(() => {
     const p = new URLSearchParams(location.search).get("game");
     if (p && /^\d+$/.test(p)) setInviteId(Number(p));
+    if (new URLSearchParams(location.search).get("tab") === "cartoon") { setCartMode("bot"); setTab("cartoon"); } // ссылка /?tab=cartoon
     const r = new URLSearchParams(location.search).get("room"); // ссылка в бесплатную комнату: /?room=ID
     if (r && /^[0-9a-f]{10}$/.test(r)) { setFriend({ room: r, color: "r", minutes: 60, n: 1 }); setTab("friend"); }
   }, []);
@@ -148,7 +149,7 @@ export default function Home() {
         {inviteId !== null && <Invite id={inviteId} onClose={() => setInviteId(null)} />}
         {tab === "lobby" && (
           <div className="space-y-4">
-            <HomeTiles onEarn={() => setTab("earn")} onPlay={openGames} />
+            <HomeTiles onEarn={() => setTab("earn")} onPlay={openGames} onCartoon={() => { setCartMode("bot"); setTab("cartoon"); }} />
 
             <details id="games" open={gamesOpen} onToggle={(e) => setGamesOpen((e.currentTarget as HTMLDetailsElement).open)} className="card">
               <summary className="cursor-pointer select-none text-lg font-extrabold" style={{ color: "#d4a017" }}>♞ {ru ? "Играть в шахматы" : "Play chess"}</summary>
