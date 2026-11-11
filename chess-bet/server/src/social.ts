@@ -31,6 +31,7 @@ CREATE INDEX IF NOT EXISTS comments_post ON comments(post, id);
 `);
 
 try { db.exec("ALTER TABLE posts ADD COLUMN edited INTEGER NOT NULL DEFAULT 0"); } catch { /* колонка уже есть */ }
+try { db.exec("ALTER TABLE users ADD COLUMN langs TEXT NOT NULL DEFAULT ''"); } catch { /* колонка уже есть */ } // HiMeet langs
 
 // Секрет для токенов входа: создаётся один раз и хранится в data/
 let SECRET = "";
@@ -91,7 +92,7 @@ setInterval(() => {
 const clean = (s: unknown, max: number) =>
   String(s ?? "").replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F\u202A-\u202E]/g, "").trim().slice(0, max);
 
-type U = { addr: string; name: string; bio: string; country: string; link: string; avatar: string; banner: string; created: number };
+type U = { addr: string; name: string; bio: string; country: string; link: string; avatar: string; banner: string; created: number; langs?: string };
 const userByName = (n: string) => db.prepare("SELECT * FROM users WHERE name=? AND banned=0").get(n) as U | undefined;
 const userByAddr = (a: string) => db.prepare("SELECT * FROM users WHERE addr=? AND banned=0").get(a) as U | undefined;
 
@@ -144,10 +145,13 @@ function ensureUser(addr: string): U {
   return userByAddr(addr)!;
 }
 
+const LANG_CODES = new Set(["en", "ru", "es", "de", "fr", "it", "pt", "zh", "ja", "ko", "ar", "tr", "pl", "uk", "hi"]);
+const langsOf = (s: string | undefined) => String(s ?? "").split(",").filter((x) => LANG_CODES.has(x));
+
 function profile(u: U, viewer: string) {
   const c = (sql: string, ...p: string[]) => (db.prepare(sql).get(...p) as { n: number }).n;
   return {
-    name: u.name, bio: u.bio, country: u.country, link: u.link, avatar: u.avatar, banner: u.banner, joined: u.created,
+    name: u.name, bio: u.bio, country: u.country, link: u.link, avatar: u.avatar, banner: u.banner, joined: u.created, langs: langsOf(u.langs),
     following: c("SELECT COUNT(*) n FROM follows WHERE a=?", u.addr),
     followers: c("SELECT COUNT(*) n FROM follows WHERE b=?", u.addr),
     posts: c("SELECT COUNT(*) n FROM posts WHERE addr=? AND deleted=0", u.addr),
@@ -217,8 +221,11 @@ export async function handleSocial(req: http.IncomingMessage, res: http.ServerRe
       }
       if (p === "/api/people") { // поиск людей по нику
         const s = clean(q.get("q"), 20).toLowerCase().replace(/[^a-z0-9_]/g, "");
-        const rows = db.prepare("SELECT name,avatar,bio FROM users WHERE banned=0 AND name LIKE ? ORDER BY created DESC LIMIT 20").all(s + "%");
-        return out(200, { ok: true, users: rows });
+        const lg = clean(q.get("lang"), 5).toLowerCase();
+        const lang = LANG_CODES.has(lg) ? lg : "";
+        const rows = db.prepare("SELECT name,avatar,bio,langs FROM users WHERE banned=0 AND name LIKE ? AND (? = '' OR (',' || langs || ',') LIKE ?) ORDER BY created DESC LIMIT 20")
+          .all(s + "%", lang, "%," + lang + ",%") as { name: string; avatar: string; bio: string; langs: string }[];
+        return out(200, { ok: true, users: rows.map((r) => ({ name: r.name, avatar: r.avatar, bio: r.bio, langs: langsOf(r.langs) })) });
       }
       return bad("not_found", 404);
     }
@@ -268,8 +275,9 @@ export async function handleSocial(req: http.IncomingMessage, res: http.ServerRe
         const v = m[k] !== undefined ? clean(m[k], 200) : cur;
         return v === "" || /^\/media\/[a-z0-9_.-]+$/i.test(v) ? v : cur; // только загруженные на нашем сервере
       };
-      db.prepare("UPDATE users SET name=?, bio=?, country=?, link=?, avatar=?, banner=? WHERE addr=?")
-        .run(name, pick("bio", u.bio, 160), pick("country", u.country, 40), link, media("avatar", u.avatar), media("banner", u.banner), viewer);
+      const langs = Array.isArray(m.langs) ? Array.from(new Set((m.langs as unknown[]).map((x) => String(x))).values()).filter((x) => LANG_CODES.has(x)).slice(0, 8).join(",") : String(u.langs ?? "");
+      db.prepare("UPDATE users SET name=?, bio=?, country=?, link=?, avatar=?, banner=?, langs=? WHERE addr=?")
+        .run(name, pick("bio", u.bio, 160), pick("country", u.country, 40), link, media("avatar", u.avatar), media("banner", u.banner), langs, viewer);
       return out(200, { ok: true, user: profile(userByAddr(viewer)!, viewer) });
     }
     if (p === "/api/follow") {

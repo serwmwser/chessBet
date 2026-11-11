@@ -19,7 +19,7 @@ import PostComposer, { uploadImage } from "@/components/PostComposer";
 import { useApp } from "@/lib/ctx";
 import { shortAddr } from "@/lib/config";
 import { absoluteUrl, profileUrl } from "@/lib/urls";
-import { errText, follow, getFeed, getPosts, getUser, saveProfile, useSocial, type SPost, type SUser } from "@/lib/social";
+import { errText, follow, getFeed, getPosts, getUser, LANGS, saveProfile, useSocial, type SPost, type SUser } from "@/lib/social";
 
 type Tab = "posts" | "media" | "feed" | "chat" | "mail" | "tch";
 
@@ -44,7 +44,7 @@ function Profile() {
   const [edit, setEdit] = useState(false);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
-  const [f, setF] = useState({ name: "", bio: "", country: "", link: "", avatar: "", banner: "" });
+  const [f, setF] = useState({ name: "", bio: "", country: "", link: "", avatar: "", banner: "", langs: [] as string[] }); // HiMeet langs
 
   useEffect(() => {
     setMissing(false);
@@ -70,7 +70,7 @@ function Profile() {
     if (!u) return;
     try { const t = s.token || (await s.signIn()); setU(await follow(t, u.name, !u.follows)); } catch (e) { toast(errText(e, ru), "err"); }
   };
-  const startEdit = () => { if (!u) return; setF({ name: u.name, bio: u.bio, country: u.country, link: u.link, avatar: u.avatar, banner: u.banner }); setEdit(true); };
+  const startEdit = () => { if (!u) return; setF({ name: u.name, bio: u.bio, country: u.country, link: u.link, avatar: u.avatar, banner: u.banner, langs: u.langs ?? [] }); setEdit(true); };
   const autoEdit = useRef(false); // ссылка /u/?edit=1 из кабинета сразу открывает редактор
   useEffect(() => { if (u?.me && sp.get("edit") === "1" && !autoEdit.current) { autoEdit.current = true; startEdit(); } }, [u]); // eslint-disable-line react-hooks/exhaustive-deps
   const upImg = async (k: "avatar" | "banner", file?: File) => {
@@ -132,6 +132,7 @@ function Profile() {
           {u.bio && <p className="mt-1 whitespace-pre-wrap break-words">{u.bio}</p>}
           <p className="mt-2 text-sm opacity-70 flex flex-wrap gap-x-4 gap-y-1">
             {u.country && <span>📍 {u.country}</span>}
+            {!!u.langs?.length && <span>🗣 {u.langs.map((c) => LANGS.find((l) => l[0] === c)?.[ru ? 1 : 2] ?? c).join(", ")}</span>}
             {u.link && <a href={u.link} target="_blank" rel="noopener noreferrer nofollow ugc" className="underline break-all">🔗 {u.link.replace(/^https:\/\//, "")}</a>}
             <span>📅 {ru ? "С " : "Joined "}{new Date(u.joined).toLocaleDateString(ru ? "ru-RU" : "en-US", { month: "long", year: "numeric" })}</span>
           </p>
@@ -158,6 +159,20 @@ function Profile() {
             <label className="block text-sm">{ru ? "Ссылка (https://…)" : "Link (https://…)"}
               <input className="mt-1 w-full rounded-lg border px-3 py-2 bg-transparent" value={f.link} maxLength={120} onChange={(e) => setF({ ...f, link: e.target.value })} />
             </label>
+          </div>
+          <div className="text-sm">
+            <div>{ru ? "Языки, на которых вы общаетесь" : "Languages you speak"}</div>
+            <div className="mt-1 flex flex-wrap gap-2">
+              {LANGS.map(([code, nameRu, nameEn]) => {
+                const on = f.langs.includes(code);
+                return (
+                  <button key={code} type="button" className={"chip " + (on ? "chip-on" : "")} aria-pressed={on}
+                    onClick={() => setF({ ...f, langs: on ? f.langs.filter((x) => x !== code) : f.langs.length >= 8 ? f.langs : [...f.langs, code] })}>
+                    {ru ? nameRu : nameEn}
+                  </button>
+                );
+              })}
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-3 text-sm">
             <label className="block">{ru ? "Аватар" : "Avatar"}

@@ -6,7 +6,7 @@ import { API_URL } from "./config";
 import { dropToken, ensureToken, getToken } from "./session";
 
 export type SUser = {
-  name: string; bio: string; country: string; link: string; avatar: string; banner: string; joined: number;
+  name: string; bio: string; country: string; link: string; avatar: string; banner: string; joined: number; langs?: string[];
   following: number; followers: number; posts: number; me: boolean; follows: boolean; addr?: string;
 };
 export type SPost = { id: number; edited: number; text: string; media: string[]; created: number; user: { name: string; avatar: string }; likes: number; liked: boolean; comments?: number };
@@ -46,9 +46,15 @@ export const getPosts = (name: string, before = 0, token = "") =>
   call<{ posts: SPost[] }>(`/api/posts?name=${encodeURIComponent(name)}${before ? `&before=${before}` : ""}`, { token }).then((r) => r.posts);
 export const getAll = (before = 0, token = "") => call<{ posts: SPost[] }>(`/api/posts${before ? `?before=${before}` : ""}`, { token }).then((r) => r.posts);
 export const getFeed = (token: string, before = 0) => call<{ posts: SPost[] }>(`/api/feed${before ? `?before=${before}` : ""}`, { token }).then((r) => r.posts);
-export const findPeople = (q: string) => call<{ users: { name: string; avatar: string; bio: string }[] }>(`/api/people?q=${encodeURIComponent(q)}`).then((r) => r.users);
+/** HiMeet langs: языки, которые можно выбрать в профиле (код, по-русски, по-английски) */
+export const LANGS: [string, string, string][] = [
+  ["en", "Английский", "English"], ["ru", "Русский", "Russian"], ["es", "Испанский", "Spanish"], ["de", "Немецкий", "German"], ["fr", "Французский", "French"],
+  ["it", "Итальянский", "Italian"], ["pt", "Португальский", "Portuguese"], ["zh", "Китайский", "Chinese"], ["ja", "Японский", "Japanese"], ["ko", "Корейский", "Korean"],
+  ["ar", "Арабский", "Arabic"], ["tr", "Турецкий", "Turkish"], ["pl", "Польский", "Polish"], ["uk", "Украинский", "Ukrainian"], ["hi", "Хинди", "Hindi"],
+];
+export const findPeople = (q: string, lang = "") => call<{ users: { name: string; avatar: string; bio: string; langs?: string[] }[] }>(`/api/people?q=${encodeURIComponent(q)}${lang ? `&lang=${encodeURIComponent(lang)}` : ""}`).then((r) => r.users);
 
-export const saveProfile = (token: string, p: Partial<Pick<SUser, "name" | "bio" | "country" | "link" | "avatar" | "banner">>) =>
+export const saveProfile = (token: string, p: Partial<Pick<SUser, "name" | "bio" | "country" | "link" | "avatar" | "banner" | "langs">>) =>
   call<{ user: SUser }>("/api/profile", { token, post: p }).then((r) => r.user);
 export const follow = (token: string, name: string, on: boolean) => call<{ user: SUser }>("/api/follow", { token, post: { name, on } }).then((r) => r.user);
 export const publish = (token: string, text: string, media: string[] = []) => call<{ post: SPost }>("/api/post", { token, post: { text, media } }).then((r) => r.post);
