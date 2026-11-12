@@ -120,7 +120,7 @@ function Profile() {
               ) : (
                 <>
                   <button type="button" className={u.follows ? "btn btn-ghost !py-2" : "btn btn-primary !py-2"} onClick={doFollow}>
-                    {u.follows ? (ru ? "Вы читаете" : "Following") : ru ? "Читать" : "Follow"}
+                    {u.follows && u.followsMe ? (ru ? "👫 Друзья" : "👫 Friends") : u.follows ? (ru ? "Заявка отправлена" : "Request sent") : u.followsMe ? (ru ? "Принять в друзья" : "Accept friend") : ru ? "Добавить в друзья" : "Add friend"}
                   </button>
                   <button type="button" className="btn btn-primary !py-2" onClick={() => { setTab("chat"); setEdit(false); setTimeout(() => document.getElementById("profile-tabs")?.scrollIntoView({ behavior: "smooth", block: "start" }), 60); }}>✉ {ru ? "Написать" : "Message"}</button>
                   <CallButton name={u.name} className="!py-2" />
@@ -131,6 +131,16 @@ function Profile() {
           </div>
           <h2 className="mt-2 text-xl font-extrabold">@{u.name}</h2>
           {u.bio && <p className="mt-1 whitespace-pre-wrap break-words">{u.bio}</p>}
+          {/* HiMeet match: совпадение с вами по языкам и интересам */}
+          {!u.me && s.me && (() => {
+            const mine = [...(s.me.langs ?? []).map((c) => "l:" + c), ...(s.me.interests ?? []).map((c) => "i:" + c)];
+            const theirs = [...(u.langs ?? []).map((c) => "l:" + c), ...(u.interests ?? []).map((c) => "i:" + c)];
+            const common = mine.filter((x) => theirs.includes(x));
+            if (!common.length) return null;
+            const pct = Math.round((common.length / Math.min(mine.length, theirs.length)) * 100);
+            const names = common.map((x) => x.startsWith("l:") ? (LANGS.find((l) => l[0] === x.slice(2))?.[ru ? 1 : 2] ?? x.slice(2)) : (INTERESTS.find((i) => i[0] === x.slice(2))?.[ru ? 2 : 3] ?? x.slice(2)));
+            return <p className="mt-2 text-sm font-semibold" style={{ color: "#a855f7" }}>💞 {ru ? "Совпадение " : "Match "}{pct}%<span className="font-normal opacity-80"> · {ru ? "общее: " : "in common: "}{names.slice(0, 5).join(", ")}</span></p>;
+          })()}
           {/* HiMeet interests */}
           {!!u.interests?.length && (
             <p className="mt-2 flex flex-wrap gap-2">

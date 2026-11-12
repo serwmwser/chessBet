@@ -7,7 +7,7 @@ import { dropToken, ensureToken, getToken } from "./session";
 
 export type SUser = {
   name: string; bio: string; country: string; link: string; avatar: string; banner: string; joined: number; langs?: string[]; interests?: string[];
-  following: number; followers: number; posts: number; me: boolean; follows: boolean; addr?: string;
+  following: number; followers: number; posts: number; me: boolean; follows: boolean; followsMe?: boolean; addr?: string;
 };
 export type SPost = { id: number; edited: number; text: string; media: string[]; created: number; user: { name: string; avatar: string }; likes: number; liked: boolean; comments?: number };
 

@@ -160,6 +160,7 @@ function profile(u: U, viewer: string) {
     posts: c("SELECT COUNT(*) n FROM posts WHERE addr=? AND deleted=0", u.addr),
     me: viewer === u.addr,
     follows: viewer && viewer !== u.addr ? !!db.prepare("SELECT 1 FROM follows WHERE a=? AND b=?").get(viewer, u.addr) : false,
+    followsMe: viewer && viewer !== u.addr ? !!db.prepare("SELECT 1 FROM follows WHERE a=? AND b=?").get(u.addr, viewer) : false, // HiMeet friends
     ...(viewer === u.addr ? { addr: u.addr } : {}),
   };
 }
