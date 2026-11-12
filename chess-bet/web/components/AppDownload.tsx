@@ -33,9 +33,9 @@ export default function AppDownload() {
     try { await evt.prompt(); await evt.userChoice; } catch { /* отменили */ }
     setEvt(null);
   };
-  const green = { background: "#3ddc84" } as const;
+  const green = { background: "linear-gradient(90deg,#ff5c93,#a855f7 55%,#3b82f6)" } as const;
   return (
-    <section className="card space-y-3" style={{ border: "1px solid #3ddc84" }}>
+    <section className="card space-y-3" style={{ border: "2px solid #ff8fb1" }}>
       <div className="flex items-center gap-3">
         <div className="text-3xl" aria-hidden="true">📲</div>
         <div className="flex-1 min-w-0">
@@ -43,7 +43,7 @@ export default function AppDownload() {
           <div className="text-xs opacity-70">{ru ? "Значок на экране, запуск без адресной строки." : "Home-screen icon, opens without the address bar."}</div>
         </div>
       </div>
-      <button type="button" onClick={install} className="w-full px-4 py-3 rounded-xl font-extrabold text-black text-base" style={green}>
+      <button type="button" onClick={install} className="w-full px-4 py-3 rounded-xl font-extrabold text-white text-base" style={green}>
         {ru ? "Установить" : "Install"}
       </button>
       {hint && (

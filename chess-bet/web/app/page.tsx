@@ -150,9 +150,11 @@ export default function Home() {
         {tab === "lobby" && (
           <div className="space-y-4">
             <HomeTiles onEarn={() => setTab("earn")} onPlay={openGames} onCartoon={() => { setCartMode("bot"); setTab("cartoon"); }} />
+            {/* HiMeet install */}
+            <AppDownload />
 
             <details id="games" open={gamesOpen} onToggle={(e) => setGamesOpen((e.currentTarget as HTMLDetailsElement).open)} className="card">
-              <summary className="cursor-pointer select-none text-lg font-extrabold" style={{ color: "#d4a017" }}>♞ {ru ? "Играть в шахматы" : "Play chess"}</summary>
+              <summary className="cursor-pointer select-none text-lg font-extrabold" style={{ color: "#6d28d9" }}>♞ {ru ? "Играть в шахматы" : "Play chess"}</summary>
               <div className="space-y-4 pt-4">
                 <Hero onBot={() => setTab("bot")} onEarn={() => setTab("earn")} />
                 <FriendCard onStart={(c, mins) => { setFriend((f) => ({ room: null, color: c, minutes: mins, n: (f?.n ?? 0) + 1 })); setTab("friend"); }} />
@@ -167,10 +169,9 @@ export default function Home() {
             </details>
 
             <details open={moreOpen} onToggle={(e) => setMoreOpen((e.currentTarget as HTMLDetailsElement).open)} className="card">
-              <summary className="cursor-pointer select-none text-lg font-extrabold" style={{ color: "#d4a017" }}>✨ {ru ? "Ещё" : "More"}</summary>
+              <summary className="cursor-pointer select-none text-lg font-extrabold" style={{ color: "#6d28d9" }}>✨ {ru ? "Ещё" : "More"}</summary>
               <div className="space-y-4 pt-4">
                 <AdsPromo />
-                <AppDownload />
                 <RefBanner onEarn={() => setTab("earn")} />
                 <button type="button" onClick={() => setTab("nft")} className="w-full rounded-2xl px-4 py-3 text-start shadow-glow" style={{ background: "linear-gradient(90deg,#ff5a1f,#ff4fa3,#8b4dff)", color: "#fff" }}><div className="text-base font-extrabold">🎨 {ru ? "Студия NFT" : "NFT Studio"}</div><div className="text-xs font-medium opacity-90">{ru ? "Выберите ход из своей партии и мультяшную фигуру: получится картинка-NFT" : "Pick a move from your game and a cartoon piece to make an NFT picture"}</div></button>
                 <div className="grid grid-cols-2 gap-2">
