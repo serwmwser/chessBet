@@ -11,6 +11,7 @@ import FriendGame from "@/components/FriendGame";
 import MyFriendRooms from "@/components/MyFriendRooms";
 import PieceShowcase from "@/components/PieceShowcase";
 import AppDownload from "@/components/AppDownload";
+import InviteFriend from "@/components/InviteFriend";
 import TelegramCard from "@/components/TelegramCard";
 import SeoAbout from "@/components/SeoAbout";
 import AdsPromo from "@/components/AdsPromo";
@@ -152,6 +153,7 @@ export default function Home() {
             <HomeTiles onEarn={() => setTab("earn")} onPlay={openGames} onCartoon={() => { setCartMode("bot"); setTab("cartoon"); }} />
             {/* HiMeet install */}
             <AppDownload />
+            <InviteFriend />
 
             <details id="games" open={gamesOpen} onToggle={(e) => setGamesOpen((e.currentTarget as HTMLDetailsElement).open)} className="card">
               <summary className="cursor-pointer select-none text-lg font-extrabold" style={{ color: "#6d28d9" }}>♞ {ru ? "Играть в шахматы" : "Play chess"}</summary>

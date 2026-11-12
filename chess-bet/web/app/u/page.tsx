@@ -16,6 +16,7 @@ import DailyQuests, { PlayerBadges } from "@/components/DailyQuests";
 import { useUnread } from "@/lib/dm";
 import { useMailUnread } from "@/lib/mail";
 import ShareMenu from "@/components/ShareMenu";
+import InviteFriend from "@/components/InviteFriend";
 import PostComposer, { uploadImage } from "@/components/PostComposer";
 import { useApp } from "@/lib/ctx";
 import { shortAddr } from "@/lib/config";
@@ -110,7 +111,7 @@ function Profile() {
           <div className="flex items-end justify-between -mt-10">
             <div className="rounded-full p-1" style={{ background: "var(--bg, #fff)" }}><Avatar name={u.name} src={u.avatar} size={80} /></div>
             <div className="flex flex-wrap justify-end gap-2 pb-1">
-              <ShareMenu url={absoluteUrl(profileUrl(u.name))} text={`@${u.name} — Rook Club`} label={ru ? "Поделиться профилем" : "Share profile"} className="btn btn-ghost !py-2" />
+              <ShareMenu url={absoluteUrl(profileUrl(u.name))} text={ru ? `@${u.name} на HiMeet: общаемся на любых языках, чат переводит сам` : `@${u.name} on HiMeet: chat in any language, translation built in`} label={ru ? "Поделиться профилем" : "Share profile"} className="btn btn-ghost !py-2" />
               {u.me ? (
                 <>
                   <button type="button" className="btn btn-ghost !py-2" onClick={startEdit}>{ru ? "Редактировать" : "Edit profile"}</button>
@@ -158,6 +159,7 @@ function Profile() {
       </section>
 
       {!edit && (u.me ? <DailyQuests token={s.token} signIn={s.signIn} /> : <PlayerBadges name={u.name} />)}
+      {!edit && u.me && <InviteFriend />}
       {!edit && u.me && <SectionsGrid force />}
 
       {edit && (
