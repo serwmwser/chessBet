@@ -22,6 +22,7 @@ CREATE INDEX IF NOT EXISTS call_log_b ON call_log(b, ended);
 `);
 
 const DAY = 86400000;
+import { hasPush, pushTo } from "./push.js"; // HiMeet push
 const RING_MS = 40_000;      // сколько звонит вызов
 const IDLE_MS = 30_000;      // нет пингов дольше — связь потеряна
 const ALIVE_MS = 15_000;     // секунды идут, только пока оба слали пинг не позже этого срока (клиент шлёт пинг раз в 5 секунд)
@@ -131,8 +132,11 @@ callsWss.on("connection", (ws: WebSocket) => {
       if (old && old !== ws) { try { old.close(4000, "replaced"); } catch { /* уже закрыто */ } }
       me = addr; online.set(addr, ws);
       const stale = byUser.get(addr); // обновили страницу: прежний разговор потерян вместе с потоком
-      if (stale && calls.get(stale)) end(calls.get(stale)!, "reconnect");
+      const sc = stale ? calls.get(stale) : undefined;
+      const pending = sc && sc.state === "ringing" && sc.b === addr ? sc : undefined; // вам звонили, пока сайт был закрыт: покажем вызов
+      if (sc && !pending) end(sc, "reconnect");
       ws.send(JSON.stringify({ t: "ready", name: u.name, ice: iceServers(addr) }));
+      if (pending) send(addr, { t: "incoming", id: pending.id, from: pub(userByAddr(pending.a)) });
       return;
     }
     if (!me) return err("auth");
@@ -144,14 +148,15 @@ callsWss.on("connection", (ws: WebSocket) => {
       if (blocked(me, peer.addr) || blocked(peer.addr, me)) return err("not_found");
       if (byUser.has(me)) return err("busy_me");
       if (byUser.has(peer.addr)) return err("busy");
-      if (!online.has(peer.addr)) return err("offline");
+      if (!online.has(peer.addr) && !hasPush(peer.addr)) return err("offline");
       if (calls.size >= MAX_CALLS) return err("overloaded");
       if (limited("cinv:" + me, 15, 600000) || limited("cinvday:" + me, 100, DAY) || limited(`cpair:${me}>${peer.addr}`, 5, 600000)) return err("slow_down");
       const now = Date.now();
       const c: Call = { id: crypto.randomBytes(8).toString("hex"), a: me, b: peer.addr, state: "ringing", created: now, started: 0, secs: 0, last: now, ping: { a: now, b: now } };
       calls.set(c.id, c); byUser.set(me, c.id); byUser.set(peer.addr, c.id);
       ws.send(JSON.stringify({ t: "ringing", id: c.id, peer: pub(peer) }));
-      send(peer.addr, { t: "incoming", id: c.id, from: pub(userByAddr(me)) });
+      if (online.has(peer.addr)) send(peer.addr, { t: "incoming", id: c.id, from: pub(userByAddr(me)) });
+      else pushTo(peer.addr, { title: "📞 @" + (userByAddr(me)?.name ?? ""), body: "Входящий звонок / Incoming call", url: "/u/?tab=chat", tag: "call-" + c.id, call: true });
       return;
     }
 
@@ -209,7 +214,7 @@ export async function handleCalls(req: http.IncomingMessage, res: http.ServerRes
     if (p === "/api/calls/online") {
       const u = userByName(String(url.searchParams.get("name") ?? ""));
       if (!u || u.banned || u.addr === viewer || blocked(viewer, u.addr) || blocked(u.addr, viewer)) return out(200, { ok: true, online: false, busy: false });
-      return out(200, { ok: true, online: online.has(u.addr), busy: byUser.has(u.addr) });
+      return out(200, { ok: true, online: online.has(u.addr) || hasPush(u.addr), busy: byUser.has(u.addr) }); // с включёнными уведомлениями дозвониться можно и при закрытом сайте
     }
     if (p === "/api/calls/history") {
       const rows = db.prepare("SELECT id,a,b,started,secs,reason FROM call_log WHERE a=@me OR b=@me ORDER BY ended DESC LIMIT 20").all({ me: viewer }) as { id: string; a: string; b: string; started: number; secs: number; reason: string }[];
@@ -221,3 +226,6 @@ export async function handleCalls(req: http.IncomingMessage, res: http.ServerRes
     return bad("server", 500);
   }
 }
+
+/** Открыт ли у человека сайт (есть связь для звонков) */
+export const isOnline = (addr: string): boolean => online.has(addr);

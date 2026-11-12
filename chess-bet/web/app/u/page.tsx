@@ -17,6 +17,7 @@ import { useUnread } from "@/lib/dm";
 import { useMailUnread } from "@/lib/mail";
 import ShareMenu from "@/components/ShareMenu";
 import InviteFriend from "@/components/InviteFriend";
+import PushToggle from "@/components/PushToggle";
 import PostComposer, { uploadImage } from "@/components/PostComposer";
 import { useApp } from "@/lib/ctx";
 import { shortAddr } from "@/lib/config";
@@ -159,6 +160,7 @@ function Profile() {
       </section>
 
       {!edit && (u.me ? <DailyQuests token={s.token} signIn={s.signIn} /> : <PlayerBadges name={u.name} />)}
+      {!edit && u.me && <PushToggle />}
       {!edit && u.me && <InviteFriend />}
       {!edit && u.me && <SectionsGrid force />}
 

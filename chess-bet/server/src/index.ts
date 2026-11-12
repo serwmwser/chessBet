@@ -19,7 +19,8 @@ import { handleComments } from "./comments.js";
 import { handleMod } from "./mod.js";
 import { handleDating } from "./dating.js";
 import { handlePuzzles } from "./puzzles.js";
-import { callsWss, handleCalls, setCallHook } from "./calls.js";
+import { callsWss, handleCalls, isOnline as isCallOnline, setCallHook } from "./calls.js";
+import { handlePush, pushTo } from "./push.js"; // HiMeet push
 import { handleTch, tchOnCall } from "./tch.js";
 
 // после каждого разговора начисляем баллы TCH (правила и лимиты в tch.ts)
@@ -227,8 +228,8 @@ const publicProfile = (a: string) => {
   const p = profiles.get(a), sp = socialPublic(a); // ник и аватар берём из профиля соцсети
   return p || sp ? { name: sp?.name ?? p?.name ?? "", bio: p?.bio ?? "", link: p?.link ?? "", avatar: sp?.avatar || p?.avatar || "" } : null;
 };
-setDmNotify((to, from) => { void tgNotify(to, `✉️ Новое сообщение от @${from}`, `✉️ New message from @${from}`, `dm:${from}:${Math.floor(Date.now() / 600000)}`, `${SITE_URL}/messages/?with=${encodeURIComponent(from)}`); }); // не чаще раза в 10 минут от одного отправителя
-setMailNotify((to, from) => { void tgNotify(to, `📧 Новое письмо от @${from}`, `📧 New mail from @${from}`, `mail:${from}:${Math.floor(Date.now() / 600000)}`, `${SITE_URL}/u/?tab=mail`); });
+setDmNotify((to, from) => { if (!isCallOnline(to)) pushTo(to, { title: "✉️ @" + from, body: "Новое сообщение / New message", url: "/messages/?with=" + encodeURIComponent(from), tag: "dm-" + from }); void tgNotify(to, `✉️ Новое сообщение от @${from}`, `✉️ New message from @${from}`, `dm:${from}:${Math.floor(Date.now() / 600000)}`, `${SITE_URL}/messages/?with=${encodeURIComponent(from)}`); }); // не чаще раза в 10 минут от одного отправителя
+setMailNotify((to, from) => { if (!isCallOnline(to)) pushTo(to, { title: "📧 @" + from, body: "Новое письмо / New mail", url: "/u/?tab=mail", tag: "mail-" + from }); void tgNotify(to, `📧 Новое письмо от @${from}`, `📧 New mail from @${from}`, `mail:${from}:${Math.floor(Date.now() / 600000)}`, `${SITE_URL}/u/?tab=mail`); });
 setLegacy((a) => profiles.get(a) ?? null, (n) => nameOwner.get(n.toLowerCase()) ?? ""); // старые профили: перенос в соцсеть и занятые ники
 
 // ---------- синхронизация с контрактом ----------
@@ -563,6 +564,7 @@ const server = http.createServer((req, res) => {
   if (url.pathname === "/api/translate") { handleTranslate(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (url.pathname.startsWith("/api/puzzles/")) { handlePuzzles(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (url.pathname.startsWith("/api/dating/")) { handleDating(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
+  if (url.pathname.startsWith("/api/push/")) { handlePush(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (url.pathname.startsWith("/api/dm/")) { handleDm(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (url.pathname.startsWith("/api/mail/")) { handleMail(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
   if (parts[0] === "media" || url.pathname === "/api/upload" || url.pathname === "/api/upload-voice") { handleMedia(req, res, url, viewerOf(req)).catch(() => { if (!res.headersSent) res.writeHead(500); res.end(); }); return; }
