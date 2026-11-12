@@ -1,7 +1,7 @@
 "use client";
 import LoginPrompt from "@/components/LoginPrompt";
 import SectionsGrid from "@/components/SectionsGrid";
-import { Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState, Fragment } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import Avatar, { mediaUrl } from "@/components/Avatar";
@@ -197,9 +197,10 @@ function Profile() {
           onPosted={(p) => { setPosts((a) => (tab === "feed" || tab === "posts" || p.media.length ? [p, ...a] : a)); setU((x) => (x ? { ...x, posts: x.posts + 1 } : x)); }} />
       )}
 
-      <nav id="profile-tabs" className="flex gap-2 scroll-mt-4" aria-label={ru ? "Разделы профиля" : "Profile sections"}>
-        {tabs.map(([k, label]) => (
-          <button key={k} type="button" onClick={() => setTab(k)} aria-pressed={tab === k} className={tab === k ? "btn btn-primary !py-2" : "btn btn-ghost !py-2"}>{label}{k === "chat" && u.me && unread > 0 ? ` (${unread > 99 ? "99+" : unread})` : ""}{k === "mail" && mailUnread > 0 ? ` (${mailUnread > 99 ? "99+" : mailUnread})` : ""}</button>
+      <nav id="profile-tabs" className="flex flex-wrap gap-2 scroll-mt-4" aria-label={ru ? "Разделы профиля" : "Profile sections"}>
+        {tabs.map(([k, label], i) => (
+          <Fragment key={k}>{/* HiMeet tabs */}{i > 0 && tabs[i - 1][0] === "chat" && <span aria-hidden="true" className="basis-full h-0 sm:hidden" />}
+          <button type="button" onClick={() => setTab(k)} aria-pressed={tab === k} className={tab === k ? "btn btn-primary !py-2" : "btn btn-ghost !py-2"}>{label}{k === "chat" && u.me && unread > 0 ? ` (${unread > 99 ? "99+" : unread})` : ""}{k === "mail" && mailUnread > 0 ? ` (${mailUnread > 99 ? "99+" : mailUnread})` : ""}</button></Fragment>
         ))}
       </nav>
 
