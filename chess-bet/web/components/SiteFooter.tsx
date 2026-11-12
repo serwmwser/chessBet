@@ -8,7 +8,6 @@ import ProductHuntCard from "./ProductHuntCard";
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
 const scan = (a: string) => `https://polygonscan.com/address/${a}`;
 
-/** Подвал главной: блок доверия с настоящими фактами и ссылки на все страницы */
 export default function SiteFooter() {
   const { lang } = useApp();
   const ru = lang === "ru";
@@ -39,12 +38,11 @@ export default function SiteFooter() {
     [ru ? "Токен TCH" : "TCH token", `${BASE}/token/`, false],
     [ru ? "Белые книги" : "Whitepapers", `${BASE}/whitepaper/`, false],
     [ru ? "Прозрачность контракта" : "Contract transparency", `${BASE}/transparency/`, false],
-    [ru ? "Разработка Solidity" : "Solidity dev services", `${BASE}/dev.html`, false],
-    [ru ? "Разработка Solidity" : "Solidity dev services", `${BASE}/dev.html`, false],
     [ru ? "HiMeet в Telegram" : "HiMeet on Telegram", TG_BOT_URL, true],
   ];
+
   return (
-    <footer className="space-y-3">
+    <footer className="space-y-4">
       <section className="card lobby-info space-y-3" aria-label={ru ? "Почему нам можно доверять" : "Why trust HiMeet"}>
         <h2 className="font-extrabold" style={{ color: "#d4a017" }}>🛡 {ru ? "Прозрачные правила" : "Transparent rules"}</h2>
         <div className="grid grid-cols-2 gap-2 text-center">
@@ -65,6 +63,18 @@ export default function SiteFooter() {
           {NFT_ADDRESS && <div>{ru ? "Контракт NFT: " : "NFT contract: "}<a className="underline mono" dir="ltr" href={scan(NFT_ADDRESS)} target="_blank" rel="noopener noreferrer">{shortAddr(NFT_ADDRESS)}</a> Polygonscan</div>}
         </div>
       </section>
+
+      {/* КНОПКА SOLIDITY (отображается на каждой странице) */}
+      <div className="flex justify-center my-2">
+        <a 
+          href={`${BASE}/dev.html`} 
+          className="inline-flex items-center justify-center px-6 py-3 text-sm font-bold text-white transition-all rounded-xl shadow-lg hover:shadow-xl hover:scale-105"
+          style={{ background: "linear-gradient(135deg, #8b5cff, #6d3df0)" }}
+        >
+          {ru ? "🛠 Разработка Solidity" : "🛠 Solidity Dev Services"}
+        </a>
+      </div>
+
       <nav className="card text-sm" aria-label={ru ? "Ссылки" : "Links"}>
         <ul className="grid gap-1.5">
           {links.map(([t, h, ext]) => (
