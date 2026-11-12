@@ -3,8 +3,97 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>HiMeet · Solidity Smart Contracts on Polygon</title>
-<meta name="description" content="Solidity smart contracts on Polygon: token launch kits, vesting and LP locks, escrow, ERC-721, test suites. Verified source, ownership to your wallet, paid in USDC.">
+<title>Solidity Smart Contract Development on Polygon | HiMeet</title>
+<meta name="description" content="Fixed-price Solidity smart contracts on Polygon: token launch kits, vesting and LP locks, escrow, ERC-721 and test suites. Verified source, ownership to your wallet, paid in USDC.">
+<meta name="keywords" content="Solidity developer, Polygon smart contracts, token launch kit, vesting contract, LP lock, escrow contract, ERC-721, Foundry tests, Hardhat tests, USDC payment">
+<meta name="author" content="whattime">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<meta name="theme-color" content="#8b5cff">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<link rel="canonical" href="https://himeet.online/dev.html">
+<link rel="icon" href="/dev/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="HiMeet">
+<meta property="og:title" content="Solidity Smart Contract Development on Polygon | HiMeet">
+<meta property="og:description" content="Token launch kits, vesting and LP locks, escrow, ERC-721 and tests. Verified source, ownership to your wallet, paid in USDC.">
+<meta property="og:url" content="https://himeet.online/dev.html">
+<meta property="og:image" content="https://himeet.online/dev/og-dev.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Solidity smart contract development on Polygon by HiMeet">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ru_RU">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Solidity Smart Contract Development on Polygon | HiMeet">
+<meta name="twitter:description" content="Fixed-price Solidity contracts on Polygon. Verified source, tests, ownership to your wallet. Paid in USDC.">
+<meta name="twitter:image" content="https://himeet.online/dev/og-dev.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://himeet.online/dev.html#webpage",
+      "url": "https://himeet.online/dev.html",
+      "name": "Solidity Smart Contract Development on Polygon | HiMeet",
+      "description": "Fixed-price Solidity smart contracts on Polygon: token launch kits, vesting and LP locks, escrow, ERC-721 and test suites.",
+      "inLanguage": ["en", "ru"],
+      "isPartOf": { "@type": "WebSite", "name": "HiMeet", "url": "https://himeet.online/" },
+      "primaryImageOfPage": { "@type": "ImageObject", "url": "https://himeet.online/dev/og-dev.png" },
+      "breadcrumb": { "@id": "https://himeet.online/dev.html#breadcrumb" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://himeet.online/dev.html#breadcrumb",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "HiMeet", "item": "https://himeet.online/" },
+        { "@type": "ListItem", "position": 2, "name": "Solidity services", "item": "https://himeet.online/dev.html" }
+      ]
+    },
+    {
+      "@type": "Service",
+      "@id": "https://himeet.online/dev.html#service",
+      "name": "Solidity Smart Contract Development",
+      "serviceType": "Smart contract development",
+      "url": "https://himeet.online/dev.html",
+      "description": "Smart contracts only: ERC-20 token launch kits, vesting and LP locks, escrow, ERC-721, Foundry/Hardhat test suites and developer code review. Not a security audit.",
+      "provider": {
+        "@type": "Person",
+        "name": "whattime",
+        "email": "chessgrokearn@gmail.com",
+        "url": "https://himeet.online/"
+      },
+      "areaServed": "Worldwide",
+      "availableLanguage": ["English", "Russian"],
+      "termsOfService": "https://himeet.online/dev.html#terms",
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Solidity services",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "name": "Contract Task",
+            "priceSpecification": { "@type": "PriceSpecification", "minPrice": "150", "priceCurrency": "USD" },
+            "itemOffered": { "@type": "Service", "name": "Fixed-scope Solidity contract task" }
+          },
+          {
+            "@type": "Offer",
+            "name": "Token Launch Kit",
+            "priceSpecification": { "@type": "PriceSpecification", "price": "400", "priceCurrency": "USD" },
+            "itemOffered": { "@type": "Service", "name": "ERC-20, vesting/locks, LP-lock, scripts and handover" }
+          },
+          {
+            "@type": "Offer",
+            "name": "Tests + Code Review",
+            "priceSpecification": { "@type": "PriceSpecification", "price": "250", "priceCurrency": "USD" },
+            "itemOffered": { "@type": "Service", "name": "Developer test suite and code review, not a security audit" }
+          }
+        ]
+      }
+    }
+  ]
+}
+</script>
 <style>
 :root{--bg:#0c0a14;--s:#161226;--s2:#1e1834;--line:#2c2447;--txt:#efeaff;--mut:#a79dc6;--acc:#8b5cff;--acc2:#22d3ee;--ok:#34d399;--warn:#fbbf24;--r:16px}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -18,14 +107,16 @@ a{color:var(--acc2);text-decoration:none}a:hover{text-decoration:underline}
 html[data-lang=en] .en{display:inline}html[data-lang=ru] .ru{display:inline}
 html[data-lang=en] .en.b{display:block}html[data-lang=ru] .ru.b{display:block}
 header{position:sticky;top:0;z-index:30;background:rgba(12,10,20,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
-nav{display:flex;align-items:center;justify-content:space-between;height:62px;gap:12px}
+nav.top{display:flex;align-items:center;justify-content:space-between;height:62px;gap:12px}
 .logo{font-weight:800;font-size:17px}.logo span{color:var(--acc)}
 .navr{display:flex;align-items:center;gap:12px}
 .home{color:var(--mut);font-size:13px}
 .lang{display:flex;border:1px solid var(--line);border-radius:99px;overflow:hidden}
 .lang button{background:transparent;border:0;color:var(--mut);padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer}
 .lang button.on{background:var(--acc);color:#fff}
-.hero{padding:70px 0 42px;text-align:center}
+.crumbs{font-size:12.5px;color:var(--mut);margin-bottom:14px}
+.crumbs span.sep{margin:0 7px;opacity:.6}
+.hero{padding:44px 0 42px;text-align:center}
 .chip{display:inline-block;border:1px solid var(--line);background:var(--s);color:var(--mut);font-size:12.5px;padding:6px 14px;border-radius:99px;margin-bottom:20px}
 h1{font-size:clamp(28px,5vw,46px);line-height:1.14;font-weight:800;letter-spacing:-.5px;margin-bottom:16px}
 h1 .hl{background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -87,11 +178,11 @@ details p{color:var(--mut);font-size:13.5px;padding-bottom:14px}
 footer{border-top:1px solid var(--line);padding:30px 0;color:var(--mut);font-size:12.5px}
 .disc{background:var(--s2);border:1px solid var(--line);border-radius:12px;padding:15px 17px;margin-bottom:16px;font-size:12px;line-height:1.7}
 .fnav{display:flex;gap:16px;flex-wrap:wrap}
-@media(max-width:720px){.two{grid-template-columns:1fr}.hero{padding:46px 0 30px}section{padding:38px 0}}
+@media(max-width:720px){.two{grid-template-columns:1fr}.hero{padding:30px 0 30px}section{padding:38px 0}}
 </style>
 </head>
 <body>
-<header><div class="wrap"><nav>
+<header><div class="wrap"><nav class="top">
 <div class="logo">Hi<span>Meet</span> · Solidity</div>
 <div class="navr">
 <a class="home" href="https://himeet.online/"><span class="en">← HiMeet</span><span class="ru">← HiMeet</span></a>
@@ -99,6 +190,7 @@ footer{border-top:1px solid var(--line);padding:30px 0;color:var(--mut);font-siz
 </div></nav></div></header>
 
 <div class="hero"><div class="wrap">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="https://himeet.online/">HiMeet</a><span class="sep">›</span><span class="en">Solidity services</span><span class="ru">Solidity-услуги</span></nav>
 <div class="chip"><span class="en">Solidity · Polygon · Paid in USDC</span><span class="ru">Solidity · Polygon · Оплата в USDC</span></div>
 <h1><span class="en b">Smart contracts on Polygon —<br><span class="hl">built, verified, delivered.</span></span><span class="ru b">Смарт-контракты на Polygon —<br><span class="hl">код, верификация, сдача.</span></span></h1>
 <p class="sub"><span class="en">Token launch kits, vesting &amp; LP locks, escrow, ERC-721 and test suites. Fixed price, verified source on Polygonscan, ownership transferred to your wallet. I never hold your keys or your funds.</span><span class="ru">Комплекты запуска токена, vesting и LP-локи, escrow, ERC-721 и наборы тестов. Фикс-цена, верифицированный код на Polygonscan, владение передается на ваш кошелек. Я никогда не держу ваши ключи и средства.</span></p>

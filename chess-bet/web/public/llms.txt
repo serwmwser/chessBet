@@ -24,6 +24,7 @@
 - [Cartoon chess](https://himeet.online/cartoon/): funny character pieces, bright boards and piece voices; free against the bot.
 - [Language exchange](https://himeet.online/language-exchange/): free chat with message translation and calls, find people by language.
 - [Find friends](https://himeet.online/find-friends/): pick interests and languages in your profile, meet people from around the world.
+- [Android app](https://himeet.online/android/): download the HiMeet app (APK) and install it on Android.
 - [Tournaments](https://himeet.online/tournaments/): free hourly chess arenas with points, badges and cups.
 - [Chess NFTs](https://himeet.online/nft/): turn a move from your own finished game into an ERC-721 NFT on Polygon.
 - [FAQ](https://himeet.online/faq/): answers about stakes, fees, payouts, age, fair play, classifieds, dating and the community.
@@ -49,3 +50,4 @@
 ## Languages
 
 The site is available in English first, with Russian and several other languages in the interface.
+- [Solidity dev services](https://himeet.online/dev.html): Smart contract development on Polygon - token launch kits, vesting/locks, escrow, ERC-721, test suites. Verified source, ownership transfer, paid in USDC. Not a security audit.
