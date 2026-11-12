@@ -40,6 +40,7 @@ export default function SiteFooter() {
     [ru ? "Белые книги" : "Whitepapers", `${BASE}/whitepaper/`, false],
     [ru ? "Прозрачность контракта" : "Contract transparency", `${BASE}/transparency/`, false],
     [ru ? "Разработка Solidity" : "Solidity dev services", `${BASE}/dev.html`, false],
+    [ru ? "Разработка Solidity" : "Solidity dev services", `${BASE}/dev.html`, false],
     [ru ? "HiMeet в Telegram" : "HiMeet on Telegram", TG_BOT_URL, true],
   ];
   return (
