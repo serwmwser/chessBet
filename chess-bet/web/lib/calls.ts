@@ -47,20 +47,57 @@ let iAmCaller = false;
 const send = (o: unknown) => { if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(o)); };
 
 // ---------- сигнал вызова ----------
-function beep() {
+// HiMeet ringtone: браузер не даёт играть звук, пока страница не получила нажатие, поэтому звук «разблокируем» при любом касании.
+function unlockAudio() {
   try {
     actx = actx ?? new AudioContext();
-    const o = actx.createOscillator(), g = actx.createGain();
-    o.frequency.value = 520; g.gain.value = 0.06;
-    o.connect(g); g.connect(actx.destination); o.start(); o.stop(actx.currentTime + 0.35);
+    if (actx.state === "suspended") void actx.resume();
   } catch { /* звук необязателен */ }
 }
+let unlockArmed = false;
+function armAudioUnlock() {
+  if (unlockArmed || typeof window === "undefined") return;
+  unlockArmed = true;
+  for (const ev of ["pointerdown", "keydown", "touchstart"]) window.addEventListener(ev, unlockAudio, { passive: true });
+}
+function tone(freqs: number[], sec: number, vol: number) {
+  try {
+    unlockAudio();
+    const ctx = actx!, t0 = ctx.currentTime;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(vol, t0 + 0.03);
+    g.gain.setValueAtTime(vol, t0 + sec - 0.06);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + sec);
+    g.connect(ctx.destination);
+    for (const f of freqs) { const o = ctx.createOscillator(); o.type = "sine"; o.frequency.value = f; o.connect(g); o.start(t0); o.stop(t0 + sec + 0.02); }
+  } catch { /* звук необязателен */ }
+}
+/** Сигнал принимающему: две ноты */
+function beep() { tone([660], 0.25, 0.25); setTimeout(() => tone([880], 0.25, 0.25), 300); }
+/** Гудок звонящему: 425 Гц, секунда звучит и три секунды пауза */
+function startRingback() {
+  stopRing(); tone([425], 1.0, 0.15);
+  ringTimer = setInterval(() => tone([425], 1.0, 0.15), 4000);
+}
+let titleTimer: ReturnType<typeof setInterval> | null = null;
+let baseTitle = "";
 function startRing() {
   stopRing(); beep();
+  try {
+    if (typeof document !== "undefined") {
+      baseTitle = document.title;
+      titleTimer = setInterval(() => { document.title = document.title === baseTitle ? "📞 Входящий звонок / Incoming call" : baseTitle; }, 800);
+      if (document.hidden && typeof Notification !== "undefined" && Notification.permission === "granted") new Notification("HiMeet", { body: "📞 Входящий звонок / Incoming call" });
+    }
+  } catch { /* необязательно */ }
   try { navigator.vibrate?.([300, 200, 300]); } catch { /* необязательно */ }
   ringTimer = setInterval(() => { beep(); try { navigator.vibrate?.([300, 200, 300]); } catch { /* необязательно */ } }, 2000);
 }
-function stopRing() { if (ringTimer) { clearInterval(ringTimer); ringTimer = null; } }
+function stopRing() {
+  if (ringTimer) { clearInterval(ringTimer); ringTimer = null; }
+  if (titleTimer) { clearInterval(titleTimer); titleTimer = null; try { if (baseTitle) document.title = baseTitle; } catch { /* необязательно */ } }
+}
 
 // ---------- очистка ----------
 function cleanup() {
@@ -142,7 +179,7 @@ function connect() {
     try { m = JSON.parse(String(ev.data)); } catch { return; }
     switch (m.t) {
       case "ready": retry = 0; ice = (m.ice as RTCIceServer[]) || ice; if (state.status === "off") set({ status: "idle" }); break;
-      case "ringing": set({ status: "calling", id: String(m.id), peer: m.peer as Peer, error: "" }); break;
+      case "ringing": set({ status: "calling", id: String(m.id), peer: m.peer as Peer, error: "" }); startRingback(); break;
       case "incoming": set({ status: "incoming", id: String(m.id), peer: m.from as Peer, error: "" }); startRing(); break;
       case "accepted":
         stopRing();
@@ -179,6 +216,7 @@ function connect() {
 /** Включает приём звонков для вошедшего пользователя (токен «адрес|токен»). Пустой токен — выключает */
 export function startCalls(t: string) {
   if (!t) { stopCalls(); return; }
+  armAudioUnlock();
   if (t === token && wantOn) return;
   token = t; wantOn = true; retry = 0;
   if (ws) { try { ws.close(); } catch { /* закрыто */ } ws = null; }
@@ -196,6 +234,7 @@ export function stopCalls() {
 /** Позвонить пользователю по нику. Только после нажатия пользователя (нужен микрофон) */
 export async function callUser(name: string) {
   if (state.status !== "idle") return;
+  unlockAudio();
   if (!(await mic())) return;
   iAmCaller = true;
   send({ t: "invite", to: name });
