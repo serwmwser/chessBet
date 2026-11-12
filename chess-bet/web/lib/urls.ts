@@ -20,6 +20,7 @@ export const ROUTES = {
   puzzles: `${BASE}/puzzles/`,
   cartoon: `${BASE}/cartoon/`,
   exchange: `${BASE}/language-exchange/`,
+  android: `${BASE}/android/`,
   friends: `${BASE}/find-friends/`,
   dating: `${BASE}/dating/`,
   about: `${BASE}/about/`,

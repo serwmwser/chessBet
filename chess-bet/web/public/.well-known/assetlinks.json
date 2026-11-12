@@ -1,12 +1,8 @@
-[
-  {
-    "relation": ["delegate_permission/common.handle_all_urls"],
-    "target": {
-      "namespace": "android_app",
-      "package_name": "lol.chessbet.app",
-      "sha256_cert_fingerprints": [
-        "85:D1:04:C4:04:92:FD:AE:FE:32:78:89:8C:57:58:58:F3:A8:FA:4D:41:08:89:A8:58:16:25:C4:FE:2B:BF:DB"
-      ]
-    }
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "online.himeet.app",
+    "sha256_cert_fingerprints": ["B3:D6:5B:FE:F8:D5:19:F4:02:19:02:8B:F9:A9:3B:83:2F:CD:9E:69:9A:28:47:74:B2:D3:40:86:94:D7:C5:36"]
   }
-]
+}]

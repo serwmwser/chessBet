@@ -46,6 +46,8 @@ export default function AppDownload() {
       <button type="button" onClick={install} className="w-full px-4 py-3 rounded-xl font-extrabold text-white text-base" style={green}>
         {ru ? "Установить" : "Install"}
       </button>
+      {/* HiMeet apk */}
+      {android && <a href={BASE + "/android/"} className="block text-center text-sm font-semibold underline">📦 {ru ? "Скачать APK для Android" : "Download Android APK"}</a>}
       {hint && (
         <div className="text-xs opacity-80">
           {ru ? "Откройте меню браузера (три точки или кнопка «Поделиться») и выберите «Установить приложение» / «Добавить на главный экран»." : "Open the browser menu (three dots or the Share button) and choose “Install app” / “Add to Home screen”."}
