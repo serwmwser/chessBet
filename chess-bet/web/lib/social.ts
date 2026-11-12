@@ -6,7 +6,7 @@ import { API_URL } from "./config";
 import { dropToken, ensureToken, getToken } from "./session";
 
 export type SUser = {
-  name: string; bio: string; country: string; link: string; avatar: string; banner: string; joined: number; langs?: string[];
+  name: string; bio: string; country: string; link: string; avatar: string; banner: string; joined: number; langs?: string[]; interests?: string[];
   following: number; followers: number; posts: number; me: boolean; follows: boolean; addr?: string;
 };
 export type SPost = { id: number; edited: number; text: string; media: string[]; created: number; user: { name: string; avatar: string }; likes: number; liked: boolean; comments?: number };
@@ -52,9 +52,15 @@ export const LANGS: [string, string, string][] = [
   ["it", "Итальянский", "Italian"], ["pt", "Португальский", "Portuguese"], ["zh", "Китайский", "Chinese"], ["ja", "Японский", "Japanese"], ["ko", "Корейский", "Korean"],
   ["ar", "Арабский", "Arabic"], ["tr", "Турецкий", "Turkish"], ["pl", "Польский", "Polish"], ["uk", "Украинский", "Ukrainian"], ["hi", "Хинди", "Hindi"],
 ];
+/** HiMeet interests: интересы для профиля (код, эмодзи, по-русски, по-английски) */
+export const INTERESTS: [string, string, string, string][] = [
+  ["travel", "✈️", "Путешествия", "Travel"], ["music", "🎵", "Музыка", "Music"], ["movies", "🎬", "Кино", "Movies"], ["books", "📚", "Книги", "Books"],
+  ["sport", "⚽", "Спорт", "Sports"], ["games", "🎮", "Игры", "Games"], ["chess", "♟️", "Шахматы", "Chess"], ["food", "🍜", "Еда", "Food"],
+  ["art", "🎨", "Искусство", "Art"], ["tech", "💻", "Технологии", "Tech"], ["photo", "📷", "Фото", "Photo"], ["nature", "🌿", "Природа", "Nature"],
+];
 export const findPeople = (q: string, lang = "") => call<{ users: { name: string; avatar: string; bio: string; langs?: string[] }[] }>(`/api/people?q=${encodeURIComponent(q)}${lang ? `&lang=${encodeURIComponent(lang)}` : ""}`).then((r) => r.users);
 
-export const saveProfile = (token: string, p: Partial<Pick<SUser, "name" | "bio" | "country" | "link" | "avatar" | "banner" | "langs">>) =>
+export const saveProfile = (token: string, p: Partial<Pick<SUser, "name" | "bio" | "country" | "link" | "avatar" | "banner" | "langs" | "interests">>) =>
   call<{ user: SUser }>("/api/profile", { token, post: p }).then((r) => r.user);
 export const follow = (token: string, name: string, on: boolean) => call<{ user: SUser }>("/api/follow", { token, post: { name, on } }).then((r) => r.user);
 export const publish = (token: string, text: string, media: string[] = []) => call<{ post: SPost }>("/api/post", { token, post: { text, media } }).then((r) => r.post);
