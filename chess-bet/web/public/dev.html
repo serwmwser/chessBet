@@ -180,6 +180,7 @@ footer{border-top:1px solid var(--line);padding:30px 0;color:var(--mut);font-siz
 .fnav{display:flex;gap:16px;flex-wrap:wrap}
 @media(max-width:720px){.two{grid-template-columns:1fr}.hero{padding:30px 0 30px}section{padding:38px 0}}
 /* HiMeet leadform */
+/* HiMeet telegram */
 .lf{max-width:620px;margin:22px auto 0;text-align:left;background:var(--s);border:1px solid var(--line);border-radius:var(--r);padding:20px}
 .lf label{display:block;font-size:12.5px;font-weight:700;color:var(--mut);margin:12px 0 5px}
 .lf label:first-child{margin-top:0}
@@ -309,16 +310,18 @@ footer{border-top:1px solid var(--line);padding:30px 0;color:var(--mut);font-siz
 <button type="button" class="btn p" data-act="mail"><span class="en">Open in email app</span><span class="ru">Открыть в почтовой программе</span></button>
 <button type="button" class="btn g" data-act="gmail"><span class="en">Open in Gmail</span><span class="ru">Открыть в Gmail</span></button>
 <button type="button" class="btn g" data-act="copy"><span class="en">Copy text</span><span class="ru">Скопировать текст</span></button>
+<button type="button" class="btn g" data-act="tg"><span class="en">Copy &amp; open Telegram</span><span class="ru">Скопировать и открыть Telegram</span></button>
 </div>
 <div id="leadmsg" role="status" aria-live="polite"></div>
-<p class="note"><span class="en">This form does not send data to a server: it prepares an email to me, and you press Send yourself. Never include your seed phrase or private keys.</span><span class="ru">Форма ничего не отправляет на сервер: она готовит письмо мне, а отправляете его вы сами. Никогда не указывайте seed-фразу и приватные ключи.</span></p>
+<p class="note"><span class="en">This form does not send data to a server: it prepares a message to me (an email, or text to paste into Telegram) and you send it yourself. Never include your seed phrase or private keys.</span><span class="ru">Форма ничего не отправляет на сервер: она готовит сообщение мне (письмо или текст для вставки в Telegram), а отправляете его вы сами. Никогда не указывайте seed-фразу и приватные ключи.</span></p>
 </form>
 <div class="cbox">
 <div class="crow"><span class="k"><span class="en">In-app chat</span><span class="ru">Чат в приложении</span></span><span><b>@whattime</b> · <a href="https://himeet.online/" target="_blank" rel="noopener">himeet.online</a></span></div>
+<div class="crow"><span class="k">Telegram</span><a href="https://t.me/himeetonline" target="_blank" rel="noopener">@himeetonline</a></div>
 <div class="crow"><span class="k">Email</span><a href="mailto:chessgrokearn@gmail.com">chessgrokearn@gmail.com</a></div>
 <div class="crow"><span class="k"><span class="en">Payment</span><span class="ru">Оплата</span></span><span><span class="en">USDC on Polygon — address shared in the invoice.</span><span class="ru">USDC на Polygon — адрес в инвойсе.</span></span></div>
 </div>
-<div class="cta" style="margin-top:22px"><a class="btn p" href="mailto:chessgrokearn@gmail.com?subject=Solidity%20contract%20work"><span class="en">Email me</span><span class="ru">Написать на почту</span></a><a class="btn g" href="https://himeet.online/" target="_blank" rel="noopener"><span class="en">Message in app</span><span class="ru">Написать в приложении</span></a></div>
+<div class="cta" style="margin-top:22px"><a class="btn p" href="mailto:chessgrokearn@gmail.com?subject=Solidity%20contract%20work"><span class="en">Email me</span><span class="ru">Написать на почту</span></a><a class="btn g" href="https://t.me/himeetonline" target="_blank" rel="noopener"><span class="en">Telegram</span><span class="ru">Telegram</span></a><a class="btn g" href="https://himeet.online/" target="_blank" rel="noopener"><span class="en">Message in app</span><span class="ru">Написать в приложении</span></a></div>
 </div></section>
 
 <footer><div class="wrap">
@@ -349,8 +352,8 @@ var b=e.target.closest?e.target.closest('[data-act]'):null;if(!b)return;
 var d=build();if(!d)return;var a=b.getAttribute('data-act'),r=ru();
 if(a==='mail'){location.href='mailto:'+TO+'?subject='+encodeURIComponent(d.subj)+'&body='+encodeURIComponent(d.body);say(r?'Письмо подготовлено. Нажмите «Отправить» в почтовой программе.':'Email prepared. Press Send in your email app.')}
 else if(a==='gmail'){window.open('https://mail.google.com/mail/?view=cm&fs=1&to='+TO+'&su='+encodeURIComponent(d.subj)+'&body='+encodeURIComponent(d.body),'_blank','noopener');say(r?'Откроется Gmail с готовым письмом.':'Gmail will open with the message ready.')}
-else{var t='To: '+TO+'\nSubject: '+d.subj+'\n\n'+d.body;
-var done=function(){say(r?'Текст скопирован. Вставьте его в письмо на '+TO+'.':'Text copied. Paste it into an email to '+TO+'.')};
+else{if(a==='tg')window.open('https://t.me/himeetonline','_blank','noopener');var t=a==='tg'?d.subj+'\n\n'+d.body:'To: '+TO+'\nSubject: '+d.subj+'\n\n'+d.body;
+var done=function(){if(a==='tg'){say(r?'Текст скопирован. Вставьте его в чат Telegram @himeetonline.':'Text copied. Paste it into the Telegram chat with @himeetonline.');return}say(r?'Текст скопирован. Вставьте его в письмо на '+TO+'.':'Text copied. Paste it into an email to '+TO+'.')};
 if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done,function(){say(t)})}
 else{var x=document.createElement('textarea');x.value=t;document.body.appendChild(x);x.select();try{document.execCommand('copy');done()}catch(er){say(t)}document.body.removeChild(x)}}
 });
