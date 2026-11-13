@@ -179,7 +179,18 @@ footer{border-top:1px solid var(--line);padding:30px 0;color:var(--mut);font-siz
 .disc{background:var(--s2);border:1px solid var(--line);border-radius:12px;padding:15px 17px;margin-bottom:16px;font-size:12px;line-height:1.7}
 .fnav{display:flex;gap:16px;flex-wrap:wrap}
 @media(max-width:720px){.two{grid-template-columns:1fr}.hero{padding:30px 0 30px}section{padding:38px 0}}
+/* HiMeet leadform */
+.lf{max-width:620px;margin:22px auto 0;text-align:left;background:var(--s);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.lf label{display:block;font-size:12.5px;font-weight:700;color:var(--mut);margin:12px 0 5px}
+.lf label:first-child{margin-top:0}
+.lf select,.lf input,.lf textarea{width:100%;background:var(--bg);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:11px 12px;font:inherit;font-size:14px}
+.lf textarea{min-height:110px;resize:vertical}
+.lf select:focus,.lf input:focus,.lf textarea:focus{outline:2px solid var(--acc);outline-offset:1px}
+.lf .acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.lf .note{font-size:12px;color:var(--mut);margin-top:12px}
+#leadmsg{font-size:13px;color:var(--ok);margin-top:10px;min-height:18px}
 </style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","@id":"https://himeet.online/dev.html#faq","mainEntity":[{"@type":"Question","name":"Is this a security audit?","acceptedAnswer":{"@type":"Answer","text":"No. I write contracts and tests and do a developer-level code review. My own contracts had an AI-assisted review, not a paid third-party audit. For production funds, hire a professional auditor."}},{"@type":"Question","name":"Who controls the deployed contract?","acceptedAnswer":{"@type":"Answer","text":"You do. Deployment happens from your wallet, or ownership is transferred right after delivery. I never keep admin rights, keys or funds."}},{"@type":"Question","name":"Why crypto-only payment?","acceptedAnswer":{"@type":"Answer","text":"I work with web3 teams and settle in USDC on Polygon: fast, low fees, no bank friction. Each payment is transparent on-chain."}},{"@type":"Question","name":"Can I see the code before paying the rest?","acceptedAnswer":{"@type":"Answer","text":"Yes. Source is verified on Polygonscan and tests are provided. You review, then the final 50% is paid and ownership is transferred."}},{"@type":"Question","name":"How do I get a price?","acceptedAnswer":{"@type":"Answer","text":"Send a few lines about your project through the form below. I reply with a one-page scope and a fixed price. No work starts before the scope is agreed in writing."}},{"@type":"Question","name":"Will you ask for my seed phrase or private keys?","acceptedAnswer":{"@type":"Answer","text":"Never. I do not need your seed phrase or private keys and will never ask for them. Deployment happens from your wallet, and each payment is confirmed by an on-chain TxID."}},{"@type":"Question","name":"What do I receive at delivery?","acceptedAnswer":{"@type":"Answer","text":"Verified source code on Polygonscan, a test suite you can run, and ownership of the contract transferred to your wallet. The Token Launch Kit also includes scripts and handover."}},{"@type":"Question","name":"Can you build a token with hidden mint or a fake lock?","acceptedAnswer":{"@type":"Answer","text":"No. I do not build hidden mint, honeypots, fake locks or any rug mechanics, and I do not promise price growth or returns. Such requests are declined."}}]}</script>
 </head>
 <body>
 <header><div class="wrap"><nav class="top">
@@ -270,12 +281,38 @@ footer{border-top:1px solid var(--line);padding:30px 0;color:var(--mut);font-siz
 <details><summary><span class="en">Who controls the deployed contract?</span><span class="ru">Кто управляет контрактом?</span></summary><p><span class="en">You do. Deployment happens from your wallet, or ownership is transferred right after delivery. I never keep admin rights, keys or funds.</span><span class="ru">Вы. Деплой с вашего кошелька, либо владение передается сразу после сдачи. Я не оставляю себе админ-права, ключи и средства.</span></p></details>
 <details><summary><span class="en">Why crypto-only payment?</span><span class="ru">Почему оплата только в крипте?</span></summary><p><span class="en">I work with web3 teams and settle in USDC on Polygon: fast, low fees, no bank friction. Each payment is transparent on-chain.</span><span class="ru">Я работаю с web3-командами и рассчитываюсь в USDC на Polygon: быстро, низкие комиссии, без банков. Каждый платеж прозрачен в блокчейне.</span></p></details>
 <details><summary><span class="en">Can I see the code before paying the rest?</span><span class="ru">Можно увидеть код до оплаты остатка?</span></summary><p><span class="en">Yes. Source is verified on Polygonscan and tests are provided. You review, then the final 50% is paid and ownership is transferred.</span><span class="ru">Да. Код верифицирован на Polygonscan, тесты предоставлены. Вы проверяете, затем оплачивается остаток и передается владение.</span></p></details>
+<details><summary><span class="en">How do I get a price?</span><span class="ru">Как узнать цену?</span></summary><p><span class="en">Send a few lines about your project through the form below. I reply with a one-page scope and a fixed price. No work starts before the scope is agreed in writing.</span><span class="ru">Отправьте пару строк о проекте через форму ниже. Я отвечу одностраничным scope и фикс-ценой. Работа не начинается, пока scope не согласован письменно.</span></p></details>
+<details><summary><span class="en">Will you ask for my seed phrase or private keys?</span><span class="ru">Вы попросите seed-фразу или приватные ключи?</span></summary><p><span class="en">Never. I do not need your seed phrase or private keys and will never ask for them. Deployment happens from your wallet, and each payment is confirmed by an on-chain TxID.</span><span class="ru">Никогда. Мне не нужны ваши seed-фраза и приватные ключи, и я их не запрашиваю. Деплой выполняется с вашего кошелька, а каждый платеж подтверждается TxID в блокчейне.</span></p></details>
+<details><summary><span class="en">What do I receive at delivery?</span><span class="ru">Что я получу при сдаче?</span></summary><p><span class="en">Verified source code on Polygonscan, a test suite you can run, and ownership of the contract transferred to your wallet. The Token Launch Kit also includes scripts and handover.</span><span class="ru">Верифицированный код на Polygonscan, набор тестов, который можно запустить, и владение контрактом, переданное на ваш кошелек. Token Launch Kit также включает скрипты и передачу.</span></p></details>
+<details><summary><span class="en">Can you build a token with hidden mint or a fake lock?</span><span class="ru">Можете сделать токен со скрытым минтом или фальшивым локом?</span></summary><p><span class="en">No. I do not build hidden mint, honeypots, fake locks or any rug mechanics, and I do not promise price growth or returns. Such requests are declined.</span><span class="ru">Нет. Я не делаю скрытый минт, honeypot, фальшивые локи и любые rug-механики и не обещаю рост цены или доходность. Такие заказы отклоняются.</span></p></details>
 </div></section>
 
 <section id="contact" class="contact"><div class="wrap">
 <div class="eyebrow"><span class="en">Get started</span><span class="ru">Начать</span></div>
 <h2><span class="en">Tell me what you need</span><span class="ru">Расскажите, что нужно</span></h2>
 <p class="lead" style="margin:0 auto"><span class="en">Send a few lines about your project. I'll reply with a one-page scope and a fixed price.</span><span class="ru">Пришлите пару строк о проекте. Отвечу одностраничным scope и фикс-ценой.</span></p>
+<form class="lf" id="leadf" onsubmit="return false" novalidate>
+<label for="lf-svc"><span class="en">What do you need?</span><span class="ru">Что нужно сделать?</span></label>
+<select id="lf-svc" name="svc">
+<option value="Contract Task">Contract Task (from 150 USD)</option>
+<option value="Token Launch Kit">Token Launch Kit (400 USD)</option>
+<option value="Tests + Code Review">Tests + Code Review (250 USD)</option>
+<option value="Other">Other / Другое</option>
+</select>
+<label for="lf-desc"><span class="en">Project in a few lines</span><span class="ru">Проект в нескольких строках</span></label>
+<textarea id="lf-desc" name="desc" maxlength="1500" data-ph-en="What should the contract do? Which network, any existing code or links?" data-ph-ru="Что должен делать контракт? Какая сеть, есть ли код или ссылки?"></textarea>
+<label for="lf-dl"><span class="en">Deadline (optional)</span><span class="ru">Срок (необязательно)</span></label>
+<input id="lf-dl" name="dl" maxlength="60" data-ph-en="e.g. within 2 weeks" data-ph-ru="например, за 2 недели">
+<label for="lf-contact"><span class="en">How to reach you</span><span class="ru">Как с вами связаться</span></label>
+<input id="lf-contact" name="contact" maxlength="80" data-ph-en="Email or Telegram" data-ph-ru="Почта или Telegram">
+<div class="acts">
+<button type="button" class="btn p" data-act="mail"><span class="en">Open in email app</span><span class="ru">Открыть в почтовой программе</span></button>
+<button type="button" class="btn g" data-act="gmail"><span class="en">Open in Gmail</span><span class="ru">Открыть в Gmail</span></button>
+<button type="button" class="btn g" data-act="copy"><span class="en">Copy text</span><span class="ru">Скопировать текст</span></button>
+</div>
+<div id="leadmsg" role="status" aria-live="polite"></div>
+<p class="note"><span class="en">This form does not send data to a server: it prepares an email to me, and you press Send yourself. Never include your seed phrase or private keys.</span><span class="ru">Форма ничего не отправляет на сервер: она готовит письмо мне, а отправляете его вы сами. Никогда не указывайте seed-фразу и приватные ключи.</span></p>
+</form>
 <div class="cbox">
 <div class="crow"><span class="k"><span class="en">In-app chat</span><span class="ru">Чат в приложении</span></span><span><b>@whattime</b> · <a href="https://himeet.online/" target="_blank" rel="noopener">himeet.online</a></span></div>
 <div class="crow"><span class="k">Email</span><a href="mailto:chessgrokearn@gmail.com">chessgrokearn@gmail.com</a></div>
@@ -292,6 +329,33 @@ footer{border-top:1px solid var(--line);padding:30px 0;color:var(--mut);font-siz
 <script>
 function setLang(l){document.documentElement.setAttribute('data-lang',l);document.documentElement.setAttribute('lang',l);document.getElementById('b-en').classList.toggle('on',l==='en');document.getElementById('b-ru').classList.toggle('on',l==='ru');try{localStorage.setItem('hm_lang',l)}catch(e){}}
 (function(){var s='en';try{s=localStorage.getItem('hm_lang')||((navigator.language||'en').toLowerCase().indexOf('ru')===0?'ru':'en')}catch(e){}setLang(s)})();
+(function(){
+var f=document.getElementById('leadf');if(!f)return;
+var TO='chessgrokearn@gmail.com',msg=document.getElementById('leadmsg');
+function ru(){return document.documentElement.getAttribute('data-lang')==='ru'}
+function ph(){var els=f.querySelectorAll('[data-ph-en]');for(var i=0;i<els.length;i++)els[i].setAttribute('placeholder',els[i].getAttribute(ru()?'data-ph-ru':'data-ph-en'))}
+var old=window.setLang;window.setLang=function(l){old(l);ph()};ph();
+function say(t,bad){msg.style.color=bad?'var(--warn)':'var(--ok)';msg.textContent=t}
+function build(){
+var v=function(n){return (f.elements[n].value||'').trim()},r=ru();
+if(v('desc').length<10){say(r?'Опишите проект хотя бы в паре слов (от 10 символов).':'Please describe the project in a few words (10+ characters).',1);f.elements.desc.focus();return null}
+if(v('contact').length<3){say(r?'Укажите, как с вами связаться.':'Please tell me how to reach you.',1);f.elements.contact.focus();return null}
+var subj='Solidity: '+v('svc');
+var body=(r?'Услуга: ':'Service: ')+v('svc')+'\n'+(r?'Срок: ':'Deadline: ')+(v('dl')||'-')+'\n'+(r?'Контакт: ':'Contact: ')+v('contact')+'\n\n'+v('desc')+'\n';
+return {subj:subj,body:body};
+}
+f.addEventListener('click',function(e){
+var b=e.target.closest?e.target.closest('[data-act]'):null;if(!b)return;
+var d=build();if(!d)return;var a=b.getAttribute('data-act'),r=ru();
+if(a==='mail'){location.href='mailto:'+TO+'?subject='+encodeURIComponent(d.subj)+'&body='+encodeURIComponent(d.body);say(r?'Письмо подготовлено. Нажмите «Отправить» в почтовой программе.':'Email prepared. Press Send in your email app.')}
+else if(a==='gmail'){window.open('https://mail.google.com/mail/?view=cm&fs=1&to='+TO+'&su='+encodeURIComponent(d.subj)+'&body='+encodeURIComponent(d.body),'_blank','noopener');say(r?'Откроется Gmail с готовым письмом.':'Gmail will open with the message ready.')}
+else{var t='To: '+TO+'\nSubject: '+d.subj+'\n\n'+d.body;
+var done=function(){say(r?'Текст скопирован. Вставьте его в письмо на '+TO+'.':'Text copied. Paste it into an email to '+TO+'.')};
+if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done,function(){say(t)})}
+else{var x=document.createElement('textarea');x.value=t;document.body.appendChild(x);x.select();try{document.execCommand('copy');done()}catch(er){say(t)}document.body.removeChild(x)}}
+});
+})();
+/* HiMeet leadform */
 </script>
 </body>
 </html>
