@@ -8,6 +8,9 @@ import Avatar from "./Avatar";
 import { useSocial } from "@/lib/social";
 import VoiceBubble from "./VoiceBubble";
 import VoiceRecorder from "./VoiceRecorder";
+import AttachButton from "./AttachButton";
+import FileBubble from "./FileBubble";
+import { parseFile } from "@/lib/attach";
 import { parseVoice } from "@/lib/voice";
 import { targetLang, translateError, translateText } from "@/lib/translate";
 
@@ -145,12 +148,12 @@ export default function DmThread({ name, token, onBack, onChanged, draft }: { na
             </div>
             <div className="max-w-[85%] rounded-2xl px-3 py-2 text-sm break-words whitespace-pre-wrap"
               style={m.mine ? { background: "linear-gradient(90deg,#fde68a,#f5b301)", color: "#2b1a00" } : { background: "rgba(127,127,127,.16)" }}>
-              {(() => { const v = parseVoice(m.text); if (v) return <VoiceBubble path={v.path} sec={v.sec} />; const t = tr[m.id]; return t && t !== "load" && t.show ? t.text : m.text; })()}
+              {(() => { const v = parseVoice(m.text); if (v) return <VoiceBubble path={v.path} sec={v.sec} />; const fl = parseFile(m.text); if (fl) return <FileBubble f={fl} ru={ru} />; const t = tr[m.id]; return t && t !== "load" && t.show ? t.text : m.text; })()}
               <div className="mt-1 flex items-center gap-2 text-[10px] opacity-60">
                 <span>{time(m.created)}{m.mine && m.read ? " ✓✓" : ""}</span>
                 {m.mine ? <button type="button" onClick={() => del(m.id)} className="underline">{ru ? "удалить" : "delete"}</button>
                   : <button type="button" onClick={() => report(m.id)} className="underline">{ru ? "пожаловаться" : "report"}</button>}
-                {!m.mine && !parseVoice(m.text) && (
+                {!m.mine && !parseVoice(m.text) && !parseFile(m.text) && (
                   <button type="button" onClick={() => void doTr(m)} disabled={tr[m.id] === "load"} className="underline">
                     🌐 {tr[m.id] === "load" ? "…" : tr[m.id] && tr[m.id] !== "load" && (tr[m.id] as { show: boolean }).show ? (ru ? "оригинал" : "original") : ru ? "перевести" : "translate"}
                   </button>
@@ -168,6 +171,7 @@ export default function DmThread({ name, token, onBack, onChanged, draft }: { na
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
             placeholder={ru ? "Сообщение…" : "Message…"} aria-label={ru ? "Текст сообщения" : "Message text"}
             className="flex-1 min-w-0 rounded-xl border px-3 py-2 bg-transparent outline-none resize-none text-sm" />
+          <AttachButton token={token} onFile={sendVoice} />
           <VoiceRecorder token={token} onVoice={sendVoice} />
           <div className="flex flex-col items-center gap-1 shrink-0">
             <span className="text-[10px] opacity-50">{MAX - text.length}</span>

@@ -7,8 +7,9 @@ import type http from "node:http";
 const DIR = process.env.MEDIA_DIR || "./data/media";
 fs.mkdirSync(DIR, { recursive: true });
 const MAX = 2 * 1024 * 1024;
-const NAME_RE = /^[a-f0-9]{20}\.(jpg|png|webp|webm|ogg|m4a)$/;
-const MIME: Record<string, string> = { jpg: "image/jpeg", png: "image/png", webp: "image/webp", webm: "audio/webm", ogg: "audio/ogg", m4a: "audio/mp4" };
+const FMAX = 5 * 1024 * 1024; // вложения: фото и PDF
+const NAME_RE = /^[a-f0-9]{20}\.(jpg|png|webp|webm|ogg|m4a|pdf)$/;
+const MIME: Record<string, string> = { jpg: "image/jpeg", png: "image/png", webp: "image/webp", webm: "audio/webm", ogg: "audio/ogg", m4a: "audio/mp4", pdf: "application/pdf" };
 
 /** Тип по первым байтам файла (расширению и заголовку от клиента не верим) */
 function kind(b: Buffer): "jpg" | "png" | "webp" | "" {
@@ -26,6 +27,14 @@ function voiceKind(b: Buffer): "webm" | "ogg" | "m4a" | "" {
   return "";
 }
 
+/** Вложение: фото (jpg/png/webp) или PDF, тип по первым байтам */
+function fileKind(b: Buffer): "jpg" | "png" | "webp" | "pdf" | "" {
+  const k = kind(b);
+  if (k) return k;
+  if (b.length > 8 && b.toString("ascii", 0, 5) === "%PDF-") return "pdf";
+  return "";
+}
+
 const hits = new Map<string, number[]>();
 function limited(key: string, max: number, ms: number): boolean {
   const now = Date.now();
@@ -36,11 +45,11 @@ function limited(key: string, max: number, ms: number): boolean {
   return false;
 }
 
-function readRaw(req: http.IncomingMessage): Promise<Buffer> {
+function readRaw(req: http.IncomingMessage, max = MAX): Promise<Buffer> {
   return new Promise((resolve, reject) => {
-    if (Number(req.headers["content-length"] || 0) > MAX) { reject(new Error("too_big")); return; }
+    if (Number(req.headers["content-length"] || 0) > max) { reject(new Error("too_big")); return; }
     let n = 0; const chunks: Buffer[] = [];
-    req.on("data", (c: Buffer) => { n += c.length; if (n > MAX) { reject(new Error("too_big")); req.destroy(); } else chunks.push(c); });
+    req.on("data", (c: Buffer) => { n += c.length; if (n > max) { reject(new Error("too_big")); req.destroy(); } else chunks.push(c); });
     req.on("end", () => resolve(Buffer.concat(chunks)));
     req.on("error", reject);
   });
@@ -61,6 +70,7 @@ export async function handleMedia(req: http.IncomingMessage, res: http.ServerRes
         "Cache-Control": "public, max-age=31536000, immutable",
         "X-Content-Type-Options": "nosniff", "Cross-Origin-Resource-Policy": "cross-origin",
       };
+      if (name.endsWith(".pdf")) { head["Content-Disposition"] = 'attachment; filename="document.pdf"'; head["Content-Security-Policy"] = "sandbox"; }
       const rg = /^bytes=(\d*)-(\d*)$/.exec(String(req.headers.range || ""));
       if (rg && (rg[1] || rg[2])) { // частичная отдача: нужна Safari и перемотке аудио
         const start = rg[1] ? Number(rg[1]) : Math.max(0, st.size - Number(rg[2]));
@@ -97,6 +107,19 @@ export async function handleMedia(req: http.IncomingMessage, res: http.ServerRes
     try { buf = await readRaw(req); } catch { return json(413, { ok: false, error: "too_big" }); }
     const ext = voiceKind(buf);
     if (!ext) return json(400, { ok: false, error: "bad_audio" });
+    const name = crypto.createHash("sha256").update(buf).digest("hex").slice(0, 20) + "." + ext;
+    const file = path.join(DIR, name);
+    if (!fs.existsSync(file)) { fs.writeFileSync(file + ".tmp", buf); fs.renameSync(file + ".tmp", file); }
+    return json(200, { ok: true, path: "/media/" + name });
+  }
+
+  if (req.method === "POST" && url.pathname === "/api/upload-file") {
+    if (!viewer) return json(401, { ok: false, error: "auth" });
+    if (limited("fl:" + viewer, 30, 3600000) || limited("flday:" + viewer, 100, 86400000)) return json(429, { ok: false, error: "slow_down" });
+    let buf: Buffer;
+    try { buf = await readRaw(req, FMAX); } catch { return json(413, { ok: false, error: "too_big" }); }
+    const ext = fileKind(buf);
+    if (!ext) return json(400, { ok: false, error: "bad_file" });
     const name = crypto.createHash("sha256").update(buf).digest("hex").slice(0, 20) + "." + ext;
     const file = path.join(DIR, name);
     if (!fs.existsSync(file)) { fs.writeFileSync(file + ".tmp", buf); fs.renameSync(file + ".tmp", file); }

@@ -2,6 +2,9 @@
 import { useCallback, useEffect, useState } from "react";
 import LoginPrompt from "./LoginPrompt";
 import Avatar from "./Avatar";
+import AttachButton from "./AttachButton";
+import FileBubble from "./FileBubble";
+import { parseFile, splitFiles, stripFiles } from "@/lib/attach";
 import { useApp } from "@/lib/ctx";
 import { mailAddr, mailErr, mailGet, mailList, mailPurge, mailSend, mailStar, mailTrash, type MailBox, type MailItem } from "@/lib/mail";
 
@@ -21,6 +24,7 @@ export default function MailPanel({ token, myName, initialTo }: { token: string;
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
   const [busy, setBusy] = useState(false);
+  const [atts, setAtts] = useState<string[]>([]); // вложения нового письма
 
   const load = useCallback(() => {
     if (!token) return;
@@ -51,14 +55,14 @@ export default function MailPanel({ token, myName, initialTo }: { token: string;
     try { await fn(); if (back) { setView("list"); setCur(null); } }
     catch (e) { toast(mailErr(e, ru), "err"); }
   };
-  const compose = (toName = "", subj = "") => { setTo(toName); setSubject(subj); setBody(""); setView("compose"); };
+  const compose = (toName = "", subj = "") => { setTo(toName); setSubject(subj); setBody(""); setAtts([]); setView("compose"); };
   const send = async () => {
     if (busy) return;
     setBusy(true);
     try {
-      await mailSend(token, to, subject, body);
+      await mailSend(token, to, subject, [body.trim(), ...atts].filter(Boolean).join("\n"));
       toast(ru ? "Письмо отправлено" : "Message sent", "ok");
-      setBody(""); setSubject(""); setTo(""); setBox("out"); setView("list");
+      setBody(""); setSubject(""); setTo(""); setAtts([]); setBox("out"); setView("list");
     } catch (e) { toast(mailErr(e, ru), "err"); }
     finally { setBusy(false); }
   };
@@ -79,7 +83,12 @@ export default function MailPanel({ token, myName, initialTo }: { token: string;
               <div className="text-xs opacity-60">{new Date(cur.created).toLocaleString(ru ? "ru-RU" : "en-US")}</div>
             </div>
           </div>
-          <div className="whitespace-pre-wrap break-words text-sm leading-relaxed">{cur.body}</div>
+          {(() => { const sp = splitFiles(cur.body || ""); return (
+            <>
+              <div className="whitespace-pre-wrap break-words text-sm leading-relaxed">{sp.text}</div>
+              {sp.files.length > 0 && <div className="flex flex-wrap gap-3 pt-1">{sp.files.map((f, i) => <div key={f.path + i} className="rounded-xl border p-2 text-sm"><FileBubble f={f} ru={ru} /></div>)}</div>}
+            </>
+          ); })()}
         </article>
         <div className="flex flex-wrap gap-2">
           {!cur.mine && <button type="button" className="btn btn-primary !py-2" onClick={() => compose(other.name, re)}>{ru ? "Ответить" : "Reply"}</button>}
@@ -106,10 +115,20 @@ export default function MailPanel({ token, myName, initialTo }: { token: string;
           <h2 className="font-bold">{ru ? "Новое письмо" : "New message"}</h2>
           <input value={to} onChange={(e) => setTo(e.target.value)} placeholder={ru ? "Кому: ник или ник@himeet" : "To: name or name@himeet"} aria-label={ru ? "Кому" : "To"} maxLength={40} className="w-full rounded-xl border px-3 py-2 bg-transparent outline-none text-sm" />
           <input value={subject} onChange={(e) => setSubject(e.target.value)} placeholder={ru ? "Тема" : "Subject"} aria-label={ru ? "Тема" : "Subject"} maxLength={120} className="w-full rounded-xl border px-3 py-2 bg-transparent outline-none text-sm" />
-          <textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder={ru ? "Текст письма" : "Message"} aria-label={ru ? "Текст письма" : "Message"} maxLength={10000} rows={9} className="w-full rounded-xl border px-3 py-2 bg-transparent outline-none text-sm" />
+          <textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder={ru ? "Текст письма" : "Message"} aria-label={ru ? "Текст письма" : "Message"} maxLength={9500} rows={9} className="w-full rounded-xl border px-3 py-2 bg-transparent outline-none text-sm" />
+          {atts.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {atts.map((m, i) => { const f = parseFile(m); return f ? (
+                <span key={m + i} className="chip flex items-center gap-1.5">{f.image ? "🖼" : "📄"} {f.image ? (ru ? "Фото" : "Photo") : "PDF"} · {f.kb} {ru ? "КБ" : "KB"}
+                  <button type="button" aria-label={ru ? "Убрать вложение" : "Remove attachment"} onClick={() => setAtts((a) => a.filter((_, j) => j !== i))}>✕</button>
+                </span>
+              ) : null; })}
+            </div>
+          )}
           <div className="flex items-center gap-2">
-            <button type="button" className="btn btn-primary !py-2" disabled={busy || !to.trim() || !body.trim()} onClick={send}>{busy ? "…" : ru ? "Отправить" : "Send"}</button>
-            <span className="text-xs opacity-60 ms-auto">{body.length}/10000</span>
+            <button type="button" className="btn btn-primary !py-2" disabled={busy || !to.trim() || (!body.trim() && !atts.length)} onClick={send}>{busy ? "…" : ru ? "Отправить" : "Send"}</button>
+            <AttachButton token={token} disabled={atts.length >= 3} onFile={(m) => setAtts((a) => [...a, m].slice(0, 3))} />
+            <span className="text-xs opacity-60 ms-auto">{body.length}/9500</span>
           </div>
           <p className="text-xs opacity-60">{ru ? "Письма доставляются только пользователям HiMeet. В обычную почту они не уходят." : "Messages are delivered only to HiMeet users. They are not sent to regular email."}</p>
         </section>
@@ -149,7 +168,7 @@ export default function MailPanel({ token, myName, initialTo }: { token: string;
                   <span className="ms-auto text-[11px] opacity-60 shrink-0">{fmt(m.created)}</span>
                 </div>
                 <p className={"truncate text-sm " + (unread ? "font-semibold" : "")}>{m.subject || (ru ? "(без темы)" : "(no subject)")}</p>
-                <p className="truncate text-xs opacity-60">{m.preview}</p>
+                <p className="truncate text-xs opacity-60">{stripFiles(m.preview || "")}</p>
               </div>
               {unread && <span className="shrink-0 w-2.5 h-2.5 rounded-full" style={{ background: "#f5b301" }} />}
             </button>

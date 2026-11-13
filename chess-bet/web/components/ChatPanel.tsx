@@ -7,6 +7,7 @@ import { useApp } from "@/lib/ctx";
 import { dmList, type DmChat } from "@/lib/dm";
 import { errText } from "@/lib/social";
 import { parseVoice } from "@/lib/voice";
+import { parseFile } from "@/lib/attach";
 import { takeShareDraft } from "@/lib/shareNets";
 
 const NICK = /^[a-z0-9_]{3,20}$/i;
@@ -79,7 +80,7 @@ export default function ChatPanel({ token, addr, busy, signIn, peer, initial }: 
                 <b className="truncate">@{c.name}</b>
                 <span className="ms-auto text-[11px] opacity-60 shrink-0">{new Date(c.last.created).toLocaleDateString(ru ? "ru-RU" : "en-US", { day: "numeric", month: "short" })}</span>
               </div>
-              <p className={`truncate text-sm ${c.unread ? "font-semibold" : "opacity-70"}`}>{c.last.mine ? (ru ? "Вы: " : "You: ") : ""}{parseVoice(c.last.text) ? (ru ? "🎤 Голосовое сообщение" : "🎤 Voice message") : c.last.text}</p>
+              <p className={`truncate text-sm ${c.unread ? "font-semibold" : "opacity-70"}`}>{c.last.mine ? (ru ? "Вы: " : "You: ") : ""}{parseVoice(c.last.text) ? (ru ? "🎤 Голосовое сообщение" : "🎤 Voice message") : parseFile(c.last.text) ? (ru ? "📎 Вложение" : "📎 Attachment") : c.last.text}</p>
             </div>
             {c.unread > 0 && (
               <span className="shrink-0 min-w-[1.4rem] h-[1.4rem] px-1 rounded-full text-[11px] font-bold flex items-center justify-center" style={{ background: "#f5b301", color: "#2b1a00" }}>{c.unread > 99 ? "99+" : c.unread}</span>
