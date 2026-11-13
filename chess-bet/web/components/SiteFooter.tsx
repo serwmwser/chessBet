@@ -29,6 +29,7 @@ export default function SiteFooter() {
     [ru ? "Мультяшные шахматы" : "Cartoon chess", `${BASE}/cartoon/`, false],
     [ru ? "Языковой обмен" : "Language exchange", `${BASE}/language-exchange/`, false],
     [ru ? "Найти друзей" : "Find friends", `${BASE}/find-friends/`, false],
+    [ru ? "Чат с переводом" : "Chat with translation", `${BASE}/chat-with-translation/`, false],
     [ru ? "Скачать для Android (APK)" : "Download for Android (APK)", `${BASE}/android/`, false],
     [ru ? "Доска объявлений" : "Classifieds", `${BASE}/ads/`, false],
     [ru ? "Лента Rook Club" : "Rook Club feed", `${BASE}/feed/`, false],

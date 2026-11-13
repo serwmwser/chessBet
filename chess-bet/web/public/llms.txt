@@ -24,6 +24,7 @@
 - [Cartoon chess](https://himeet.online/cartoon/): funny character pieces, bright boards and piece voices; free against the bot.
 - [Language exchange](https://himeet.online/language-exchange/): free chat with message translation and calls, find people by language.
 - [Find friends](https://himeet.online/find-friends/): pick interests and languages in your profile, meet people from around the world.
+- [Chat with translation](https://himeet.online/chat-with-translation/): free messenger where every message can be translated in one tap, with voice notes, photos, PDFs, mail and calls.
 - [Android app](https://himeet.online/android/): download the HiMeet app (APK) and install it on Android.
 - [Tournaments](https://himeet.online/tournaments/): free hourly chess arenas with points, badges and cups.
 - [Chess NFTs](https://himeet.online/nft/): turn a move from your own finished game into an ERC-721 NFT on Polygon.

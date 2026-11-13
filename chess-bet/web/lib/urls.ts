@@ -22,6 +22,7 @@ export const ROUTES = {
   exchange: `${BASE}/language-exchange/`,
   android: `${BASE}/android/`,
   friends: `${BASE}/find-friends/`,
+  translateChat: `${BASE}/chat-with-translation/`,
   dating: `${BASE}/dating/`,
   about: `${BASE}/about/`,
   tournaments: `${BASE}/tournaments/`,
