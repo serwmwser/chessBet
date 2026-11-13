@@ -91,7 +91,8 @@ input, textarea, select { @apply outline-none focus-visible:ring-2 focus-visible
   box-shadow: 0 5px 0 rgba(124,58,237,.35), 0 10px 20px -8px rgba(168,85,247,.55);
 }
 :root:not(.dark) .btn-primary:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(124,58,237,.35); }
-:root:not(.dark) .chip { border-radius: 9999px; background: rgba(255,255,255,.8); }
+:root:not(.dark) .chip { border-radius: 9999px; background-color: rgba(255,255,255,.8); } /* HiMeet chip fix: только цвет, чтобы не сбрасывать градиент выбранной кнопки */
+:root:not(.dark) .chip.chip-on { color: #fff; }
 :root:not(.dark) input[type="range"] { accent-color: #ff5c93; }
 /* плитки главной: у каждой свой пастельный цвет */
 .tile-pop { transition: transform .15s ease; }
