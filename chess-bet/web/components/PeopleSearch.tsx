@@ -4,8 +4,9 @@ import { useApp } from "@/lib/ctx";
 import { findPeople, LANGS } from "@/lib/social";
 import { ROUTES, profileUrl } from "@/lib/urls";
 import Avatar from "./Avatar";
+import OnlineDot from "./OnlineDot";
 
-type P = { name: string; avatar: string; bio: string; langs?: string[] };
+type P = { name: string; avatar: string; bio: string; langs?: string[]; presence?: number };
 
 /** HiMeet people: поиск собеседников по языку и началу ника */
 export default function PeopleSearch({ me }: { me?: string }) {
@@ -47,11 +48,11 @@ export default function PeopleSearch({ me }: { me?: string }) {
             <li key={p.name} className="flex items-center gap-3">
               <Avatar name={p.name} src={p.avatar} size={44} />
               <div className="min-w-0 flex-1">
-                <a href={profileUrl(p.name)} className="font-bold hover:underline">@{p.name}</a>
+                <div className="flex flex-wrap items-center gap-x-2"><a href={profileUrl(p.name)} className="font-bold hover:underline">@{p.name}</a><OnlineDot presence={p.presence} ru={ru} /></div>
                 {!!p.langs?.length && <div className="text-xs opacity-75">🗣 {p.langs.map(nameOf).join(", ")}</div>}
                 {p.bio && <div className="text-xs opacity-60 truncate">{p.bio}</div>}
               </div>
-              <a href={`${ROUTES.profile}?tab=chat&with=${encodeURIComponent(p.name)}`} className="btn btn-primary !py-1.5 text-sm shrink-0">{ru ? "Написать" : "Message"}</a>
+              <a href={`${ROUTES.profile}?tab=chat&with=${encodeURIComponent(p.name)}`} className="btn btn-primary !py-1 !px-2.5 !text-xs shrink-0">{ru ? "Написать" : "Message"}</a>
             </li>
           ))}
         </ul>

@@ -5,6 +5,7 @@ import { Suspense, useCallback, useEffect, useRef, useState, Fragment } from "re
 import { useRouter, useSearchParams } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import Avatar, { mediaUrl } from "@/components/Avatar";
+import OnlineDot from "@/components/OnlineDot";
 import PostCard from "@/components/PostCard";
 import ChatPanel from "@/components/ChatPanel";
 import MailPanel from "@/components/MailPanel";
@@ -124,7 +125,7 @@ function Profile() {
                   <button type="button" className={u.follows ? "btn btn-ghost !py-2" : "btn btn-primary !py-2"} onClick={doFollow}>
                     {u.follows && u.followsMe ? (ru ? "👫 Друзья" : "👫 Friends") : u.follows ? (ru ? "Заявка отправлена" : "Request sent") : u.followsMe ? (ru ? "Принять в друзья" : "Accept friend") : ru ? "Добавить в друзья" : "Add friend"}
                   </button>
-                  <button type="button" className="btn btn-primary !py-2" onClick={() => { setTab("chat"); setEdit(false); setTimeout(() => document.getElementById("profile-tabs")?.scrollIntoView({ behavior: "smooth", block: "start" }), 60); }}>✉ {ru ? "Написать" : "Message"}</button>
+                  <button type="button" className="btn btn-primary !py-1 !px-2.5 !text-xs" onClick={() => { setTab("chat"); setEdit(false); setTimeout(() => document.getElementById("profile-tabs")?.scrollIntoView({ behavior: "smooth", block: "start" }), 60); }}>✉ {ru ? "Написать" : "Message"}</button>
                   <CallButton name={u.name} className="!py-2" />
                   <ReportButton kind="user" name={u.name} token={s.token} className="btn btn-ghost !py-2 text-sm" />
                 </>
@@ -132,6 +133,7 @@ function Profile() {
             </div>
           </div>
           <h2 className="mt-2 text-xl font-extrabold">@{u.name}</h2>
+          {!u.me && <div className="mt-0.5"><OnlineDot presence={u.presence} ru={ru} /></div>}
           {u.bio && <p className="mt-1 whitespace-pre-wrap break-words">{u.bio}</p>}
           {/* HiMeet match: совпадение с вами по языкам и интересам */}
           {!u.me && s.me && (() => {

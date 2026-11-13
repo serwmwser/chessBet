@@ -7,7 +7,7 @@ import { dropToken, ensureToken, getToken } from "./session";
 
 export type SUser = {
   name: string; bio: string; country: string; link: string; avatar: string; banner: string; joined: number; langs?: string[]; interests?: string[];
-  following: number; followers: number; posts: number; me: boolean; follows: boolean; followsMe?: boolean; addr?: string;
+  following: number; followers: number; posts: number; me: boolean; follows: boolean; followsMe?: boolean; presence?: number; addr?: string;
 };
 export type SPost = { id: number; edited: number; text: string; media: string[]; created: number; user: { name: string; avatar: string }; likes: number; liked: boolean; comments?: number };
 
@@ -58,7 +58,7 @@ export const INTERESTS: [string, string, string, string][] = [
   ["sport", "⚽", "Спорт", "Sports"], ["games", "🎮", "Игры", "Games"], ["chess", "♟️", "Шахматы", "Chess"], ["food", "🍜", "Еда", "Food"],
   ["art", "🎨", "Искусство", "Art"], ["tech", "💻", "Технологии", "Tech"], ["photo", "📷", "Фото", "Photo"], ["nature", "🌿", "Природа", "Nature"],
 ];
-export const findPeople = (q: string, lang = "") => call<{ users: { name: string; avatar: string; bio: string; langs?: string[] }[] }>(`/api/people?q=${encodeURIComponent(q)}${lang ? `&lang=${encodeURIComponent(lang)}` : ""}`).then((r) => r.users);
+export const findPeople = (q: string, lang = "") => call<{ users: { name: string; avatar: string; bio: string; langs?: string[]; presence?: number }[] }>(`/api/people?q=${encodeURIComponent(q)}${lang ? `&lang=${encodeURIComponent(lang)}` : ""}`).then((r) => r.users);
 
 export const saveProfile = (token: string, p: Partial<Pick<SUser, "name" | "bio" | "country" | "link" | "avatar" | "banner" | "langs" | "interests">>) =>
   call<{ user: SUser }>("/api/profile", { token, post: p }).then((r) => r.user);

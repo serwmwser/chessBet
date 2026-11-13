@@ -33,6 +33,21 @@ CREATE INDEX IF NOT EXISTS comments_post ON comments(post, id);
 try { db.exec("ALTER TABLE posts ADD COLUMN edited INTEGER NOT NULL DEFAULT 0"); } catch { /* колонка уже есть */ }
 try { db.exec("ALTER TABLE users ADD COLUMN langs TEXT NOT NULL DEFAULT ''"); } catch { /* колонка уже есть */ } // HiMeet langs
 try { db.exec("ALTER TABLE users ADD COLUMN interests TEXT NOT NULL DEFAULT ''"); } catch { /* колонка уже есть */ } // HiMeet interests
+try { db.exec("ALTER TABLE users ADD COLUMN seen_at INTEGER NOT NULL DEFAULT 0"); } catch { /* колонка уже есть */ } // HiMeet seen
+// Активность: пишем в базу не чаще раза в минуту на пользователя
+const seenMap = new Map<string, number>();
+function touchSeen(addr: string): void {
+  const now = Date.now();
+  if (now - (seenMap.get(addr) ?? 0) < 60000) return;
+  seenMap.set(addr, now);
+  if (seenMap.size > 50000) seenMap.clear();
+  try { db.prepare("UPDATE users SET seen_at=? WHERE addr=?").run(now, addr); } catch { /* не критично */ }
+}
+// Грубый статус без точного времени: 2 = в сети (до 5 мин), 1 = был(а) недавно (до 24 ч), 0 = не показываем
+function presenceOf(seen?: number): number {
+  const d = Date.now() - (seen || 0);
+  return !seen ? 0 : d < 300000 ? 2 : d < 86400000 ? 1 : 0;
+}
 
 // Секрет для токенов входа: создаётся один раз и хранится в data/
 let SECRET = "";
@@ -58,6 +73,7 @@ export function viewerOf(req: http.IncomingMessage): string {
     const row = db.prepare("SELECT banned,name FROM users WHERE addr=?").get(w) as { banned: number; name: string } | undefined;
     if (row?.banned) return "";
     if (!row) ensureUser(w); else if (AUTO_RE.test(row.name)) seedFromLegacy(w);
+    touchSeen(w);
     return w;
   }
   const h = String(req.headers.authorization || "");
@@ -67,7 +83,8 @@ export function viewerOf(req: http.IncomingMessage): string {
   const good = sign(`${addr}.${exp}`);
   if (mac.length !== good.length || !crypto.timingSafeEqual(Buffer.from(mac), Buffer.from(good))) return "";
   const u = db.prepare("SELECT banned FROM users WHERE addr=?").get(addr) as { banned: number } | undefined;
-  return u && !u.banned ? addr : "";
+  if (u && !u.banned) { touchSeen(addr); return addr; }
+  return "";
 }
 
 // Вызовы входа (одноразовые тексты для подписи)
@@ -93,7 +110,7 @@ setInterval(() => {
 const clean = (s: unknown, max: number) =>
   String(s ?? "").replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F\u202A-\u202E]/g, "").trim().slice(0, max);
 
-type U = { addr: string; name: string; bio: string; country: string; link: string; avatar: string; banner: string; created: number; langs?: string; interests?: string };
+type U = { addr: string; name: string; bio: string; country: string; link: string; avatar: string; banner: string; created: number; langs?: string; interests?: string; seen_at?: number };
 const userByName = (n: string) => db.prepare("SELECT * FROM users WHERE name=? AND banned=0").get(n) as U | undefined;
 const userByAddr = (a: string) => db.prepare("SELECT * FROM users WHERE addr=? AND banned=0").get(a) as U | undefined;
 
@@ -158,6 +175,7 @@ function profile(u: U, viewer: string) {
     following: c("SELECT COUNT(*) n FROM follows WHERE a=?", u.addr),
     followers: c("SELECT COUNT(*) n FROM follows WHERE b=?", u.addr),
     posts: c("SELECT COUNT(*) n FROM posts WHERE addr=? AND deleted=0", u.addr),
+    presence: viewer === u.addr ? 0 : presenceOf(u.seen_at),
     me: viewer === u.addr,
     follows: viewer && viewer !== u.addr ? !!db.prepare("SELECT 1 FROM follows WHERE a=? AND b=?").get(viewer, u.addr) : false,
     followsMe: viewer && viewer !== u.addr ? !!db.prepare("SELECT 1 FROM follows WHERE a=? AND b=?").get(u.addr, viewer) : false, // HiMeet friends
@@ -227,9 +245,9 @@ export async function handleSocial(req: http.IncomingMessage, res: http.ServerRe
         const s = clean(q.get("q"), 20).toLowerCase().replace(/[^a-z0-9_]/g, "");
         const lg = clean(q.get("lang"), 5).toLowerCase();
         const lang = LANG_CODES.has(lg) ? lg : "";
-        const rows = db.prepare("SELECT name,avatar,bio,langs FROM users WHERE banned=0 AND name LIKE ? AND (? = '' OR (',' || langs || ',') LIKE ?) ORDER BY created DESC LIMIT 20")
-          .all(s + "%", lang, "%," + lang + ",%") as { name: string; avatar: string; bio: string; langs: string }[];
-        return out(200, { ok: true, users: rows.map((r) => ({ name: r.name, avatar: r.avatar, bio: r.bio, langs: langsOf(r.langs) })) });
+        const rows = db.prepare("SELECT name,avatar,bio,langs,seen_at FROM users WHERE banned=0 AND name LIKE ? AND (? = '' OR (',' || langs || ',') LIKE ?) ORDER BY created DESC LIMIT 20")
+          .all(s + "%", lang, "%," + lang + ",%") as { name: string; avatar: string; bio: string; langs: string; seen_at: number }[];
+        return out(200, { ok: true, users: rows.map((r) => ({ name: r.name, avatar: r.avatar, bio: r.bio, langs: langsOf(r.langs), presence: presenceOf(r.seen_at) })) });
       }
       return bad("not_found", 404);
     }
